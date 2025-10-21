@@ -3,7 +3,7 @@
 """
 etapa 1 - pipeline de datos fifa 15–21
 - lee todas las hojas del excel usando data_loader
-- agrega columna anio
+- agrega columna año
 - convierte columnas monetarias a numero
 - limpia filas resumen, duplicados, nulos/imputa, selecciona columnas, guarda csv
 """
@@ -125,7 +125,7 @@ def leer_todas_hojas_con_anio(
     mapa_hoja_anio: Dict[str, int] | None = None
 ) -> pd.DataFrame:
     """
-    lee todas las hojas del excel usando data_loader y añade columna anio.
+    lee todas las hojas del excel usando data_loader y añade columna año.
     si mapa_hoja_anio no se provee, intenta inferir el año desde el nombre de la hoja (ej: 'fifa20' -> 2020).
     """
     # usar la funcion del data_loader para cargar las hojas

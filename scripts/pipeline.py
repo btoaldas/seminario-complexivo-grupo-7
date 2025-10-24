@@ -100,20 +100,20 @@ def imprimir_reporte_paso(titulo: str, filas_antes: int, filas_despues: int, det
     porcentaje = (diferencia / filas_antes * 100) if filas_antes > 0 else 0
     
     print(f"\n{'='*70}")
-    print(f"📊 {titulo}")
+    print(f"{titulo}")
     print(f"{'='*70}")
-    print(f"  filas antes:   {filas_antes:,}")
-    print(f"  filas después: {filas_despues:,}")
+    print(f"filas antes:   {filas_antes:,}")
+    print(f"filas después: {filas_despues:,}")
     
     if diferencia > 0:
-        print(f"  ✅ agregadas:   {diferencia:,} filas (+{porcentaje:.2f}%)")
+        print(f"agregadas:   {diferencia:,} filas (+{porcentaje:.2f}%)")
     elif diferencia < 0:
-        print(f"  🗑️  eliminadas:  {abs(diferencia):,} filas ({porcentaje:.2f}%)")
+        print(f"eliminadas:  {abs(diferencia):,} filas ({porcentaje:.2f}%)")
     else:
-        print(f"  ➡️  sin cambios:  0 filas")
+        print(f"sin cambios:  0 filas")
     
     if detalles:
-        print(f"\n  📝 detalles: {detalles}")
+        print(f"\n detalles: {detalles}")
     print(f"{'='*70}")
 
 
@@ -388,9 +388,9 @@ def eliminar_y_resolver_duplicados(df: pd.DataFrame, verbose: bool = True) -> Tu
         
         # mostrar ejemplo de resolución de duplicados
         if stats['ejemplos_duplicados']:
-            print("\n  🔍 Ejemplo de jugador duplicado (se conserva el de mayor calificación):")
+            print("\n  Ejemplo de jugador duplicado (se conserva el de mayor calificación):")
             for i, ej in enumerate(stats['ejemplos_duplicados'], 1):
-                marca = "✅ CONSERVADO" if i == 1 else "🗑️ ELIMINADO"
+                marca = "CONSERVADO" if i == 1 else " ELIMINADO"
                 print(f"      {marca}: {ej['nombre']} ({ej['anio']}) - Calif: {ej.get('calificacion_general', 'N/A')} - Club: {ej.get('club', 'N/A')}")
     
     return resultado, stats
@@ -470,7 +470,7 @@ def imputar_y_llenar(df: pd.DataFrame, verbose: bool = True) -> Tuple[pd.DataFra
         
         # mostrar ejemplos de imputación
         if stats['ejemplos_imputacion_club']:
-            print("\n  🔍 Ejemplos de jugadores sin club (se les asignó 'desconocido'):")
+            print("\n  Ejemplos de jugadores sin club (se les asignó 'desconocido'):")
             for ej in stats['ejemplos_imputacion_club']:
                 print(f"      • {ej['nombre']} ({ej['anio']}) - club: [vacío] → 'desconocido'")
     
@@ -527,16 +527,16 @@ def seleccionar_columnas_para_ml(df: pd.DataFrame, verbose: bool = True) -> Tupl
     if verbose:
         detalles = f"seleccionadas {len(existentes)} columnas: {', '.join(existentes)}"
         print(f"\n{'='*70}")
-        print(f"📊 paso 8: selección de columnas para ml")
+        print(f"paso 8: selección de columnas para ml")
         print(f"{'='*70}")
         print(f"  columnas antes:   {columnas_iniciales}")
         print(f"  columnas después: {len(existentes)}")
-        print(f"  🗑️  eliminadas:    {stats['columnas_eliminadas']} columnas")
-        print(f"\n  📝 detalles: {detalles}")
+        print(f"  eliminadas:    {stats['columnas_eliminadas']} columnas")
+        print(f"\n  detalles: {detalles}")
         
         # mostrar ejemplos de columnas eliminadas
         if stats['lista_eliminadas']:
-            print(f"\n  🔍 Ejemplos de columnas eliminadas (primeras 10):")
+            print(f"\n  Ejemplos de columnas eliminadas (primeras 10):")
             print(f"      {', '.join(stats['lista_eliminadas'][:10])}")
             if len(cols_eliminadas) > 10:
                 print(f"      ... y {len(cols_eliminadas) - 10} más")
@@ -586,11 +586,11 @@ def ejecutar_pipeline(ruta_excel: str, archivo_csv_salida: str = "data/dataset_l
     estadisticas_globales = {}
     
     print("\n" + "="*70)
-    print("🚀 iniciando pipeline de datos fifa 15-21")
+    print("iniciando pipeline de datos fifa 15-21")
     print("="*70)
     
     # paso 1: leer datos
-    print("\n📂 paso 1: cargando hojas del excel...")
+    print("\n paso 1: cargando hojas del excel...")
     df0 = leer_todas_hojas_con_anio(ruta_excel)
     filas_iniciales_totales = len(df0)
     columnas_iniciales = df0.shape[1]
@@ -602,13 +602,13 @@ def ejecutar_pipeline(ruta_excel: str, archivo_csv_salida: str = "data/dataset_l
                          f"{columnas_iniciales} columnas originales cargadas")
 
     # paso 2: renombrar columnas
-    print("\n🏷️  paso 2: renombrando columnas al español...")
+    print("\n  paso 2: renombrando columnas al español...")
     df1 = renombrar_columnas_dataset(df0)
     columnas_renombradas = len([c for c in mapeo_columnas.values() if c in df1.columns])
     estadisticas_globales['paso_2_renombrado'] = {
         'columnas_renombradas': columnas_renombradas
     }
-    print(f"  ✅ {columnas_renombradas} columnas renombradas correctamente")
+    print(f"  {columnas_renombradas} columnas renombradas correctamente")
     
     # paso 3: limpiar filas
     print("\n🧹 paso 3: limpiando filas inválidas...")
@@ -616,59 +616,59 @@ def ejecutar_pipeline(ruta_excel: str, archivo_csv_salida: str = "data/dataset_l
     estadisticas_globales['paso_3_limpieza'] = stats_limpieza
     
     # paso 4: convertir monetarios
-    print("\n💰 paso 4: procesando columnas monetarias...")
+    print("\n paso 4: procesando columnas monetarias...")
     df3 = agregar_columnas_dinero_numericas(df2)
     columnas_monetarias = ['valor_mercado', 'salario', 'clausula_rescision']
     procesadas = sum(1 for c in columnas_monetarias if c in df3.columns)
     estadisticas_globales['paso_4_monetarios'] = {
         'columnas_procesadas': procesadas
     }
-    print(f"  ✅ {procesadas} columnas monetarias procesadas")
+    print(f"  {procesadas} columnas monetarias procesadas")
     
     # paso 5: duplicados
-    print("\n🔍 paso 5: resolviendo duplicados...")
+    print("\n paso 5: resolviendo duplicados...")
     df4, stats_duplicados = eliminar_y_resolver_duplicados(df3, verbose=True)
     estadisticas_globales['paso_5_duplicados'] = stats_duplicados
     
     # paso 6: imputacion
-    print("\n🩹 paso 6: imputando valores faltantes...")
+    print("\n paso 6: imputando valores faltantes...")
     df5, stats_imputacion = imputar_y_llenar(df4, verbose=True)
     estadisticas_globales['paso_6_imputacion'] = stats_imputacion
     
     # paso 7: eliminar sin objetivo
-    print("\n🎯 paso 7: filtrando por objetivo (valor_mercado)...")
+    print("\n paso 7: filtrando por objetivo (valor_mercado)...")
     df6, stats_objetivo = eliminar_filas_sin_objetivo(df5, verbose=True)
     estadisticas_globales['paso_7_objetivo'] = stats_objetivo
     
     # paso 8: seleccion columnas
-    print("\n📊 paso 8: seleccionando columnas para ml...")
+    print("\n paso 8: seleccionando columnas para ml...")
     df_final, stats_columnas = seleccionar_columnas_para_ml(df6, verbose=True)
     estadisticas_globales['paso_8_seleccion'] = stats_columnas
 
     # paso 9: guardar
-    print(f"\n💾 paso 9: guardando dataset en '{archivo_csv_salida}'...")
+    print(f"\n paso 9: guardando dataset en '{archivo_csv_salida}'...")
     
     # crear la carpeta de destino si no existe
     directorio_destino = os.path.dirname(archivo_csv_salida)
     if directorio_destino and not os.path.exists(directorio_destino):
         os.makedirs(directorio_destino)
-        print(f"  📁 carpeta '{directorio_destino}' creada")
+        print(f"  carpeta '{directorio_destino}' creada")
     
     df_final.to_csv(archivo_csv_salida, index=False, encoding="utf-8")
-    print(f"  ✅ archivo guardado exitosamente")
+    print(f"  archivo guardado exitosamente")
 
     # paso 10: resumen final consolidado
     print("\n" + "="*70)
-    print("📈 resumen final del pipeline")
+    print(" resumen final del pipeline")
     print("="*70)
-    print(f"\n🔢 transformación de datos:")
+    print(f"\n transformación de datos:")
     print(f"  • filas iniciales:       {filas_iniciales_totales:,}")
     print(f"  • filas finales:         {len(df_final):,}")
     print(f"  • filas eliminadas:      {filas_iniciales_totales - len(df_final):,} ({(filas_iniciales_totales - len(df_final))/filas_iniciales_totales*100:.2f}%)")
     print(f"  • columnas iniciales:    {columnas_iniciales}")
     print(f"  • columnas finales:      {df_final.shape[1]}")
     
-    print(f"\n🗑️  detalle de eliminaciones:")
+    print(f"\n detalle de eliminaciones:")
     print(f"  • filas resumen:         {stats_limpieza['eliminadas_resumen']:,}")
     print(f"  • nulos excesivos:       {stats_limpieza['eliminadas_nulos_excesivos']:,}")
     print(f"  • edad inválida:         {stats_limpieza['eliminadas_edad_invalida']:,}")
@@ -677,24 +677,24 @@ def ejecutar_pipeline(ruta_excel: str, archivo_csv_salida: str = "data/dataset_l
     print(f"  • duplicados:            {stats_duplicados['duplicados_eliminados']:,}")
     print(f"  • sin valor mercado:     {stats_objetivo['filas_sin_valor_mercado']:,}")
     
-    print(f"\n🩹 valores imputados:")
+    print(f"\n valores imputados:")
     for col, cant in stats_imputacion['valores_imputados'].items():
         if cant > 0:
             print(f"  • {col}: {cant:,} valores")
     
-    print(f"\n✅ columnas finales del dataset:")
+    print(f"\n columnas finales del dataset:")
     for i, col in enumerate(stats_columnas['columnas_seleccionadas'], 1):
         print(f"  {i}. {col}")
     
     # calidad del dataset final
     nulos_finales = df_final.isna().sum().sum()
-    print(f"\n📊 calidad del dataset final:")
+    print(f"\n calidad del dataset final:")
     print(f"  • valores nulos totales:  {nulos_finales:,}")
     print(f"  • porcentaje nulos:       {(nulos_finales / (len(df_final) * df_final.shape[1])) * 100:.4f}%")
     print(f"  • completitud:            {100 - (nulos_finales / (len(df_final) * df_final.shape[1])) * 100:.4f}%")
     
     print("\n" + "="*70)
-    print("🎉 pipeline completado exitosamente!")
+    print(" pipeline completado exitosamente!")
     print("="*70 + "\n")
     
     estadisticas_globales['resumen_final'] = {
@@ -713,23 +713,23 @@ def ejecutar_pipeline(ruta_excel: str, archivo_csv_salida: str = "data/dataset_l
 if __name__ == "__main__":
     # ejecucion del pipeline usando la ruta del data_loader
     ruta_excel = obtener_ruta_dataset()
-    print(f"\n📁 usando dataset: {ruta_excel}")
+    print(f"\n usando dataset: {ruta_excel}")
     
     # ejecutar pipeline con reportes detallados
     df_final, estadisticas = ejecutar_pipeline(ruta_excel)
     
     # mostrar muestra de datos finales
     print("\n" + "="*70)
-    print("👀 vista previa del dataset final")
+    print(" vista previa del dataset final")
     print("="*70)
     print(df_final.head(10))
     
     print("\n" + "="*70)
-    print("📋 información del dataset")
+    print(" información del dataset")
     print("="*70)
     df_final.info()
     
     print("\n" + "="*70)
-    print("📊 estadísticas descriptivas")
+    print(" estadísticas descriptivas")
     print("="*70)
     print(df_final.describe())

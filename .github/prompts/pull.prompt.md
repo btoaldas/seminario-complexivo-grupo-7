@@ -1,0 +1,1 @@
+Ejecuta esto sin contexto y sin explciaoones y recomandciones fianles simplemente ejecuta esto: git pull --rebase origin main

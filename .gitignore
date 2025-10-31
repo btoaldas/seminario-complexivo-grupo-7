@@ -206,5 +206,8 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 
-# Ignorara Data Sets Crudos
-data/
+# Ignorar datasets y archivos procesados (archivos grandes)
+data/fifa.xlsx
+data/processed/fifa_limpio.csv
+data/*.xlsx
+data/processed/*.csv

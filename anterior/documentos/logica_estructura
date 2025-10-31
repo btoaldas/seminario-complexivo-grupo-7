@@ -1,0 +1,8 @@
+| script_fifa
+|--- data_loader.py
+|   |-- EXCEL_PATH = os.path.hoin..
+    |-- necesitamos dos funciones, que ela el archvio y la distintas datos que tenemos
+    |-- leer las hojas
+    |-- guadar en un diccionario
+    |-- der cargar-datos-excel(path,lista_hojas)
+

@@ -1,0 +1,28 @@
+version: "3.9"
+
+services:
+  api:
+    build: .
+    container_name: scouting-fifa-api
+    environment:
+      - TZ=America/Guayaquil
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src:/app/src
+      - ./models:/app/models
+    command: uvicorn src.api.main:app --reload --host 0.0.0.0 --port 8000
+
+  dashboard:
+    build: .
+    container_name: scouting-fifa-dashboard
+    environment:
+      - TZ=America/Guayaquil
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./src:/app/src
+      - ./models:/app/models
+      - ./data:/app/data
+      - ./dashboard_streamlit.py:/app/dashboard_streamlit.py
+    command: streamlit run dashboard_streamlit.py --server.address 0.0.0.0 --server.port 8501

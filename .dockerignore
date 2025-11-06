@@ -1,0 +1,17 @@
+.git
+.github
+.venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+dist
+build
+data
+notebooks
+scripts
+anterior
+backups
+documentos
+*.ipynb_checkpoints

@@ -1,5 +1,6 @@
 from enum import Enum
 from typing import Optional, List
+from typing import Dict
 
 from pydantic import BaseModel, Field, validator
 
@@ -290,3 +291,65 @@ class JugadorSobreprecio(BaseModel):
     valor_predicho_formateado: Optional[str] = None
     sobreprecio_eur_formateado: Optional[str] = None
     sobreprecio_pct_formateado: Optional[str] = None
+
+
+class JugadorBusquedaItem(BaseModel):
+    """Item devuelto por el endpoint de búsqueda de jugadores."""
+
+    player_id: Optional[str] = None
+    nombre_corto: Optional[str] = None
+    nombre_completo: Optional[str] = None
+    posicion_principal: Optional[PosicionPrincipal] = None
+    edad: Optional[int] = None
+    calificacion_general: Optional[int] = None
+    potencial: Optional[int] = None
+    valor_euros: Optional[float] = None
+    valor_euros_formateado: Optional[str] = None
+    club: Optional[str] = None
+    liga: Optional[str] = None
+    nacionalidad: Optional[str] = None
+
+
+class BusquedaRespuesta(BaseModel):
+    """Respuesta paginada para /players/search."""
+
+    total: int
+    page: int
+    page_size: int
+    items: List[JugadorBusquedaItem]
+
+
+class ResumenJugadoresRespuesta(BaseModel):
+    """Resumen estadístico para /players/summary con los mismos filtros de búsqueda."""
+
+    total: int
+    promedio_valor: Optional[float] = None
+    promedio_valor_formateado: Optional[str] = None
+    promedio_calificacion: Optional[float] = None
+    promedio_potencial: Optional[float] = None
+    conteo_por_posicion: Dict[str, int] = {}
+
+
+class JugadorPerfilRespuesta(BaseModel):
+    """Perfil completo de un jugador con valor predicho por el modelo."""
+
+    player_id: str
+    nombre_corto: Optional[str] = None
+    nombre_completo: Optional[str] = None
+    posicion_principal: Optional[PosicionPrincipal] = None
+    pie_preferido: Optional[PiePreferido] = None
+    edad: Optional[int] = None
+    altura_cm: Optional[float] = None
+    peso_kg: Optional[float] = None
+    calificacion_general: Optional[int] = None
+    potencial: Optional[int] = None
+    club: Optional[str] = None
+    liga: Optional[str] = None
+    nacionalidad: Optional[str] = None
+    valor_real: Optional[float] = None
+    valor_real_formateado: Optional[str] = None
+    valor_predicho: Optional[float] = None
+    valor_predicho_formateado: Optional[str] = None
+    diferencia: Optional[float] = None
+    diferencia_formateada: Optional[str] = None
+    clasificacion: Optional[str] = None

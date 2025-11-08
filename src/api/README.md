@@ -48,6 +48,10 @@ docker run --rm -p 8000:8000 -v $(pwd)/models:/app/models scouting-fifa-api
 - `POST /evaluate` – predice y clasifica (INFRAVALORADO/SOBREVALORADO/BIEN VALORADO).
 - `GET /sample_request` – devuelve ejemplos listos para copiar/pegar para `/predict` y `/evaluate` (paginado).
  - `POST /compare` – compara 2–5 jugadores (predicción, diferencia vs valor_real y ranking por más infravalorado).
+- `GET /players/search` – búsqueda filtrada por `posicion`, `min_edad`, `max_edad`, `potencial_min` (mínimo) y `potencial_max` (máximo); orden solo por `valor` con `order` (asc|desc) y paginación (`page`, `page_size`).
+  - Si no hay coincidencias, responde 404 con `{"detail": "No se encontraron jugadores con los criterios proporcionados"}`.
+- `GET /players/summary` – resumen estadístico (promedios y conteos) para los mismos filtros que `/players/search`.
+- `GET /players/{player_id}/profile` – perfil completo de un jugador incluyendo valor predicho por el modelo.
 
 ### Ejemplo de entrada
 
@@ -239,6 +243,49 @@ Parámetros:
 - `ascendente` (bool, default false): si es `true`, ordena por oportunidad de forma ascendente.
 
 Requiere tener el dataset procesado en `data/processed/fifa_limpio.csv` y los artefactos del modelo en `models/`.
+
+## Perfil de jugador (`/players/{player_id}/profile`)
+
+Este endpoint resuelve el jugador exclusivamente por una columna de ID del dataset.
+
+- Variables de entorno:
+  - `PLAYER_ID_COLUMN` (default: `sofifa_id`) – columna usada para buscar el jugador.
+  - `PLAYER_ID_STRICT` (default: `false`) – si es `true`, deshabilita fallbacks y solo acepta IDs existentes en `PLAYER_ID_COLUMN`.
+- Si la columna no existe, la API responde 500 indicando el problema.
+- Si no hay coincidencia exacta por ID, responde 404.
+
+Ejemplos:
+
+```
+# Usando el ID por defecto (sofifa_id)
+GET /players/158023/profile
+
+# Cambiar la columna del ID (ej.: player_id)
+PLAYER_ID_COLUMN=player_id uvicorn src.api.main:app --reload
+GET /players/12345/profile
+```
+
+Con modo estricto activado:
+
+```
+PLAYER_ID_COLUMN=sofifa_id PLAYER_ID_STRICT=true uvicorn src.api.main:app --reload
+```
+
+Campos relevantes en la respuesta:
+- `valor_real`, `valor_real_formateado`, `valor_predicho`, `valor_predicho_formateado`, `diferencia`, `diferencia_formateada`, `clasificacion`.
+
+## Configuración con .env
+
+Puedes crear un archivo `.env` en la raíz del proyecto para configurar variables sin modificar el compose/código.
+
+Ejemplo `.env`:
+
+```
+# Columna usada para identificar jugadores en /players/{player_id}/profile
+PLAYER_ID_COLUMN=sofifa_id
+```
+
+El `docker-compose.yml` ya incluye `env_file: .env` y la aplicación también carga `.env` automáticamente al iniciar.
 
 ## Sobrevalorados (Top con sobreprecio)
 

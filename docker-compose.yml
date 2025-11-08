@@ -6,6 +6,13 @@ services:
     container_name: scouting-fifa-api
     environment:
       - TZ=America/Guayaquil
+      # Columna usada para resolver IDs de jugadores en /players/{player_id}/profile
+      # Cambia a 'player_id' u otra columna si tu dataset la usa
+      - PLAYER_ID_COLUMN=sofifa_id
+      # Modo estricto: si es true, desactiva los fallbacks y exige coincidencia por la columna de ID
+      - PLAYER_ID_STRICT=false
+    env_file:
+      - .env
     ports:
       - "8000:8000"
     volumes:

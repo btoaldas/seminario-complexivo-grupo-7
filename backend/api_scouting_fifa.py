@@ -198,6 +198,7 @@ def buscar_jugadores(
     potencial_min: Optional[int] = Query(None, ge=40, le=100, description="Potencial mínimo"),
     potencial_max: Optional[int] = Query(None, ge=40, le=100, description="Potencial máximo"),
     valor_max_eur: Optional[float] = Query(None, description="Valor máximo de mercado en EUR"),
+    año_datos: Optional[int] = Query(None, ge=2015, le=2021, description="Año FIFA (2015-2021)"),
     categoria_edad: Optional[List[str]] = Query(None, description="Categoría de edad (Joven/Prime/Veterano)"),
     categoria_posicion: Optional[List[str]] = Query(None, description="Categoría de posición"),
     pie_preferido: Optional[str] = Query(None, description="Pie preferido (Left/Right)"),
@@ -246,6 +247,11 @@ def buscar_jugadores(
         if valor_max_eur is not None:
             df_filtrado = df_filtrado[df_filtrado["valor_mercado_eur"] <= valor_max_eur]
         
+        # ⚽ FILTRO DE AÑO FIFA (NUEVO)
+        if año_datos is not None:
+            if "año_datos" in df_filtrado.columns:
+                df_filtrado = df_filtrado[df_filtrado["año_datos"] == año_datos]
+        
         if categoria_edad:
             df_filtrado = df_filtrado[df_filtrado["categoria_edad"].isin(categoria_edad)]
         
@@ -268,6 +274,10 @@ def buscar_jugadores(
             "posiciones_jugador", "valoracion_global", "potencial", "valor_mercado_eur",
             "salario_eur", "pie_preferido", "altura_cm", "peso_kg", "url_jugador"
         ]
+        
+        # Agregar año_datos si existe en el DataFrame
+        if "año_datos" in df_filtrado.columns:
+            columnas_respuesta.append("año_datos")
         
         jugadores_encontrados = df_filtrado[columnas_respuesta].to_dict("records")
         

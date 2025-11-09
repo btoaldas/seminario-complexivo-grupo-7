@@ -508,6 +508,17 @@ with tab1:
         </div>
         """, unsafe_allow_html=True)
         
+        # ⚽ FILTRO DE AÑO FIFA (NUEVO)
+        st.markdown("### 📅 Año FIFA")
+        año_filtro = st.selectbox(
+            "Selecciona el año:",
+            options=["Todos", 2021, 2020, 2019, 2018, 2017, 2016, 2015],
+            index=1,  # Por defecto 2021
+            help="Por defecto muestra solo jugadores de 2021 (versión más reciente)"
+        )
+        
+        st.markdown("---")  # Separador visual
+        
         # Filtro de posiciones
         posiciones_seleccionadas = st.multiselect(
             "Posiciones:",
@@ -579,6 +590,10 @@ with tab1:
             "orden_descendente": orden_desc
         }
         
+        # ⚽ FILTRO DE AÑO (NUEVO)
+        if año_filtro != "Todos":
+            params["año_datos"] = año_filtro
+        
         if posiciones_seleccionadas:
             params["posiciones_jugador"] = posiciones_seleccionadas
         if nacionalidades_seleccionadas:
@@ -640,11 +655,22 @@ with tab1:
                 "valor_mercado_eur"
             ]
             
+            # ⚽ Agregar columna año_datos si existe
+            if "año_datos" in df_resultados.columns:
+                columnas_mostrar.insert(2, "año_datos")
+            
             df_mostrar = df_resultados[columnas_mostrar].copy()
-            df_mostrar.columns = [
+            
+            # Renombrar columnas
+            columnas_renombradas = [
+                "Nombre", "Edad", "Año FIFA", "Nacionalidad", "Club", "Liga",
+                "Posición", "Overall", "Potencial", "Valor (€)"
+            ] if "año_datos" in df_resultados.columns else [
                 "Nombre", "Edad", "Nacionalidad", "Club", "Liga",
                 "Posición", "Overall", "Potencial", "Valor (€)"
             ]
+            
+            df_mostrar.columns = columnas_renombradas
             
             # Formatear valor
             df_mostrar["Valor (€)"] = df_mostrar["Valor (€)"].apply(lambda x: f"€{x:,.0f}")

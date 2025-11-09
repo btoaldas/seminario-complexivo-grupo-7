@@ -318,9 +318,13 @@ def obtener_imagen_jugador_fallback():
     Retorna URL de imagen genérica de jugador de fútbol
     Usa placeholder con ícono de jugador (PNG compatible)
     """
-    # Imagen placeholder con silueta de jugador de fútbol (PNG, siempre disponible)
-    # Alternativas confiables:
-    return "https://cdn-icons-png.flaticon.com/512/3774/3774299.png"
+    # Múltiples opciones de íconos de jugador (PNG, alta disponibilidad)
+    opciones = [
+        "https://static.vecteezy.com/system/resources/previews/009/383/461/original/soccer-player-clipart-design-illustration-free-png.png",
+        "https://cdn-icons-png.flaticon.com/512/3774/3774299.png",
+        "https://cdn-icons-png.flaticon.com/512/53/53283.png"
+    ]
+    return opciones[0]  # Vecteezy: PNG transparente, sin restricciones
 
 def obtener_bandera_pais(nacionalidad):
     """

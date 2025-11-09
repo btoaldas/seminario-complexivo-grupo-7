@@ -316,10 +316,11 @@ def crear_grafico_radar(jugador_data):
 def obtener_imagen_jugador_fallback():
     """
     Retorna URL de imagen genérica de jugador de fútbol
-    API: SVGRepo (gratuita, sin autenticación, vectorial)
+    Usa placeholder con ícono de jugador (PNG compatible)
     """
-    # Ilustración vectorial de jugador de fútbol (SVG de alta calidad)
-    return "https://www.svgrepo.com/show/31151/soccer-player-with-ball.svg"
+    # Imagen placeholder con silueta de jugador de fútbol (PNG, siempre disponible)
+    # Alternativas confiables:
+    return "https://cdn-icons-png.flaticon.com/512/3774/3774299.png"
 
 def obtener_bandera_pais(nacionalidad):
     """
@@ -390,19 +391,27 @@ def mostrar_ficha_jugador(jugador_id, jugador_nombre):
                 try:
                     st.image(url_foto, width=200, caption=f"📸 {nombre}")
                 except:
-                    # Si falla la foto, usar ícono de jugador genérico
+                    # Si falla la foto, usar ícono de jugador genérico con bandera superpuesta
                     url_jugador = obtener_imagen_jugador_fallback()
                     url_bandera, pais = obtener_bandera_pais(nacionalidad)
-                    st.image(url_jugador, width=200)
-                    # Mostrar bandera pequeña en el caption
-                    st.markdown(f"<div style='text-align: center;'><img src='{url_bandera}' width='40'/> {pais}</div>", unsafe_allow_html=True)
+                    st.markdown(f"""
+                    <div style='position: relative; width: 200px; margin: 0 auto;'>
+                        <img src='{url_jugador}' style='width: 100%; height: auto; display: block; border-radius: 10px;'/>
+                        <img src='{url_bandera}' style='position: absolute; bottom: 8px; right: 8px; width: 40px; height: auto; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.3);'/>
+                    </div>
+                    <p style='text-align: center; margin-top: 5px; font-size: 0.9em;'>⚽ {pais}</p>
+                    """, unsafe_allow_html=True)
             else:
-                # Mostrar ícono de jugador genérico con bandera en caption
+                # Mostrar ícono de jugador genérico con bandera superpuesta
                 url_jugador = obtener_imagen_jugador_fallback()
                 url_bandera, pais = obtener_bandera_pais(nacionalidad)
-                st.image(url_jugador, width=200)
-                # Mostrar bandera pequeña en el caption
-                st.markdown(f"<div style='text-align: center;'><img src='{url_bandera}' width='40'/> {pais}</div>", unsafe_allow_html=True)
+                st.markdown(f"""
+                <div style='position: relative; width: 200px; margin: 0 auto;'>
+                    <img src='{url_jugador}' style='width: 100%; height: auto; display: block; border-radius: 10px;'/>
+                    <img src='{url_bandera}' style='position: absolute; bottom: 8px; right: 8px; width: 40px; height: auto; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.3);'/>
+                </div>
+                <p style='text-align: center; margin-top: 5px; font-size: 0.9em;'>⚽ {pais}</p>
+                """, unsafe_allow_html=True)
             
             # Información básica
             st.markdown("##### Información")
@@ -529,19 +538,27 @@ def mostrar_modal_jugador(jugador_id, jugador_nombre, año_fifa):
                 try:
                     st.image(url_foto, width=250, caption=f"📸 {nombre}")
                 except:
-                    # Si falla la foto, usar ícono de jugador genérico
+                    # Si falla la foto, usar ícono de jugador genérico con bandera superpuesta
                     url_jugador = obtener_imagen_jugador_fallback()
                     url_bandera, pais = obtener_bandera_pais(nacionalidad)
-                    st.image(url_jugador, width=250)
-                    # Mostrar bandera pequeña en el caption con mensaje
-                    st.markdown(f"<div style='text-align: center;'><img src='{url_bandera}' width='50'/> <b>{pais}</b><br/><small>⚽ Foto no disponible</small></div>", unsafe_allow_html=True)
+                    st.markdown(f"""
+                    <div style='position: relative; width: 250px; margin: 0 auto;'>
+                        <img src='{url_jugador}' style='width: 100%; height: auto; display: block; border-radius: 10px;'/>
+                        <img src='{url_bandera}' style='position: absolute; bottom: 10px; right: 10px; width: 50px; height: auto; border-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.4);'/>
+                    </div>
+                    <p style='text-align: center; margin-top: 8px; font-size: 0.95em;'>⚽ {pais} • Foto no disponible</p>
+                    """, unsafe_allow_html=True)
             else:
-                # Mostrar ícono de jugador genérico con bandera en caption
+                # Mostrar ícono de jugador genérico con bandera superpuesta
                 url_jugador = obtener_imagen_jugador_fallback()
                 url_bandera, pais = obtener_bandera_pais(nacionalidad)
-                st.image(url_jugador, width=250)
-                # Mostrar bandera pequeña en el caption con mensaje
-                st.markdown(f"<div style='text-align: center;'><img src='{url_bandera}' width='50'/> <b>{pais}</b><br/><small>⚽ Foto no disponible</small></div>", unsafe_allow_html=True)
+                st.markdown(f"""
+                <div style='position: relative; width: 250px; margin: 0 auto;'>
+                    <img src='{url_jugador}' style='width: 100%; height: auto; display: block; border-radius: 10px;'/>
+                    <img src='{url_bandera}' style='position: absolute; bottom: 10px; right: 10px; width: 50px; height: auto; border-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.4);'/>
+                </div>
+                <p style='text-align: center; margin-top: 8px; font-size: 0.95em;'>⚽ {pais} • Foto no disponible</p>
+                """, unsafe_allow_html=True)
             
             # Info básica en tarjetas
             st.markdown(f"""

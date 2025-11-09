@@ -678,7 +678,7 @@ with tab1:
     with st.sidebar:
         st.markdown(f"""
         <div style='text-align: center; padding: 20px; background: linear-gradient(135deg, {COLOR_SECUNDARIO} 0%, {COLOR_ACENTO_1} 100%); border-radius: 15px; margin-bottom: 20px;'>
-            <h2 style='color: white; margin: 0;'>🎯 Filtros Avanzados</h2>
+            <h2 style='color: white !important; margin: 0;'>🎯 Filtros Avanzados</h2>
         </div>
         """, unsafe_allow_html=True)
         

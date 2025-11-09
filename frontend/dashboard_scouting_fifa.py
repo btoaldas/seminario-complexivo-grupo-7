@@ -435,6 +435,187 @@ def mostrar_ficha_jugador(jugador_id, jugador_nombre):
             st.write(f"Pie débil: {jugador.get('pie_debil', 'N/A')} ⭐")
 
 # ============================================================================
+# FUNCIÓN MODAL DE FICHA DE JUGADOR
+# ============================================================================
+@st.dialog("📋 Ficha Detallada del Jugador", width="large")
+def mostrar_modal_jugador(jugador_id, jugador_nombre, año_fifa):
+    """Muestra la ficha del jugador en un modal interactivo"""
+    
+    # Botón de cierre en la esquina
+    col_titulo, col_cerrar = st.columns([4, 1])
+    with col_titulo:
+        st.markdown(f"### {jugador_nombre}")
+        st.markdown(f"**📅 FIFA {año_fifa}**")
+    with col_cerrar:
+        if st.button("❌ Cerrar", key="cerrar_modal", use_container_width=True):
+            st.session_state.mostrar_modal = False
+            st.rerun()
+    
+    st.markdown("---")
+    
+    # Cargar perfil del jugador
+    perfil = obtener_perfil_jugador(jugador_id)
+    
+    if perfil and "jugador" in perfil:
+        jugador = perfil["jugador"]
+        prediccion = perfil.get("prediccion_ml", {})
+        
+        # SECCIÓN 1: INFO BÁSICA + FOTO
+        col1, col2 = st.columns([1, 2])
+        
+        with col1:
+            # Foto del jugador
+            url_foto = jugador.get("url_foto_jugador", "")
+            if url_foto:
+                st.image(url_foto, width=250)
+            else:
+                st.info("📷 Sin foto disponible")
+            
+            # Info básica en tarjetas
+            st.markdown(f"""
+            <div style='background: linear-gradient(135deg, {COLOR_ACENTO_2} 0%, {COLOR_PRIMARIO} 100%); 
+                 padding: 15px; border-radius: 10px; margin: 10px 0; border-left: 4px solid {COLOR_ACENTO_1};'>
+                <p style='margin: 5px 0; color: {COLOR_SECUNDARIO};'><b>🏟️ Club:</b> {jugador.get('club', 'N/A')}</p>
+                <p style='margin: 5px 0; color: {COLOR_SECUNDARIO};'><b>🏆 Liga:</b> {jugador.get('liga', 'N/A')}</p>
+                <p style='margin: 5px 0; color: {COLOR_SECUNDARIO};'><b>🌍 Nacionalidad:</b> {jugador.get('nacionalidad', 'N/A')}</p>
+                <p style='margin: 5px 0; color: {COLOR_SECUNDARIO};'><b>🎂 Edad:</b> {jugador.get('edad', 'N/A')} años</p>
+                <p style='margin: 5px 0; color: {COLOR_SECUNDARIO};'><b>📅 Año FIFA:</b> {año_fifa}</p>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # Métricas principales
+            st.markdown("#### ⚡ Métricas Clave")
+            col_m1, col_m2 = st.columns(2)
+            with col_m1:
+                st.metric("⚽ Overall", jugador.get('valoracion_global', 'N/A'))
+                st.metric("🦵 Pie", jugador.get('pie_preferido', 'N/A'))
+            with col_m2:
+                st.metric("🚀 Potencial", jugador.get('potencial', 'N/A'))
+                st.metric("📍 Posición", jugador.get('posiciones_jugador', 'N/A'))
+        
+        with col2:
+            # Tabs para organizar información
+            tab1, tab2, tab3 = st.tabs(["📊 Atributos", "💰 Valoración", "📈 Estadísticas"])
+            
+            with tab1:
+                # Gráfico de radar
+                st.markdown("##### Perfil de Habilidades")
+                fig_radar = crear_grafico_radar(jugador)
+                st.plotly_chart(fig_radar, use_container_width=True)
+                
+                # Atributos detallados en 3 columnas
+                col_a1, col_a2, col_a3 = st.columns(3)
+                
+                with col_a1:
+                    st.markdown("**⚔️ Ataque**")
+                    st.progress(int(jugador.get('ataque_definicion', 0)) / 100)
+                    st.caption(f"Definición: {jugador.get('ataque_definicion', 'N/A')}")
+                    st.progress(int(jugador.get('ataque_cabezazo', 0)) / 100)
+                    st.caption(f"Cabezazo: {jugador.get('ataque_cabezazo', 'N/A')}")
+                
+                with col_a2:
+                    st.markdown("**🏃 Movimiento**")
+                    st.progress(int(jugador.get('movimiento_aceleracion', 0)) / 100)
+                    st.caption(f"Aceleración: {jugador.get('movimiento_aceleracion', 'N/A')}")
+                    st.progress(int(jugador.get('movimiento_velocidad_sprint', 0)) / 100)
+                    st.caption(f"Sprint: {jugador.get('movimiento_velocidad_sprint', 'N/A')}")
+                
+                with col_a3:
+                    st.markdown("**🧠 Mentalidad**")
+                    st.progress(int(jugador.get('mentalidad_vision', 0)) / 100)
+                    st.caption(f"Visión: {jugador.get('mentalidad_vision', 'N/A')}")
+                    st.progress(int(jugador.get('mentalidad_compostura', 0)) / 100)
+                    st.caption(f"Compostura: {jugador.get('mentalidad_compostura', 'N/A')}")
+            
+            with tab2:
+                # Análisis de valor de mercado
+                st.markdown("##### 💰 Análisis de Valor de Mercado")
+                
+                valor_real = jugador.get("valor_mercado_eur", 0)
+                valor_predicho = prediccion.get("valor_predicho_eur", 0)
+                diferencia = prediccion.get("diferencia_porcentual", 0)
+                clasificacion = prediccion.get("clasificacion", "N/A")
+                
+                # Métricas lado a lado
+                col_v1, col_v2, col_v3 = st.columns(3)
+                with col_v1:
+                    st.metric("💵 Valor Real", f"€{valor_real:,.0f}")
+                with col_v2:
+                    st.metric("🤖 Valor Predicho", f"€{valor_predicho:,.0f}")
+                with col_v3:
+                    delta_valor = valor_real - valor_predicho
+                    st.metric("📊 Diferencia", f"€{delta_valor:,.0f}", delta=f"{diferencia:.1f}%")
+                
+                # Gráfico de comparación
+                fig_comp = go.Figure()
+                
+                fig_comp.add_trace(go.Bar(
+                    x=["Valor Real", "Valor Predicho ML"],
+                    y=[valor_real, valor_predicho],
+                    marker_color=[COLOR_ACENTO_1, COLOR_DESTACADO],
+                    text=[f"€{valor_real:,.0f}", f"€{valor_predicho:,.0f}"],
+                    textposition='auto',
+                    textfont=dict(size=14, color='white')
+                ))
+                
+                fig_comp.update_layout(
+                    title="Comparación: Real vs Predicción",
+                    yaxis_title="Euros (€)",
+                    showlegend=False,
+                    paper_bgcolor=COLOR_ACENTO_2,
+                    plot_bgcolor=COLOR_ACENTO_2,
+                    font=dict(color=COLOR_SECUNDARIO),
+                    height=300
+                )
+                
+                st.plotly_chart(fig_comp, use_container_width=True)
+                
+                # Clasificación con badge
+                if diferencia > 15:
+                    st.success(f"✅ **{clasificacion}** (+{diferencia:.1f}%)")
+                    st.info("🔍 **Oportunidad:** Jugador potencialmente INFRAVALORADO")
+                elif diferencia < -15:
+                    st.warning(f"⚠️ **{clasificacion}** ({diferencia:.1f}%)")
+                    st.info("💡 **Alerta:** Jugador potencialmente SOBREVALORADO")
+                else:
+                    st.info(f"✓ **{clasificacion}** ({diferencia:.1f}%)")
+                    st.caption("Valoración acorde al mercado")
+            
+            with tab3:
+                # Estadísticas adicionales
+                st.markdown("##### 📈 Estadísticas Físicas y Técnicas")
+                
+                col_s1, col_s2 = st.columns(2)
+                
+                with col_s1:
+                    st.markdown("**Físico**")
+                    st.write(f"📏 Altura: {jugador.get('altura_cm', 'N/A')} cm")
+                    st.write(f"⚖️ Peso: {jugador.get('peso_kg', 'N/A')} kg")
+                    st.write(f"💪 Fuerza: {jugador.get('poder_fuerza', 'N/A')}")
+                    st.write(f"⏱️ Resistencia: {jugador.get('poder_resistencia', 'N/A')}")
+                
+                with col_s2:
+                    st.markdown("**Técnica**")
+                    st.write(f"⚽ Control: {jugador.get('habilidad_control_balon', 'N/A')}")
+                    st.write(f"🎯 Regate: {jugador.get('habilidad_regate', 'N/A')}")
+                    st.write(f"🦶 Pie débil: {jugador.get('pie_debil', 'N/A')} ⭐")
+                    st.write(f"✨ Habilidades: {jugador.get('movimientos_habilidad', 'N/A')} ⭐")
+                
+                # Información contractual
+                st.markdown("---")
+                st.markdown("**💼 Información Contractual**")
+                col_c1, col_c2 = st.columns(2)
+                with col_c1:
+                    salario = jugador.get('salario_eur', 0)
+                    st.write(f"💰 Salario: €{salario:,.0f}")
+                with col_c2:
+                    st.write(f"📋 Cláusula: €{jugador.get('clausula_rescision_eur', 0):,.0f}")
+    
+    else:
+        st.error("❌ No se pudo cargar la información del jugador")
+        st.info("Intenta refrescar la página o selecciona otro jugador")
+
+# ============================================================================
 # HEADER PRINCIPAL MEJORADO
 # ============================================================================
 st.markdown(f"""
@@ -783,9 +964,9 @@ with tab1:
             </style>
             """, unsafe_allow_html=True)
             
-            # Mostrar encabezados
-            col_headers = st.columns([0.5, 1.2, 2, 0.8, 1.5, 1.5, 1.5, 1.2, 1, 1.2])
-            headers = ["#", "Acción", "Nombre", "Edad", "Nacionalidad", "Club", "Liga", "Posición", "Overall", "Potencial"]
+            # Mostrar encabezados (con nueva columna Año FIFA)
+            col_headers = st.columns([0.5, 1.2, 2, 0.7, 0.7, 1.5, 1.5, 1.5, 1, 1, 1.2])
+            headers = ["#", "Acción", "Nombre", "Edad", "Año FIFA", "Nacionalidad", "Club", "Liga", "Posición", "Overall", "Potencial"]
             
             header_html = "<div class='tabla-header'>"
             for col, header in zip(col_headers, headers):
@@ -801,7 +982,7 @@ with tab1:
                 st.markdown("<div class='fila-jugador'>", unsafe_allow_html=True)
                 
                 with st.container():
-                    col_vals = st.columns([0.5, 1.2, 2.5, 0.8, 1.5, 1.5, 1.5, 1, 1, 1])
+                    col_vals = st.columns([0.5, 1.2, 2.5, 0.7, 0.7, 1.5, 1.5, 1.5, 1, 1, 1])
                     
                     with col_vals[0]:
                         st.markdown(f"<div style='text-align: center; font-size: 1.2em; color: #f0a818; font-weight: bold;'>{idx_global + 1}</div>", unsafe_allow_html=True)
@@ -809,9 +990,13 @@ with tab1:
                     with col_vals[1]:
                         jugador_id = jugador.get('id_sofifa')
                         nombre = jugador.get('nombre_corto', 'N/A')
+                        año_jugador = jugador.get('año_datos', 'N/A')
+                        # Modal: guardar info del jugador y marcar para mostrar modal
                         if st.button("🎯 Ficha", key=f"ficha_{idx_global}_{jugador_id}", help="Ver ficha completa del jugador", use_container_width=True):
-                            st.session_state.jugador_seleccionado_id = jugador_id
-                            st.session_state.jugador_seleccionado_nombre = nombre
+                            st.session_state.modal_jugador_id = jugador_id
+                            st.session_state.modal_jugador_nombre = nombre
+                            st.session_state.modal_jugador_año = año_jugador
+                            st.session_state.mostrar_modal = True
                             st.rerun()
                     
                     with col_vals[2]:
@@ -822,26 +1007,31 @@ with tab1:
                         st.markdown(f"<div style='text-align: center;'>{edad}</div>", unsafe_allow_html=True)
                     
                     with col_vals[4]:
+                        # ⚽ NUEVA COLUMNA AÑO FIFA
+                        año = jugador.get('año_datos', 'N/A')
+                        st.markdown(f"<div style='text-align: center; background: linear-gradient(135deg, #f0a818 0%, #d89510 100%); color: #000; padding: 3px 8px; border-radius: 10px; font-weight: bold; font-size: 0.85em;'>{año}</div>", unsafe_allow_html=True)
+                    
+                    with col_vals[5]:
                         nacionalidad = jugador.get('nacionalidad', 'N/A')
                         st.markdown(f"<span class='jugador-stat'>{nacionalidad}</span>", unsafe_allow_html=True)
                     
-                    with col_vals[5]:
+                    with col_vals[6]:
                         club = jugador.get('club', 'N/A')
                         st.markdown(f"<div style='color: #7890a8;'>{club}</div>", unsafe_allow_html=True)
                     
-                    with col_vals[6]:
+                    with col_vals[7]:
                         liga = jugador.get('liga', 'N/A')
                         st.markdown(f"<div style='color: #7890a8; font-size: 0.9em;'>{liga}</div>", unsafe_allow_html=True)
                     
-                    with col_vals[7]:
+                    with col_vals[8]:
                         posicion = jugador.get('posiciones_jugador', 'N/A')
                         st.markdown(f"<div style='text-align: center; background-color: rgba(120, 144, 168, 0.2); padding: 4px; border-radius: 5px;'>{posicion}</div>", unsafe_allow_html=True)
                     
-                    with col_vals[8]:
+                    with col_vals[9]:
                         overall = jugador.get('valoracion_global', 'N/A')
                         st.markdown(f"<div class='overall-badge'>{overall}</div>", unsafe_allow_html=True)
                     
-                    with col_vals[9]:
+                    with col_vals[10]:
                         potencial = jugador.get('potencial', 'N/A')
                         color_potencial = "#4CAF50" if potencial > overall else "#FF9800"
                         st.markdown(f"<div style='text-align: center; color: {color_potencial}; font-weight: bold;'>{potencial}</div>", unsafe_allow_html=True)
@@ -866,40 +1056,12 @@ with tab1:
                     st.session_state.pagina_actual += 1
                     st.rerun()
             
-            # Ancla para scroll automático (siempre presente)
-            st.markdown('<div id="ficha-jugador"></div>', unsafe_allow_html=True)
-            
-            # Script de scroll automático cuando hay jugador seleccionado
-            if 'jugador_seleccionado_id' in st.session_state and st.session_state.jugador_seleccionado_id:
-                # Forzar scroll al ancla usando JavaScript inline con timestamp único en el contenido
-                import streamlit.components.v1 as components
-                import time
-                timestamp = int(time.time() * 1000)  # Timestamp en milisegundos
-                jugador_id = st.session_state.jugador_seleccionado_id
-                
-                components.html(
-                    f"""
-                    <div id="scroll-trigger-{jugador_id}-{timestamp}"></div>
-                    <script>
-                        (function() {{
-                            // ID único: {jugador_id}-{timestamp}
-                            setTimeout(function() {{
-                                var elemento = window.parent.document.getElementById('ficha-jugador');
-                                if (elemento) {{
-                                    elemento.scrollIntoView({{behavior: 'smooth', block: 'start'}});
-                                }}
-                            }}, 100);
-                        }})();
-                    </script>
-                    """,
-                    height=0
-                )
-                
-                st.markdown("---")
-                st.markdown("### 📋 Ficha Detallada del Jugador")
-                mostrar_ficha_jugador(
-                    st.session_state.jugador_seleccionado_id,
-                    st.session_state.jugador_seleccionado_nombre
+            # ⚽ MODAL DE FICHA DE JUGADOR
+            if st.session_state.get('mostrar_modal', False):
+                mostrar_modal_jugador(
+                    st.session_state.get('modal_jugador_id'),
+                    st.session_state.get('modal_jugador_nombre', 'Jugador'),
+                    st.session_state.get('modal_jugador_año', 'N/A')
                 )
         else:
             st.info("No se encontraron jugadores con los criterios seleccionados")

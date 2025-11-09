@@ -437,28 +437,13 @@ def mostrar_ficha_jugador(jugador_id, jugador_nombre):
 # ============================================================================
 # FUNCIÓN MODAL DE FICHA DE JUGADOR
 # ============================================================================
-@st.dialog("⚽ Ficha del Jugador", width="large")
+@st.dialog("📋 Ficha Detallada del Jugador", width="large")
 def mostrar_modal_jugador(jugador_id, jugador_nombre, año_fifa):
     """Muestra la ficha del jugador en un modal interactivo"""
     
-    # Header con diseño mejorado y botón de cierre rápido
-    st.markdown(f"""
-    <div style='background: linear-gradient(135deg, {COLOR_SECUNDARIO} 0%, {COLOR_ACENTO_1} 100%); 
-         padding: 20px; border-radius: 10px; margin-bottom: 20px;'>
-        <h2 style='color: white; margin: 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);'>
-            {jugador_nombre}
-        </h2>
-        <p style='color: rgba(255,255,255,0.9); margin: 5px 0 0 0; font-size: 16px;'>
-            📅 FIFA {año_fifa}
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Botón de cierre rápido y destacado
-    if st.button("✖️ Cerrar Ficha", key="cerrar_modal", type="primary", use_container_width=True):
-        st.session_state.mostrar_modal = False
-        st.rerun()
-    
+    # Header del modal
+    st.markdown(f"### {jugador_nombre}")
+    st.markdown(f"**📅 FIFA {año_fifa}**")
     st.markdown("---")
     
     # Cargar perfil del jugador

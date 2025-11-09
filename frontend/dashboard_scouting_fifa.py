@@ -132,6 +132,58 @@ st.markdown(f"""
         background: linear-gradient(145deg, {COLOR_ACENTO_1} 0%, {COLOR_SECUNDARIO} 100%);
     }}
     
+    /* Botón compacto "Ficha" - responsive */
+    .stButton > button[kind="primary"] {{
+        padding: 4px 12px !important;
+        font-size: 11px !important;
+        font-weight: 600 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+        border-radius: 8px !important;
+        min-height: 28px !important;
+        height: 28px !important;
+        line-height: 1 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+    }}
+    
+    /* Responsive: Reducir tamaño en pantallas medianas */
+    @media (max-width: 1400px) {{
+        .stButton > button[kind="primary"] {{
+            font-size: 10px !important;
+            padding: 4px 10px !important;
+            letter-spacing: 0.3px !important;
+        }}
+    }}
+    
+    @media (max-width: 1200px) {{
+        .stButton > button[kind="primary"] {{
+            font-size: 9px !important;
+            padding: 4px 8px !important;
+            letter-spacing: 0.2px !important;
+        }}
+    }}
+    
+    @media (max-width: 992px) {{
+        .stButton > button[kind="primary"] {{
+            font-size: 8px !important;
+            padding: 3px 6px !important;
+            letter-spacing: 0.1px !important;
+            min-height: 24px !important;
+            height: 24px !important;
+        }}
+    }}
+    
+    @media (max-width: 768px) {{
+        .stButton > button[kind="primary"] {{
+            font-size: 7px !important;
+            padding: 3px 5px !important;
+            letter-spacing: 0px !important;
+            min-height: 22px !important;
+            height: 22px !important;
+        }}
+    }}
+    
     /* Tabs mejorados */
     .stTabs [data-baseweb="tab-list"] {{
         gap: 10px;
@@ -1171,82 +1223,20 @@ with tab1:
                                 '>⚽</div>
                             '''
                         
-                        # Botón personalizado con foto y texto integrado
-                        boton_html = f"""
-                            <div id="custom_btn_{idx_global}_{jugador_id}" style='
-                                background: linear-gradient(135deg, {COLOR_PRIMARIO} 0%, #1e40af 100%);
-                                border: 2px solid {COLOR_ACENTO_1};
-                                border-radius: 12px;
-                                padding: 12px 8px;
-                                cursor: pointer;
-                                transition: all 0.3s ease;
+                        # Div solo con la foto (sin texto)
+                        foto_html = f"""
+                            <div style='
                                 text-align: center;
-                                box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-                                width: 100%;
-                                user-select: none;
-                            '
-                            onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 12px rgba(59,130,246,0.4)';"
-                            onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.2)';"
-                            onclick="
-                                var hiddenBtn = document.querySelector('[data-testid=\\'baseButton-primary\\'][key=\\'btn_hidden_{idx_global}_{jugador_id}\\']');
-                                if (!hiddenBtn) {{
-                                    hiddenBtn = Array.from(document.querySelectorAll('button')).find(btn => btn.textContent === '' && btn.closest('div').innerHTML.includes('btn_hidden_{idx_global}_{jugador_id}'));
-                                }}
-                                if (hiddenBtn) {{
-                                    hiddenBtn.click();
-                                }} else {{
-                                    console.log('Buscando botón oculto...');
-                                    setTimeout(function() {{
-                                        var allButtons = document.querySelectorAll('button');
-                                        for(var i=0; i<allButtons.length; i++) {{
-                                            if(allButtons[i].parentElement && allButtons[i].parentElement.style.display === 'none') {{
-                                                allButtons[i].click();
-                                                break;
-                                            }}
-                                        }}
-                                    }}, 50);
-                                }}
-                            ">
+                                margin-bottom: 6px;
+                            '>
                                 {img_html}
-                                <div style='
-                                    color: white;
-                                    font-size: 11px;
-                                    font-weight: 600;
-                                    text-transform: uppercase;
-                                    letter-spacing: 0.5px;
-                                '>Ver Ficha</div>
                             </div>
-                            
-                            <style>
-                            /* Ocultar completamente el botón de Streamlit */
-                            div:has(> button[key="btn_hidden_{idx_global}_{jugador_id}"]) {{
-                                display: none !important;
-                                position: absolute !important;
-                                left: -9999px !important;
-                                width: 0 !important;
-                                height: 0 !important;
-                                overflow: hidden !important;
-                                opacity: 0 !important;
-                                pointer-events: none !important;
-                            }}
-                            
-                            button[key="btn_hidden_{idx_global}_{jugador_id}"] {{
-                                display: none !important;
-                                position: absolute !important;
-                                left: -9999px !important;
-                                width: 0 !important;
-                                height: 0 !important;
-                                overflow: hidden !important;
-                                opacity: 0 !important;
-                                pointer-events: auto !important;
-                            }}
-                            </style>
                         """
                         
-                        st.markdown(boton_html, unsafe_allow_html=True)
+                        st.markdown(foto_html, unsafe_allow_html=True)
                         
-                        # Botón invisible de Streamlit para manejar el evento (completamente oculto)
-                        if st.button("", key=f"btn_hidden_{idx_global}_{jugador_id}", type="primary"):
+                        # Botón compacto y elegante con solo "Ficha"
+                        if st.button("Ficha", key=f"btn_hidden_{idx_global}_{jugador_id}", type="primary", use_container_width=True):
                             st.session_state.modal_jugador_id = jugador_id
                             st.session_state.modal_jugador_nombre = nombre
                             st.session_state.modal_jugador_año = año_jugador

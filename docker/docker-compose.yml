@@ -1,0 +1,42 @@
+﻿services:
+  backend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.backend
+    container_name: fifa-backend
+    ports:
+      - 8000:8000
+    environment:
+      - TZ=America/Guayaquil
+      - LANG=C.UTF-8
+    volumes:
+      - ../datos:/app/datos:ro
+    networks:
+      - fifa-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8000/')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+
+  frontend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.frontend
+    container_name: fifa-frontend
+    ports:
+      - 8501:8501
+    environment:
+      - TZ=America/Guayaquil
+      - LANG=C.UTF-8
+      - API_BASE_URL=http://backend:8000
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - fifa-network
+
+networks:
+  fifa-network:
+    driver: bridge

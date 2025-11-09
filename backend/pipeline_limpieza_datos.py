@@ -45,11 +45,11 @@ def main():
    # ========================================================================
    # FASE 1: CARGA DE DATOS (Múltiples hojas)
    # ========================================================================
-   print("\n" + "="*70)
+   print("="*70)
    print("FASE 1: CARGA DE DATOS")
    print("="*70)
    
-   df = cargar_datos_fifa('datos/originales/fifa.xlsx')
+   df = cargar_datos_fifa('../datos/originales/fifa.xlsx')
    
    if df is None:
        print("\nERROR: Error al cargar datos. Pipeline detenido.")
@@ -164,7 +164,7 @@ def main():
    print("FASE 6: GUARDADO DE DATOS LIMPIOS")
    print("="*70)
    
-   guardar_datos_limpios(df, 'datos/procesados/fifa_limpio.csv')
+   guardar_datos_limpios(df, '../datos/procesados/fifa_limpio.csv')
    
    # ========================================================================
    # FINALIZACIÓN
@@ -173,7 +173,7 @@ def main():
    print(" PIPELINE COMPLETADO EXITOSAMENTE")
    print("="*70)
    print("\nDatos listos para entrenamiento de modelo ML!")
-   print(f"Archivo guardado: datos/procesados/fifa_limpio.csv")
+   print(f"Archivo guardado: ../datos/procesados/fifa_limpio.csv")
    print("="*70 + "\n")
 
 

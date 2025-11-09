@@ -11,6 +11,14 @@ models/*.pkl
 models/*.h5
 models/*.joblib
 
+# Modelos entrenados en datos/modelos/ (archivos muy pesados 500MB+)
+datos/modelos/*.joblib
+datos/modelos/*.pkl
+datos/modelos/*.h5
+
+# Datos procesados (archivos grandes CSV 50MB+)
+datos/procesados/*.csv
+
 # Distribution / packaging
 .Python
 build/

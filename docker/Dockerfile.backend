@@ -1,0 +1,25 @@
+﻿FROM python:3.11-slim
+
+ENV TZ=America/Guayaquil
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
+ENV PYTHONIOENCODING=utf-8
+
+WORKDIR /app
+
+COPY backend/requirements-api.txt ./requirements.txt
+
+RUN apt-get update && apt-get install -y --no-install-recommends libgomp1 && rm -rf /var/lib/apt/lists/*
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY backend/*.py ./backend/
+COPY backend/scripts/ ./backend/scripts/
+
+RUN mkdir -p /app/datos/originales /app/datos/procesados /app/datos/modelos
+
+EXPOSE 8000
+
+CMD ["uvicorn", "backend.api_scouting_fifa:app", "--host", "0.0.0.0", "--port", "8000"]

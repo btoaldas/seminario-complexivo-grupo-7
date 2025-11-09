@@ -300,16 +300,21 @@ def buscar_jugadores(
     summary="Obtener perfil completo de un jugador",
     description="Retorna todos los atributos de un jugador específico más su valor predicho"
 )
-def obtener_perfil_jugador(jugador_id: int):
+def obtener_perfil_jugador(jugador_id: int, año: int = Query(None, description="Año FIFA específico del jugador")):
     """
     Obtiene el perfil completo de un jugador por su ID de SoFIFA.
     Incluye todos sus atributos y el valor predicho por el modelo ML.
+    Si se proporciona el parámetro año, devuelve el perfil de ese año específico.
     """
     try:
-        jugador = df_jugadores[df_jugadores["id_sofifa"] == jugador_id]
+        # Filtrar por ID y año si se proporciona
+        if año:
+            jugador = df_jugadores[(df_jugadores["id_sofifa"] == jugador_id) & (df_jugadores["año_datos"] == año)]
+        else:
+            jugador = df_jugadores[df_jugadores["id_sofifa"] == jugador_id]
         
         if jugador.empty:
-            raise HTTPException(status_code=404, detail=f"Jugador con ID {jugador_id} no encontrado")
+            raise HTTPException(status_code=404, detail=f"Jugador con ID {jugador_id}{f' en el año {año}' if año else ''} no encontrado")
         
         jugador_dict = jugador.iloc[0].to_dict()
         
@@ -351,6 +356,33 @@ def obtener_perfil_jugador(jugador_id: int):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al obtener perfil: {str(e)}")
+
+
+@app.get("/jugadores/{jugador_id}/años", tags=["Jugadores"])
+def obtener_años_jugador(jugador_id: int):
+    """
+    Obtiene todos los años FIFA en los que un jugador específico está presente en la base de datos.
+    """
+    try:
+        # Filtrar todos los registros del jugador por su id_sofifa
+        registros_jugador = df_jugadores[df_jugadores["id_sofifa"] == jugador_id]
+        
+        if registros_jugador.empty:
+            raise HTTPException(status_code=404, detail=f"Jugador con ID {jugador_id} no encontrado")
+        
+        # Obtener años únicos ordenados
+        años_disponibles = sorted(registros_jugador["año_datos"].unique().tolist(), reverse=True)
+        
+        return {
+            "id_sofifa": jugador_id,
+            "años": años_disponibles,
+            "total_registros": len(años_disponibles)
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al obtener años del jugador: {str(e)}")
 
 
 # ============================================================================

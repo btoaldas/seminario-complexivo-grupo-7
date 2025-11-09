@@ -406,11 +406,12 @@ def buscar_jugadores(params):
         st.error(f"Error al buscar jugadores: {e}")
         return None
 
-def obtener_perfil_jugador(jugador_id):
+def obtener_perfil_jugador(jugador_id, año=None):
     """Obtiene el perfil completo de un jugador"""
     try:
         url = API_URL_PERFIL.format(id=jugador_id)
-        response = sesion_http.get(url, timeout=10)
+        params = {"año": año} if año else {}
+        response = sesion_http.get(url, params=params, timeout=10)
         response.raise_for_status()
         return response.json()
     except requests.exceptions.RequestException as e:
@@ -624,13 +625,44 @@ def mostrar_ficha_jugador(jugador_id, jugador_nombre):
 def mostrar_modal_jugador(jugador_id, jugador_nombre, año_fifa):
     """Muestra la ficha del jugador en un modal interactivo"""
     
-    # Header del modal
-    st.markdown(f"### {jugador_nombre}")
-    st.markdown(f"**📅 FIFA {año_fifa}**")
+    # Header del modal con selector de año
+    col_header_1, col_header_2 = st.columns([3, 1])
+    
+    with col_header_1:
+        st.markdown(f"### {jugador_nombre}")
+    
+    with col_header_2:
+        # Obtener años disponibles para este jugador
+        try:
+            url_años = f"{API_BASE_URL}/jugadores/{jugador_id}/años"
+            response = sesion_http.get(url_años, timeout=5)
+            if response.status_code == 200:
+                años_disponibles = response.json().get("años", [año_fifa])
+            else:
+                años_disponibles = [año_fifa]
+        except:
+            años_disponibles = [año_fifa]
+        
+        # Selector de año con callback para cerrar y reabrir modal
+        año_seleccionado = st.selectbox(
+            "📅 Año FIFA",
+            options=sorted(años_disponibles, reverse=True),
+            index=sorted(años_disponibles, reverse=True).index(año_fifa) if año_fifa in años_disponibles else 0,
+            key=f"selector_año_{jugador_id}_{año_fifa}"
+        )
+        
+        # Si cambió el año, cerrar modal y actualizar session_state para reabrirlo
+        if año_seleccionado != año_fifa:
+            st.session_state.modal_jugador_id = jugador_id
+            st.session_state.modal_jugador_nombre = jugador_nombre
+            st.session_state.modal_jugador_año = año_seleccionado
+            st.session_state.mostrar_modal = True
+            st.rerun()
+    
     st.markdown("---")
     
-    # Cargar perfil del jugador
-    perfil = obtener_perfil_jugador(jugador_id)
+    # Cargar perfil del jugador con el año seleccionado
+    perfil = obtener_perfil_jugador(jugador_id, año_fifa)
     
     if perfil and "jugador" in perfil:
         jugador = perfil["jugador"]

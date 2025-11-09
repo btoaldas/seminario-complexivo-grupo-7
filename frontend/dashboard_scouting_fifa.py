@@ -896,29 +896,66 @@ with tab2:
     stats = cargar_estadisticas_generales()
     
     if stats:
-        # KPIs GENERALES
-        st.subheader("Estadísticas Globales")
+        # KPIs GENERALES CON DISEÑO MEJORADO
+        st.markdown(f"""
+        <div style='text-align: center; margin-bottom: 30px;'>
+            <h3 style='color: {COLOR_ACENTO_1};'>📈 Estadísticas Globales del Dataset</h3>
+        </div>
+        """, unsafe_allow_html=True)
         
         col1, col2, col3, col4, col5 = st.columns(5)
         
         with col1:
-            st.metric("Total Jugadores", f"{stats.get('total_jugadores', 0):,}")
+            st.metric(
+                "👥 Total Jugadores", 
+                f"{stats.get('total_jugadores', 0):,}",
+                delta="FIFA 2015-2021"
+            )
         with col2:
-            st.metric("Total Clubes", f"{stats.get('total_clubes', 0):,}")
+            st.metric(
+                "⚽ Total Clubes", 
+                f"{stats.get('total_clubes', 0):,}",
+                delta="Mundial"
+            )
         with col3:
-            st.metric("Total Ligas", f"{stats.get('total_ligas', 0):,}")
+            st.metric(
+                "🏆 Total Ligas", 
+                f"{stats.get('total_ligas', 0):,}",
+                delta="Profesionales"
+            )
         with col4:
-            st.metric("Edad Promedio", f"{stats.get('edad_promedio', 0):.1f} años")
+            st.metric(
+                "📅 Edad Promedio", 
+                f"{stats.get('edad_promedio', 0):.1f} años",
+                delta="Edad ideal"
+            )
         with col5:
             valor_promedio = stats.get('valor_mercado_promedio_eur', 0)
-            st.metric("Valor Promedio", f"€{valor_promedio:,.0f}")
+            st.metric(
+                "💰 Valor Promedio", 
+                f"€{valor_promedio/1_000_000:.1f}M",
+                delta="Por jugador"
+            )
         
-        st.markdown("---")
+        st.markdown("<br>", unsafe_allow_html=True)
         
-        # JUGADOR MÁS VALIOSO
+        # JUGADOR MÁS VALIOSO CON DISEÑO DESTACADO
         jugador_top = stats.get("jugador_mas_valioso", {})
         if jugador_top:
-            st.info(f"⭐ Jugador más valioso: **{jugador_top.get('nombre', 'N/A')}** ({jugador_top.get('club', 'N/A')}) - €{jugador_top.get('valor_eur', 0):,.0f}")
+            st.markdown(f"""
+            <div style='background: linear-gradient(135deg, {COLOR_DESTACADO} 0%, {COLOR_ADVERTENCIA} 100%); 
+                 padding: 25px; border-radius: 20px; text-align: center; box-shadow: 0 8px 32px rgba(255,167,38,0.4);
+                 margin: 20px 0;'>
+                <h3 style='color: {COLOR_PRIMARIO}; margin: 0 0 15px 0;'>⭐ JUGADOR MÁS VALIOSO DEL DATASET</h3>
+                <h2 style='color: white; font-size: 36px; margin: 10px 0;'>{jugador_top.get('nombre', 'N/A')}</h2>
+                <p style='color: {COLOR_PRIMARIO}; font-size: 20px; font-weight: 600; margin: 10px 0;'>
+                    🏆 {jugador_top.get('club', 'N/A')}
+                </p>
+                <p style='color: white; font-size: 28px; font-weight: bold; margin: 15px 0 0 0;'>
+                    💰 €{jugador_top.get('valor_eur', 0)/1_000_000:.1f} Millones
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
     
     st.markdown("---")
     

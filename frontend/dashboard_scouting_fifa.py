@@ -238,6 +238,35 @@ st.markdown(f"""
 IMAGENES_DIR = "/app/datos/imagenes"
 IMAGEN_GENERICA = "/app/datos/imagenes/jugador_generico.png"
 
+def obtener_codigo_iso_pais(nacionalidad):
+    """
+    Obtiene el código ISO del país para la API de banderas
+    
+    Args:
+        nacionalidad: Nombre del país
+    
+    Returns:
+        str: Código ISO en minúsculas para flagcdn.com
+    """
+    # Mapeo de nombres de países a códigos ISO (casos especiales)
+    pais_iso_map = {
+        "England": "gb-eng", "Spain": "es", "Brazil": "br", "Argentina": "ar",
+        "France": "fr", "Germany": "de", "Portugal": "pt", "Netherlands": "nl",
+        "Belgium": "be", "Italy": "it", "Croatia": "hr", "Uruguay": "uy",
+        "Colombia": "co", "Poland": "pl", "Egypt": "eg", "Senegal": "sn",
+        "Korea Republic": "kr", "Japan": "jp", "Mexico": "mx", "Chile": "cl",
+        "Ecuador": "ec", "Peru": "pe", "United States": "us", "Canada": "ca",
+        "Scotland": "gb-sct", "Wales": "gb-wls", "Northern Ireland": "gb-nir",
+        "Republic of Ireland": "ie", "Switzerland": "ch", "Austria": "at",
+        "Czech Republic": "cz", "Denmark": "dk", "Sweden": "se", "Norway": "no",
+        "Turkey": "tr", "Greece": "gr", "Serbia": "rs", "Bosnia Herzegovina": "ba",
+        "Australia": "au", "New Zealand": "nz", "South Africa": "za", "Morocco": "ma",
+        "Algeria": "dz", "Tunisia": "tn", "Nigeria": "ng", "Ghana": "gh",
+        "Cameroon": "cm", "Ivory Coast": "ci", "Kenya": "ke", "China PR": "cn"
+    }
+    
+    return pais_iso_map.get(nacionalidad, nacionalidad.lower()[:2] if nacionalidad else "xx")
+
 def descargar_imagen_generica():
     """Descarga una imagen genérica de jugador si no existe"""
     if os.path.exists(IMAGEN_GENERICA):
@@ -685,12 +714,18 @@ def mostrar_modal_jugador(jugador_id, jugador_nombre, año_fifa):
                 st.info("📷 Sin foto disponible")
             
             # Info básica en tarjetas
+            nacionalidad_modal = jugador.get('nacionalidad', 'N/A')
+            pais_iso_modal = obtener_codigo_iso_pais(nacionalidad_modal)
+            bandera_url_modal = f"https://flagcdn.com/32x24/{pais_iso_modal}.png"
+            
             st.markdown(f"""
             <div style='background: linear-gradient(135deg, {COLOR_ACENTO_2} 0%, {COLOR_PRIMARIO} 100%); 
                  padding: 15px; border-radius: 10px; margin: 10px 0; border-left: 4px solid {COLOR_ACENTO_1};'>
                 <p style='margin: 5px 0; color: {COLOR_SECUNDARIO};'><b>🏟️ Club:</b> {jugador.get('club', 'N/A')}</p>
                 <p style='margin: 5px 0; color: {COLOR_SECUNDARIO};'><b>🏆 Liga:</b> {jugador.get('liga', 'N/A')}</p>
-                <p style='margin: 5px 0; color: {COLOR_SECUNDARIO};'><b>🌍 Nacionalidad:</b> {jugador.get('nacionalidad', 'N/A')}</p>
+                <p style='margin: 5px 0; color: {COLOR_SECUNDARIO};'>
+                    <b><img src="{bandera_url_modal}" style="width: 24px; height: 18px; vertical-align: middle; margin-right: 5px;" onerror="this.style.display='none'"> Nacionalidad:</b> {nacionalidad_modal}
+                </p>
                 <p style='margin: 5px 0; color: {COLOR_SECUNDARIO};'><b>🎂 Edad:</b> {jugador.get('edad', 'N/A')} años</p>
                 <p style='margin: 5px 0; color: {COLOR_SECUNDARIO};'><b>📅 Año FIFA:</b> {año_fifa}</p>
             </div>
@@ -1288,8 +1323,15 @@ with tab1:
                         st.markdown(f"<div style='text-align: center; background: linear-gradient(135deg, #f0a818 0%, #d89510 100%); color: #000; padding: 3px 8px; border-radius: 10px; font-weight: bold; font-size: 0.85em;'>{año}</div>", unsafe_allow_html=True)
                     
                     with col_vals[5]:
-                        nacionalidad = jugador.get('nacionalidad', 'N/A')
-                        st.markdown(f"<span class='jugador-stat'>{nacionalidad}</span>", unsafe_allow_html=True)
+                        nacionalidad_tabla = jugador.get('nacionalidad', 'N/A')
+                        pais_iso_tabla = obtener_codigo_iso_pais(nacionalidad_tabla)
+                        bandera_url_tabla = f"https://flagcdn.com/24x18/{pais_iso_tabla}.png"
+                        st.markdown(f"""
+                        <div style='text-align: center;'>
+                            <img src="{bandera_url_tabla}" style="width: 24px; height: 18px; display: block; margin: 0 auto 4px auto; border-radius: 3px;" onerror="this.style.display='none'">
+                            <span class='jugador-stat'>{nacionalidad_tabla}</span>
+                        </div>
+                        """, unsafe_allow_html=True)
                     
                     with col_vals[6]:
                         club = jugador.get('club', 'N/A')
@@ -1403,23 +1445,115 @@ with tab2:
         
         st.markdown("<br>", unsafe_allow_html=True)
         
-        # JUGADOR MÁS VALIOSO CON DISEÑO DESTACADO
-        jugador_top = stats.get("jugador_mas_valioso", {})
-        if jugador_top:
+        # JUGADOR MÁS VALIOSO - TODO DENTRO DEL RECUADRO AMARILLO
+        # Inicio del contenedor amarillo
+        with st.container():
             st.markdown(f"""
             <div style='background: linear-gradient(135deg, {COLOR_DESTACADO} 0%, {COLOR_ADVERTENCIA} 100%); 
-                 padding: 25px; border-radius: 20px; text-align: center; box-shadow: 0 8px 32px rgba(255,167,38,0.4);
+                 padding: 25px; border-radius: 20px; box-shadow: 0 8px 32px rgba(255,167,38,0.4);
                  margin: 20px 0;'>
-                <h3 style='color: {COLOR_PRIMARIO}; margin: 0 0 15px 0;'>⭐ JUGADOR MÁS VALIOSO DEL DATASET</h3>
-                <h2 style='color: white; font-size: 36px; margin: 10px 0;'>{jugador_top.get('nombre', 'N/A')}</h2>
-                <p style='color: {COLOR_PRIMARIO}; font-size: 20px; font-weight: 600; margin: 10px 0;'>
-                    🏆 {jugador_top.get('club', 'N/A')}
-                </p>
-                <p style='color: white; font-size: 28px; font-weight: bold; margin: 15px 0 0 0;'>
-                    💰 €{jugador_top.get('valor_eur', 0)/1_000_000:.1f} Millones
-                </p>
-            </div>
+                <h3 style='color: {COLOR_PRIMARIO}; margin: 0 0 15px 0; text-align: center;'>⭐ JUGADOR MÁS VALIOSO</h3>
             """, unsafe_allow_html=True)
+            
+            # Selector de año dentro del recuadro
+            col_selector, col_space = st.columns([1, 3])
+            with col_selector:
+                # Años disponibles (2015-2021 según el dataset)
+                años_disponibles = list(range(2021, 2014, -1))
+                
+                año_seleccionado_top = st.selectbox(
+                    "📅 Filtrar por año FIFA",
+                    options=["Todos los años"] + años_disponibles,
+                    key="año_jugador_top",
+                    help="Selecciona un año específico o 'Todos los años' para ver el jugador más valioso general"
+                )
+            
+            st.markdown("<br>", unsafe_allow_html=True)
+            
+            # Obtener jugador más valioso según filtro
+            try:
+                if año_seleccionado_top == "Todos los años":
+                    url_top = f"{API_BASE_URL}/eda/jugador_mas_valioso"
+                else:
+                    url_top = f"{API_BASE_URL}/eda/jugador_mas_valioso?año={año_seleccionado_top}"
+                
+                response_top = sesion_http.get(url_top, timeout=5)
+                if response_top.status_code == 200:
+                    jugador_top = response_top.json()
+                else:
+                    jugador_top = stats.get("jugador_mas_valioso", {})
+            except:
+                jugador_top = stats.get("jugador_mas_valioso", {})
+            
+            if jugador_top:
+                # Layout: foto a la izquierda, info a la derecha
+                col_foto, col_info = st.columns([1, 3])
+                
+                with col_foto:
+                    # Obtener foto del jugador
+                    id_sofifa = jugador_top.get("id_sofifa")
+                    año_datos = jugador_top.get("año_datos", 2021)
+                    
+                    if id_sofifa:
+                        img_jugador = obtener_foto_jugador(id_sofifa, año_datos)
+                        if img_jugador:
+                            st.image(img_jugador, width=180)
+                        else:
+                            st.info("📷 Sin foto")
+                    
+                    # Año del jugador debajo de la foto
+                    st.markdown(f"""
+                    <div style='text-align: center; margin-top: 10px;'>
+                        <p style='color: {COLOR_PRIMARIO}; font-size: 16px; font-weight: 600; margin: 0;'>
+                            📅 FIFA {año_datos}
+                        </p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                
+                with col_info:
+                    # Bandera del país usando API de banderas
+                    nacionalidad = jugador_top.get("nacionalidad", "Unknown")
+                    # Mapeo de nombres de países a códigos ISO (algunos casos especiales)
+                    pais_iso = {
+                        "England": "gb-eng", "Spain": "es", "Brazil": "br", "Argentina": "ar",
+                        "France": "fr", "Germany": "de", "Portugal": "pt", "Netherlands": "nl",
+                        "Belgium": "be", "Italy": "it", "Croatia": "hr", "Uruguay": "uy",
+                        "Colombia": "co", "Poland": "pl", "Egypt": "eg", "Senegal": "sn",
+                        "Korea Republic": "kr", "Japan": "jp", "Mexico": "mx", "Chile": "cl",
+                        "Ecuador": "ec", "Peru": "pe", "United States": "us", "Canada": "ca"
+                    }.get(nacionalidad, nacionalidad.lower()[:2])
+                    
+                    bandera_url = f"https://flagcdn.com/48x36/{pais_iso}.png"
+                    
+                    # Información del jugador
+                    st.markdown(f"""
+                    <div style='background: rgba(255,255,255,0.1); padding: 20px; border-radius: 15px;'>
+                        <h2 style='color: white; font-size: 32px; margin: 0 0 10px 0;'>
+                            {jugador_top.get('nombre', 'N/A')}
+                        </h2>
+                        <p style='color: {COLOR_PRIMARIO}; font-size: 18px; font-weight: 600; margin: 5px 0;'>
+                            <img src="{bandera_url}" style="width: 32px; height: 24px; vertical-align: middle; margin-right: 8px;" 
+                                 onerror="this.style.display='none'">
+                            {nacionalidad}
+                        </p>
+                        <p style='color: {COLOR_PRIMARIO}; font-size: 18px; font-weight: 600; margin: 5px 0;'>
+                            🏆 {jugador_top.get('club', 'N/A')}
+                        </p>
+                        <p style='color: {COLOR_PRIMARIO}; font-size: 16px; margin: 5px 0;'>
+                            📍 {jugador_top.get('posicion', 'N/A')} • {jugador_top.get('edad', 'N/A')} años
+                        </p>
+                        <p style='color: {COLOR_PRIMARIO}; font-size: 16px; margin: 5px 0;'>
+                            ⚽ Overall: {jugador_top.get('valoracion', 'N/A')} • Potencial: {jugador_top.get('potencial', 'N/A')}
+                        </p>
+                        <hr style='border: 1px solid {COLOR_PRIMARIO}; margin: 15px 0;'>
+                        <p style='color: white; font-size: 28px; font-weight: bold; margin: 10px 0 0 0;'>
+                            💰 €{jugador_top.get('valor_eur', 0)/1_000_000:.1f} Millones
+                        </p>
+                    </div>
+                    """, unsafe_allow_html=True)
+            
+            # Cierre del contenedor amarillo
+            st.markdown("</div>", unsafe_allow_html=True)
     
     st.markdown("---")
     

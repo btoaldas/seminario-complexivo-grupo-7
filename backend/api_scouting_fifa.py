@@ -645,6 +645,49 @@ def obtener_estadisticas_generales():
         raise HTTPException(status_code=500, detail=f"Error al calcular estadísticas: {str(e)}")
 
 
+@app.get(
+    "/eda/jugador_mas_valioso",
+    summary="Obtener jugador más valioso",
+    description="Retorna el jugador más valioso del dataset, opcionalmente filtrado por año"
+)
+def obtener_jugador_mas_valioso(año: int = Query(None, description="Año FIFA específico (opcional)")):
+    """
+    Obtiene el jugador más valioso del dataset.
+    Si se proporciona el parámetro año, filtra por ese año específico.
+    """
+    try:
+        # Filtrar por año si se proporciona
+        if año:
+            df_filtrado = df_jugadores[df_jugadores["año_datos"] == año]
+            if df_filtrado.empty:
+                raise HTTPException(status_code=404, detail=f"No hay datos para el año {año}")
+        else:
+            df_filtrado = df_jugadores
+        
+        # Obtener el jugador más valioso
+        idx_max = df_filtrado["valor_mercado_eur"].idxmax()
+        jugador = df_filtrado.loc[idx_max]
+        
+        return {
+            "id_sofifa": int(jugador["id_sofifa"]),
+            "nombre": jugador["nombre_corto"],
+            "nombre_completo": jugador.get("nombre_largo", jugador["nombre_corto"]),
+            "valor_eur": float(jugador["valor_mercado_eur"]),
+            "club": jugador["club"],
+            "liga": jugador["liga"],
+            "nacionalidad": jugador["nacionalidad"],
+            "edad": int(jugador["edad"]),
+            "posicion": jugador["posiciones_jugador"],
+            "valoracion": int(jugador["valoracion_global"]),
+            "potencial": int(jugador["potencial"]),
+            "año_datos": int(jugador["año_datos"])
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al obtener jugador más valioso: {str(e)}")
+
+
 # ============================================================================
 # ENDPOINT 8: DATOS PARA GRÁFICOS DEL DASHBOARD
 # ============================================================================

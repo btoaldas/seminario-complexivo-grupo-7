@@ -674,6 +674,21 @@ with tab1:
     </div>
     """, unsafe_allow_html=True)
     
+    # CSS GLOBAL PARA FORZAR COLORES EN SIDEBAR
+    st.markdown("""
+    <style>
+        /* Forzar color blanco en título de filtros */
+        [data-testid="stSidebar"] h2 {
+            color: white !important;
+        }
+        
+        /* Asegurar que el div contenedor no interfiera */
+        [data-testid="stSidebar"] div h2 {
+            color: white !important;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+    
     # FILTROS EN SIDEBAR MEJORADO
     with st.sidebar:
         st.markdown(f"""

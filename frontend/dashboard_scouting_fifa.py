@@ -1148,61 +1148,105 @@ with tab1:
                         # Obtener foto en miniatura del jugador
                         img_miniatura = obtener_foto_jugador(jugador_id, año_jugador)
                         
-                        # Convertir imagen a base64 para el botón
+                        # Convertir imagen a base64 para incrustar en HTML
                         if img_miniatura:
                             img_miniatura.thumbnail((60, 60), Image.Resampling.LANCZOS)
                             buffered = BytesIO()
                             img_miniatura.save(buffered, format="PNG")
                             img_base64 = base64.b64encode(buffered.getvalue()).decode()
-                            # Construir contenido del botón con foto + texto
-                            boton_contenido = f"""
-                                <div style='display: flex; flex-direction: column; align-items: center; gap: 8px;'>
-                                    <img src="data:image/png;base64,{img_base64}" 
-                                         style="width: 60px; height: 60px; border-radius: 8px;">
-                                    <span style='font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;'>
-                                        Ver Ficha
-                                    </span>
-                                </div>
-                            """
+                            img_html = f'<img src="data:image/png;base64,{img_base64}" style="width: 60px; height: 60px; border-radius: 8px; display: block; margin: 0 auto 8px auto;">'
                         else:
-                            # Fallback con ícono genérico + texto
-                            boton_contenido = f"""
-                                <div style='display: flex; flex-direction: column; align-items: center; gap: 8px;'>
-                                    <div style='width: 60px; height: 60px; 
-                                                background: linear-gradient(135deg, {COLOR_ACENTO_2} 0%, {COLOR_PRIMARIO} 100%);
-                                                border-radius: 8px; display: flex; align-items: center; justify-content: center;
-                                                font-size: 30px;'>⚽</div>
-                                    <span style='font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;'>
-                                        Ver Ficha
-                                    </span>
-                                </div>
-                            """
+                            # Fallback con ícono genérico
+                            img_html = f'''
+                                <div style='
+                                    width: 60px;
+                                    height: 60px;
+                                    background: linear-gradient(135deg, {COLOR_ACENTO_2} 0%, {COLOR_PRIMARIO} 100%);
+                                    border-radius: 8px;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    font-size: 30px;
+                                    margin: 0 auto 8px auto;
+                                '>⚽</div>
+                            '''
                         
-                        # CSS personalizado para el botón con el mismo diseño del div
-                        st.markdown(f"""
+                        # Botón personalizado con foto y texto integrado
+                        boton_html = f"""
+                            <div id="custom_btn_{idx_global}_{jugador_id}" style='
+                                background: linear-gradient(135deg, {COLOR_PRIMARIO} 0%, #1e40af 100%);
+                                border: 2px solid {COLOR_ACENTO_1};
+                                border-radius: 12px;
+                                padding: 12px 8px;
+                                cursor: pointer;
+                                transition: all 0.3s ease;
+                                text-align: center;
+                                box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+                                width: 100%;
+                                user-select: none;
+                            '
+                            onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 12px rgba(59,130,246,0.4)';"
+                            onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.2)';"
+                            onclick="
+                                var hiddenBtn = document.querySelector('[data-testid=\\'baseButton-primary\\'][key=\\'btn_hidden_{idx_global}_{jugador_id}\\']');
+                                if (!hiddenBtn) {{
+                                    hiddenBtn = Array.from(document.querySelectorAll('button')).find(btn => btn.textContent === '' && btn.closest('div').innerHTML.includes('btn_hidden_{idx_global}_{jugador_id}'));
+                                }}
+                                if (hiddenBtn) {{
+                                    hiddenBtn.click();
+                                }} else {{
+                                    console.log('Buscando botón oculto...');
+                                    setTimeout(function() {{
+                                        var allButtons = document.querySelectorAll('button');
+                                        for(var i=0; i<allButtons.length; i++) {{
+                                            if(allButtons[i].parentElement && allButtons[i].parentElement.style.display === 'none') {{
+                                                allButtons[i].click();
+                                                break;
+                                            }}
+                                        }}
+                                    }}, 50);
+                                }}
+                            ">
+                                {img_html}
+                                <div style='
+                                    color: white;
+                                    font-size: 11px;
+                                    font-weight: 600;
+                                    text-transform: uppercase;
+                                    letter-spacing: 0.5px;
+                                '>Ver Ficha</div>
+                            </div>
+                            
                             <style>
-                            button[kind="primary"][data-testid*="baseButton"][p-id*="btn_ficha_{idx_global}_{jugador_id}"] {{
-                                background: linear-gradient(135deg, {COLOR_PRIMARIO} 0%, #1e40af 100%) !important;
-                                border: 2px solid {COLOR_ACENTO_1} !important;
-                                border-radius: 12px !important;
-                                padding: 12px 8px !important;
-                                transition: all 0.3s ease !important;
-                                box-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
+                            /* Ocultar completamente el botón de Streamlit */
+                            div:has(> button[key="btn_hidden_{idx_global}_{jugador_id}"]) {{
+                                display: none !important;
+                                position: absolute !important;
+                                left: -9999px !important;
+                                width: 0 !important;
+                                height: 0 !important;
+                                overflow: hidden !important;
+                                opacity: 0 !important;
+                                pointer-events: none !important;
                             }}
-                            button[kind="primary"][data-testid*="baseButton"][p-id*="btn_ficha_{idx_global}_{jugador_id}"]:hover {{
-                                transform: scale(1.05) !important;
-                                box-shadow: 0 4px 12px rgba(59,130,246,0.4) !important;
+                            
+                            button[key="btn_hidden_{idx_global}_{jugador_id}"] {{
+                                display: none !important;
+                                position: absolute !important;
+                                left: -9999px !important;
+                                width: 0 !important;
+                                height: 0 !important;
+                                overflow: hidden !important;
+                                opacity: 0 !important;
+                                pointer-events: auto !important;
                             }}
                             </style>
-                        """, unsafe_allow_html=True)
+                        """
                         
-                        # Botón real de Streamlit con foto y texto integrados
-                        if st.button(
-                            boton_contenido,
-                            key=f"btn_ficha_{idx_global}_{jugador_id}",
-                            use_container_width=True,
-                            type="primary"
-                        ):
+                        st.markdown(boton_html, unsafe_allow_html=True)
+                        
+                        # Botón invisible de Streamlit para manejar el evento (completamente oculto)
+                        if st.button("", key=f"btn_hidden_{idx_global}_{jugador_id}", type="primary"):
                             st.session_state.modal_jugador_id = jugador_id
                             st.session_state.modal_jugador_nombre = nombre
                             st.session_state.modal_jugador_año = año_jugador

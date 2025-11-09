@@ -941,6 +941,15 @@ with tab1:
                     display: inline-block;
                 }
                 
+                /* Estilos para botones de paginación - Texto blanco */
+                button[kind="primary"], button[kind="secondary"] {
+                    color: white !important;
+                }
+                
+                button p {
+                    color: white !important;
+                }
+                
                 /* Responsive - Vista de tarjetas en móvil */
                 @media (max-width: 768px) {
                     .fila-jugador {

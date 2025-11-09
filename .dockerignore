@@ -15,3 +15,53 @@ anterior
 backups
 documentos
 *.ipynb_checkpoints
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Jupyter
+.ipynb_checkpoints
+notebooks/
+
+# Documentación (no necesaria en producción)
+documentacion/
+
+# Proyectos de referencia
+ejercicio_en_clase/
+practica-estudiante/
+
+# Docker
+docker/
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Datos temporales
+*.tmp
+*.bak

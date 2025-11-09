@@ -139,7 +139,7 @@ celerybeat.pid
 # SageMath parsed files
 *.sage.py
 
-# Environments
+# Environments - cualquier entorno virtual en cualquier subcarpeta
 .env
 .envrc
 .venv
@@ -148,6 +148,18 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+**/venv/
+**/env/
+**/.venv/
+.python-version
+**/.env
+**/.envrc
+
+# Archivos de dependencias locales
+**/pip-selfcheck.json
+**/pyvenv.cfg
+**/.Python
+**/.python-version
 
 # Spyder project settings
 .spyderproject
@@ -211,8 +223,156 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 
-# # Ignorar datasets y archivos procesados (archivos grandes)
-# data/fifa.xlsx
-# data/processed/fifa_limpio.csv
-# data/*.xlsx
-# data/processed/*.csv
+# Datasets y archivos procesados (archivos grandes)
+
+datos/originales/*.csv
+datos/processed/*.csv
+datos/*.xlsx
+datos/*.csv
+
+# Backend - archivos procesados y cachés
+backend/__pycache__/
+backend/**/__pycache__/
+backend/pruebas/__pycache__/
+backend/scripts/__pycache__/
+backend/scripts/**/__pycache__/
+
+# Frontend - archivos de caché y temporales
+frontend/__pycache__/
+frontend/**/__pycache__/
+frontend/cache/
+frontend/temp/
+
+# Archivos de datos procesados y temporales
+**/processed/
+**/temp/
+**/cache/
+**/output/
+
+# Documentación y respaldos anteriores
+documentos/anterior/**/__pycache__/
+documentos/anterior/**/Nueva carpeta*/
+documentos/anterior/data/**/*.csv
+documentos/anterior/data/**/*.xlsx
+documentos/anterior/**/.ipynb_checkpoints/
+documentos/anterior/models/**/*.pkl
+documentos/anterior/models/**/*.joblib
+
+# Ejemplos y archivos de prueba
+documentos/ejemplos/**/__pycache__/
+documentos/ejemplos/data/**/*.csv
+documentos/ejemplos/data/**/*.xlsx
+documentos/ejemplos/script_prueba/**/*.csv
+documentos/ejemplos/script_prueba/**/*.xlsx
+documentos/ejemplos/**/.ipynb_checkpoints/
+documentos/ejemplos/testbto/
+documentos/ejemplos/ejemplos_en_clase/**/*.csv
+documentos/ejemplos/ejemplos_en_clase/**/*.xlsx
+documentos/ejemplos/ejemplos_en_clase/**/*.xls
+documentos/ejemplos/ejemplos_en_clase/**/*.pdf
+documentos/ejemplos/ejemplos_en_clase/**/*.docx
+
+# Notebooks y archivos temporales
+documentos/**/*.tmp
+documentos/**/*.temp
+documentos/**/.ipynb_checkpoints/
+documentos/**/checkpoint/
+documentos/**/__pycache__/
+
+# Archivos duplicados o copias de respaldo
+documentos/**/*copy*
+documentos/**/*copia*
+documentos/**/*backup*
+documentos/**/*respaldo*
+documentos/**/*.bak
+
+# Archivos temporales y procesados
+*.tmp
+*.temp
+*.bak
+output/
+temp/
+processed/
+
+# VS Code settings específicos del usuario
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Archivos de ambiente local
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data (opcional - descomentar si quieres ignorar datos)
+# datos/fifa.xlsx
+# datos/fifa_limpio.csv
+
+# Models (opcional - descomentar si son muy grandes)
+# backend/models/*.joblib
+# backend/models/*.pkl
+
+# Temporal
+*.tmp
+*.bak
+*.swp

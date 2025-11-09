@@ -313,6 +313,43 @@ def crear_grafico_radar(jugador_data):
     
     return fig
 
+def generar_url_foto_sofifa(id_sofifa, año_fifa):
+    """
+    Genera URL de foto oficial de SoFIFA usando el patrón descubierto.
+    
+    Patrón URL: https://cdn.sofifa.net/players/{AAA}/{BBB}/{YY}_240.png
+    - AAA = primeros 3 dígitos del sofifa_id
+    - BBB = últimos 3 dígitos del sofifa_id
+    - YY = últimos 2 dígitos del año (21 para 2021, 20 para 2020, etc.)
+    
+    Ejemplo: id_sofifa=158023, año=2021
+    → https://cdn.sofifa.net/players/158/023/21_240.png
+    
+    Args:
+        id_sofifa: ID único del jugador en SoFIFA (ejemplo: 158023)
+        año_fifa: Año FIFA completo (ejemplo: 2021)
+    
+    Returns:
+        URL de la foto del jugador en CDN de SoFIFA
+    """
+    if not id_sofifa or pd.isna(id_sofifa):
+        return None
+    
+    # Convertir a string y rellenar con ceros si es necesario (6 dígitos)
+    id_str = str(int(id_sofifa)).zfill(6)
+    
+    # Extraer primeros 3 y últimos 3 dígitos
+    primeros_3 = id_str[:3]
+    ultimos_3 = id_str[-3:]
+    
+    # Últimos 2 dígitos del año (2021 → 21, 2020 → 20)
+    año_2_digitos = str(año_fifa)[-2:]
+    
+    # Construir URL
+    url_foto = f"https://cdn.sofifa.net/players/{primeros_3}/{ultimos_3}/{año_2_digitos}_240.png"
+    
+    return url_foto
+
 def obtener_imagen_jugador_fallback():
     """
     Retorna URL de imagen genérica de jugador de fútbol
@@ -386,27 +423,26 @@ def mostrar_ficha_jugador(jugador_id, jugador_nombre):
         col1, col2, col3 = st.columns([1, 2, 2])
         
         with col1:
-            # Foto del jugador con fallback a ícono de jugador
-            url_foto = jugador.get("url_foto_jugador", "")
+            # Foto del jugador con fallback inteligente (SoFIFA → ícono genérico)
             nacionalidad = jugador.get("nacionalidad", "")
             nombre = jugador.get("nombre_corto", "")
+            id_sofifa = jugador.get("id_sofifa")
+            año_datos = jugador.get("año_datos", 2021)
             
-            if url_foto:
+            # Intentar generar URL de SoFIFA usando el patrón descubierto
+            url_foto_sofifa = generar_url_foto_sofifa(id_sofifa, año_datos)
+            
+            # Intentar mostrar foto de SoFIFA
+            foto_mostrada = False
+            if url_foto_sofifa:
                 try:
-                    st.image(url_foto, width=200, caption=f"📸 {nombre}")
+                    st.image(url_foto_sofifa, width=200, caption=f"📸 {nombre}")
+                    foto_mostrada = True
                 except:
-                    # Si falla la foto, usar ícono de jugador genérico con bandera superpuesta
-                    url_jugador = obtener_imagen_jugador_fallback()
-                    url_bandera, pais = obtener_bandera_pais(nacionalidad)
-                    st.markdown(f"""
-                    <div style='position: relative; width: 200px; margin: 0 auto;'>
-                        <img src='{url_jugador}' style='width: 100%; height: auto; display: block; border-radius: 10px;'/>
-                        <img src='{url_bandera}' style='position: absolute; bottom: 8px; right: 8px; width: 40px; height: auto; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.3);'/>
-                    </div>
-                    <p style='text-align: center; margin-top: 5px; font-size: 0.9em;'>⚽ {pais}</p>
-                    """, unsafe_allow_html=True)
-            else:
-                # Mostrar ícono de jugador genérico con bandera superpuesta
+                    pass  # Si falla, intentar con ícono genérico
+            
+            # Si no se pudo mostrar foto de SoFIFA, usar ícono genérico con bandera
+            if not foto_mostrada:
                 url_jugador = obtener_imagen_jugador_fallback()
                 url_bandera, pais = obtener_bandera_pais(nacionalidad)
                 st.markdown(f"""
@@ -533,27 +569,25 @@ def mostrar_modal_jugador(jugador_id, jugador_nombre, año_fifa):
         col1, col2 = st.columns([1, 2])
         
         with col1:
-            # Foto del jugador con fallback a ícono de jugador
-            url_foto = jugador.get("url_foto_jugador", "")
+            # Foto del jugador con fallback inteligente (SoFIFA → ícono genérico)
             nacionalidad = jugador.get("nacionalidad", "")
             nombre = jugador.get("nombre_corto", "")
+            id_sofifa = jugador.get("id_sofifa")
             
-            if url_foto:
+            # Intentar generar URL de SoFIFA usando el patrón descubierto
+            url_foto_sofifa = generar_url_foto_sofifa(id_sofifa, año_fifa)
+            
+            # Intentar mostrar foto de SoFIFA
+            foto_mostrada = False
+            if url_foto_sofifa:
                 try:
-                    st.image(url_foto, width=250, caption=f"📸 {nombre}")
+                    st.image(url_foto_sofifa, width=250, caption=f"📸 {nombre}")
+                    foto_mostrada = True
                 except:
-                    # Si falla la foto, usar ícono de jugador genérico con bandera superpuesta
-                    url_jugador = obtener_imagen_jugador_fallback()
-                    url_bandera, pais = obtener_bandera_pais(nacionalidad)
-                    st.markdown(f"""
-                    <div style='position: relative; width: 250px; margin: 0 auto;'>
-                        <img src='{url_jugador}' style='width: 100%; height: auto; display: block; border-radius: 10px;'/>
-                        <img src='{url_bandera}' style='position: absolute; bottom: 10px; right: 10px; width: 50px; height: auto; border-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.4);'/>
-                    </div>
-                    <p style='text-align: center; margin-top: 8px; font-size: 0.95em;'>⚽ {pais} • Foto no disponible</p>
-                    """, unsafe_allow_html=True)
-            else:
-                # Mostrar ícono de jugador genérico con bandera superpuesta
+                    pass  # Si falla, intentar con ícono genérico
+            
+            # Si no se pudo mostrar foto de SoFIFA, usar ícono genérico con bandera
+            if not foto_mostrada:
                 url_jugador = obtener_imagen_jugador_fallback()
                 url_bandera, pais = obtener_bandera_pais(nacionalidad)
                 st.markdown(f"""

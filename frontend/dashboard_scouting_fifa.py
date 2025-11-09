@@ -974,19 +974,22 @@ with tab2:
                 x="valor_total_eur",
                 y="club",
                 orientation="h",
-                title="Valor Total de Plantilla por Club",
+                title="💰 Valor Total de Plantilla por Club",
                 labels={"valor_total_eur": "Valor Total (€)", "club": "Club"},
                 color="valor_total_eur",
-                color_continuous_scale=["#181848", "#304878", "#7890a8", "#f0a818"],
+                color_continuous_scale=["#1E88E5", "#00ACC1", "#FFA726", "#FDD835"],
                 text_auto=".2s"
             )
             
             fig_clubes.update_layout(
                 showlegend=False,
-                paper_bgcolor=COLOR_ACENTO_2,
+                paper_bgcolor=COLOR_PRIMARIO,
                 plot_bgcolor=COLOR_ACENTO_2,
-                font=dict(color=COLOR_SECUNDARIO),
-                yaxis={'categoryorder':'total ascending'}
+                font=dict(color="white", size=12),
+                yaxis={'categoryorder':'total ascending'},
+                title_font=dict(size=18, color=COLOR_DESTACADO, family="Arial Black"),
+                margin=dict(l=10, r=10, t=50, b=10),
+                hoverlabel=dict(bgcolor=COLOR_ACENTO_2, font_size=14)
             )
             
             st.plotly_chart(fig_clubes, use_container_width=True)
@@ -1003,19 +1006,22 @@ with tab2:
                 x="valor_promedio_eur",
                 y="liga",
                 orientation="h",
-                title="Valor Promedio por Liga",
+                title="🏆 Valor Promedio por Liga",
                 labels={"valor_promedio_eur": "Valor Promedio (€)", "liga": "Liga"},
                 color="valor_promedio_eur",
-                color_continuous_scale=["#181848", "#304878", "#7890a8", "#f0a818"],
+                color_continuous_scale=["#00ACC1", "#1E88E5", "#66BB6A", "#FFA726"],
                 text_auto=".2s"
             )
             
             fig_ligas.update_layout(
                 showlegend=False,
-                paper_bgcolor=COLOR_ACENTO_2,
+                paper_bgcolor=COLOR_PRIMARIO,
                 plot_bgcolor=COLOR_ACENTO_2,
-                font=dict(color=COLOR_SECUNDARIO),
-                yaxis={'categoryorder':'total ascending'}
+                font=dict(color="white", size=12),
+                yaxis={'categoryorder':'total ascending'},
+                title_font=dict(size=18, color=COLOR_ACENTO_1, family="Arial Black"),
+                margin=dict(l=10, r=10, t=50, b=10),
+                hoverlabel=dict(bgcolor=COLOR_ACENTO_2, font_size=14)
             )
             
             st.plotly_chart(fig_ligas, use_container_width=True)

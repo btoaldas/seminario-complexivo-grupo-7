@@ -500,9 +500,13 @@ with tab1:
     </div>
     """, unsafe_allow_html=True)
     
-    # FILTROS EN SIDEBAR
+    # FILTROS EN SIDEBAR MEJORADO
     with st.sidebar:
-        st.header("Filtros de Búsqueda")
+        st.markdown(f"""
+        <div style='text-align: center; padding: 20px; background: linear-gradient(135deg, {COLOR_SECUNDARIO} 0%, {COLOR_ACENTO_1} 100%); border-radius: 15px; margin-bottom: 20px;'>
+            <h2 style='color: white; margin: 0;'>🎯 Filtros Avanzados</h2>
+        </div>
+        """, unsafe_allow_html=True)
         
         # Filtro de posiciones
         posiciones_seleccionadas = st.multiselect(
@@ -553,7 +557,17 @@ with tab1:
         
         limite_resultados = st.slider("Máximo de resultados:", 10, 100, 20)
         
-        btn_buscar = st.button("🔍 Buscar Jugadores", type="primary")
+        st.markdown("<br>", unsafe_allow_html=True)
+        btn_buscar = st.button("🔍 Buscar Jugadores", type="primary", use_container_width=True)
+        
+        # Info adicional
+        st.markdown(f"""
+        <div style='margin-top: 20px; padding: 15px; background: rgba({int(COLOR_ACENTO_1[1:3],16)}, {int(COLOR_ACENTO_1[3:5],16)}, {int(COLOR_ACENTO_1[5:7],16)}, 0.2); border-radius: 10px; border-left: 3px solid {COLOR_ACENTO_1};'>
+            <p style='color: {COLOR_SECUNDARIO}; font-size: 12px; margin: 0;'>
+                💡 <b>Tip:</b> Deja filtros vacíos para buscar en todo el dataset (122,501 jugadores)
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
     
     # RESULTADOS DE BÚSQUEDA
     if btn_buscar or "resultados_busqueda" not in st.session_state:

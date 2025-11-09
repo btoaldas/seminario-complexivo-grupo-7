@@ -1117,8 +1117,8 @@ with tab1:
             """, unsafe_allow_html=True)
             
             # Mostrar encabezados (con nueva columna Año FIFA)
-            col_headers = st.columns([0.5, 1.2, 2, 0.7, 0.7, 1.5, 1.5, 1.5, 1, 1, 1.2])
-            headers = ["#", "Acción", "Nombre", "Edad", "Año FIFA", "Nacionalidad", "Club", "Liga", "Posición", "Overall", "Potencial"]
+            col_headers = st.columns([0.5, 0.8, 2, 0.7, 0.7, 1.5, 1.5, 1.5, 1, 1, 1.2])
+            headers = ["#", "Foto", "Nombre", "Edad", "Año FIFA", "Nacionalidad", "Club", "Liga", "Posición", "Overall", "Potencial"]
             
             header_html = "<div class='tabla-header'>"
             for col, header in zip(col_headers, headers):
@@ -1143,13 +1143,32 @@ with tab1:
                         jugador_id = jugador.get('id_sofifa')
                         nombre = jugador.get('nombre_corto', 'N/A')
                         año_jugador = jugador.get('año_datos', 'N/A')
-                        # Modal: guardar info del jugador y marcar para mostrar modal
-                        if st.button("🎯 Ficha", key=f"ficha_{idx_global}_{jugador_id}", help="Ver ficha completa del jugador", use_container_width=True):
-                            st.session_state.modal_jugador_id = jugador_id
-                            st.session_state.modal_jugador_nombre = nombre
-                            st.session_state.modal_jugador_año = año_jugador
-                            st.session_state.mostrar_modal = True
-                            st.rerun()
+                        
+                        # Obtener foto en miniatura del jugador
+                        img_miniatura = obtener_foto_jugador(jugador_id, año_jugador)
+                        
+                        if img_miniatura:
+                            # Redimensionar a miniatura (50x50 para lista)
+                            img_miniatura.thumbnail((50, 50), Image.Resampling.LANCZOS)
+                            
+                            # Botón clickeable con foto como fondo usando HTML
+                            if st.button("�️ Ver", key=f"ficha_{idx_global}_{jugador_id}", help=f"Ver ficha de {nombre}", use_container_width=True):
+                                st.session_state.modal_jugador_id = jugador_id
+                                st.session_state.modal_jugador_nombre = nombre
+                                st.session_state.modal_jugador_año = año_jugador
+                                st.session_state.mostrar_modal = True
+                                st.rerun()
+                            
+                            # Mostrar miniatura debajo del botón
+                            st.image(img_miniatura, width=50)
+                        else:
+                            # Fallback: botón normal sin foto
+                            if st.button("🎯 Ficha", key=f"ficha_{idx_global}_{jugador_id}", help="Ver ficha completa del jugador", use_container_width=True):
+                                st.session_state.modal_jugador_id = jugador_id
+                                st.session_state.modal_jugador_nombre = nombre
+                                st.session_state.modal_jugador_año = año_jugador
+                                st.session_state.mostrar_modal = True
+                                st.rerun()
                     
                     with col_vals[2]:
                         st.markdown(f"<span class='jugador-nombre'>{jugador.get('nombre_corto', 'N/A')}</span>", unsafe_allow_html=True)

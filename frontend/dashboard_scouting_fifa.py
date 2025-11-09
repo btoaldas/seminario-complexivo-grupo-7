@@ -462,11 +462,11 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# CREAR PESTAÑAS
+# CREAR PESTAÑAS CON DISEÑO MEJORADO
 tab1, tab2, tab3 = st.tabs([
-    "🔍 Exploración de Jugadores",
-    "📊 Análisis de Mercado",
-    "🤖 Predicción de Valor"
+    "🔍  Búsqueda Inteligente",
+    "📊  Análisis de Mercado",
+    "🤖  Predicción ML"
 ])
 
 # Cargar opciones de filtros
@@ -487,10 +487,18 @@ else:
     categorias_edad = []
 
 # ============================================================================
-# TAB 1: EXPLORACIÓN DE JUGADORES
+# TAB 1: BÚSQUEDA INTELIGENTE
 # ============================================================================
 with tab1:
-    st.header("Búsqueda y Exploración de Jugadores")
+    st.markdown(f"""
+    <div style='background: linear-gradient(135deg, {COLOR_ACENTO_2} 0%, {COLOR_PRIMARIO} 100%); 
+         padding: 20px; border-radius: 15px; border-left: 5px solid {COLOR_DESTACADO}; margin-bottom: 25px;'>
+        <h2 style='color: {COLOR_DESTACADO}; margin: 0;'>🔍 Búsqueda Inteligente de Jugadores</h2>
+        <p style='color: {COLOR_SECUNDARIO}; margin: 10px 0 0 0;'>
+            Encuentra jugadores usando filtros avanzados y visualiza estadísticas detalladas
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
     
     # FILTROS EN SIDEBAR
     with st.sidebar:
@@ -860,7 +868,15 @@ with tab1:
 # TAB 2: ANÁLISIS DE MERCADO
 # ============================================================================
 with tab2:
-    st.header("Análisis Exploratorio del Mercado")
+    st.markdown(f"""
+    <div style='background: linear-gradient(135deg, {COLOR_ACENTO_2} 0%, {COLOR_PRIMARIO} 100%); 
+         padding: 20px; border-radius: 15px; border-left: 5px solid {COLOR_ACENTO_1}; margin-bottom: 25px;'>
+        <h2 style='color: {COLOR_ACENTO_1}; margin: 0;'>📊 Análisis Exploratorio del Mercado</h2>
+        <p style='color: {COLOR_SECUNDARIO}; margin: 10px 0 0 0;'>
+            Estadísticas globales, distribuciones y tendencias del mercado futbolístico
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
     
     # Cargar estadísticas generales
     stats = cargar_estadisticas_generales()
@@ -1028,8 +1044,15 @@ with tab2:
 # TAB 3: PREDICCIÓN DE VALOR
 # ============================================================================
 with tab3:
-    st.header("Predictor de Valor de Mercado")
-    st.write("Utiliza el modelo de Machine Learning para predecir el valor de mercado de un jugador")
+    st.markdown(f"""
+    <div style='background: linear-gradient(135deg, {COLOR_ACENTO_2} 0%, {COLOR_PRIMARIO} 100%); 
+         padding: 20px; border-radius: 15px; border-left: 5px solid {COLOR_EXITO}; margin-bottom: 25px;'>
+        <h2 style='color: {COLOR_EXITO}; margin: 0;'>🤖 Predictor de Valor de Mercado con ML</h2>
+        <p style='color: {COLOR_SECUNDARIO}; margin: 10px 0 0 0;'>
+            🌲 Random Forest (4000 árboles) | 📊 R² = 0.65-0.98 | 🎯 84 features
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
     
     col_inputs, col_resultado = st.columns([2, 1])
     

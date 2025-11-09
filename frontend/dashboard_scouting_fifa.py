@@ -313,10 +313,24 @@ def crear_grafico_radar(jugador_data):
     
     return fig
 
-def obtener_imagen_fallback(nacionalidad, nombre_jugador=""):
+def obtener_imagen_jugador_fallback():
     """
-    Genera URL de imagen de fallback usando bandera del país
+    Retorna URL de imagen genérica de jugador de fútbol
+    API: SVGRepo (gratuita, sin autenticación, vectorial)
+    """
+    # Ilustración vectorial de jugador de fútbol (SVG de alta calidad)
+    return "https://www.svgrepo.com/show/31151/soccer-player-with-ball.svg"
+
+def obtener_bandera_pais(nacionalidad):
+    """
+    Genera URL de bandera del país del jugador
     API gratuita: Flagpedia (sin límites, sin auth)
+    
+    Args:
+        nacionalidad: País del jugador
+    
+    Returns:
+        Tuple (url_bandera_pequeña, nombre_pais)
     """
     # Mapeo de países a códigos ISO 3166-1 alpha-2
     paises_iso = {
@@ -341,11 +355,10 @@ def obtener_imagen_fallback(nacionalidad, nombre_jugador=""):
     # Obtener código ISO del país
     codigo_pais = paises_iso.get(nacionalidad, 'un')  # 'un' = United Nations (bandera genérica)
     
-    # URL de Flagpedia (CDN gratuito, sin autenticación)
-    # Tamaño w640 = buena calidad sin ser pesada
-    url_bandera = f"https://flagcdn.com/w640/{codigo_pais}.png"
+    # URL de bandera pequeña para mostrar en el caption (80x60px)
+    url_bandera = f"https://flagcdn.com/80x60/{codigo_pais}.png"
     
-    return url_bandera
+    return url_bandera, nacionalidad
 
 def mostrar_ficha_jugador(jugador_id, jugador_nombre):
     """Muestra la ficha detallada de un jugador con gráfico radar"""
@@ -368,22 +381,28 @@ def mostrar_ficha_jugador(jugador_id, jugador_nombre):
         col1, col2, col3 = st.columns([1, 2, 2])
         
         with col1:
-            # Foto del jugador con fallback a bandera del país
+            # Foto del jugador con fallback a ícono de jugador
             url_foto = jugador.get("url_foto_jugador", "")
             nacionalidad = jugador.get("nacionalidad", "")
             nombre = jugador.get("nombre_corto", "")
             
             if url_foto:
                 try:
-                    st.image(url_foto, width=200, caption=f"{nombre}")
+                    st.image(url_foto, width=200, caption=f"📸 {nombre}")
                 except:
-                    # Si falla la foto original, usar bandera
-                    url_fallback = obtener_imagen_fallback(nacionalidad, nombre)
-                    st.image(url_fallback, width=200, caption=f"🏴 {nacionalidad}")
+                    # Si falla la foto, usar ícono de jugador genérico
+                    url_jugador = obtener_imagen_jugador_fallback()
+                    url_bandera, pais = obtener_bandera_pais(nacionalidad)
+                    st.image(url_jugador, width=200)
+                    # Mostrar bandera pequeña en el caption
+                    st.markdown(f"<div style='text-align: center;'><img src='{url_bandera}' width='40'/> {pais}</div>", unsafe_allow_html=True)
             else:
-                # Mostrar bandera del país como imagen por defecto
-                url_fallback = obtener_imagen_fallback(nacionalidad, nombre)
-                st.image(url_fallback, width=200, caption=f"🏴 {nacionalidad}")
+                # Mostrar ícono de jugador genérico con bandera en caption
+                url_jugador = obtener_imagen_jugador_fallback()
+                url_bandera, pais = obtener_bandera_pais(nacionalidad)
+                st.image(url_jugador, width=200)
+                # Mostrar bandera pequeña en el caption
+                st.markdown(f"<div style='text-align: center;'><img src='{url_bandera}' width='40'/> {pais}</div>", unsafe_allow_html=True)
             
             # Información básica
             st.markdown("##### Información")
@@ -501,7 +520,7 @@ def mostrar_modal_jugador(jugador_id, jugador_nombre, año_fifa):
         col1, col2 = st.columns([1, 2])
         
         with col1:
-            # Foto del jugador con fallback a bandera del país
+            # Foto del jugador con fallback a ícono de jugador
             url_foto = jugador.get("url_foto_jugador", "")
             nacionalidad = jugador.get("nacionalidad", "")
             nombre = jugador.get("nombre_corto", "")
@@ -510,15 +529,19 @@ def mostrar_modal_jugador(jugador_id, jugador_nombre, año_fifa):
                 try:
                     st.image(url_foto, width=250, caption=f"📸 {nombre}")
                 except:
-                    # Si falla la foto original, usar bandera
-                    url_fallback = obtener_imagen_fallback(nacionalidad, nombre)
-                    st.image(url_fallback, width=250, caption=f"🏴 {nacionalidad}")
-                    st.caption("⚽ Foto no disponible - Mostrando bandera del país")
+                    # Si falla la foto, usar ícono de jugador genérico
+                    url_jugador = obtener_imagen_jugador_fallback()
+                    url_bandera, pais = obtener_bandera_pais(nacionalidad)
+                    st.image(url_jugador, width=250)
+                    # Mostrar bandera pequeña en el caption con mensaje
+                    st.markdown(f"<div style='text-align: center;'><img src='{url_bandera}' width='50'/> <b>{pais}</b><br/><small>⚽ Foto no disponible</small></div>", unsafe_allow_html=True)
             else:
-                # Mostrar bandera del país como imagen por defecto
-                url_fallback = obtener_imagen_fallback(nacionalidad, nombre)
-                st.image(url_fallback, width=250, caption=f"🏴 {nacionalidad}")
-                st.caption("⚽ Foto no disponible - Mostrando bandera del país")
+                # Mostrar ícono de jugador genérico con bandera en caption
+                url_jugador = obtener_imagen_jugador_fallback()
+                url_bandera, pais = obtener_bandera_pais(nacionalidad)
+                st.image(url_jugador, width=250)
+                # Mostrar bandera pequeña en el caption con mensaje
+                st.markdown(f"<div style='text-align: center;'><img src='{url_bandera}' width='50'/> <b>{pais}</b><br/><small>⚽ Foto no disponible</small></div>", unsafe_allow_html=True)
             
             # Info básica en tarjetas
             st.markdown(f"""

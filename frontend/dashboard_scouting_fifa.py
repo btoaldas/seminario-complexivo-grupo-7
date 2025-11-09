@@ -11,60 +11,166 @@ from urllib3.util.retry import Retry
 
 # CONFIGURACIÓN DE LA PÁGINA
 st.set_page_config(
-    page_title="Scouting FIFA - Dashboard",
+    page_title="⚽ FIFA Scouting Pro | Dashboard ML",
     page_icon="⚽",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
-# PALETA DE COLORES
-COLOR_PRIMARIO = "#000000"
-COLOR_SECUNDARIO = "#7890a8"
-COLOR_ACENTO_1 = "#304878"
-COLOR_ACENTO_2 = "#181848"
-COLOR_DESTACADO = "#f0a818"
+# PALETA DE COLORES MODERNA
+COLOR_PRIMARIO = "#0A1929"  # Azul oscuro elegante
+COLOR_SECUNDARIO = "#1E88E5"  # Azul brillante
+COLOR_ACENTO_1 = "#00ACC1"  # Cyan
+COLOR_ACENTO_2 = "#132F4C"  # Azul medio oscuro
+COLOR_DESTACADO = "#FFA726"  # Naranja dorado
+COLOR_EXITO = "#66BB6A"  # Verde
+COLOR_PELIGRO = "#EF5350"  # Rojo
+COLOR_ADVERTENCIA = "#FDD835"  # Amarillo
 
-# CSS PERSONALIZADO
+# CSS PERSONALIZADO MEJORADO
 st.markdown(f"""
 <style>
+    /* Fondo principal */
+    .stApp {{
+        background: linear-gradient(135deg, {COLOR_PRIMARIO} 0%, {COLOR_ACENTO_2} 100%);
+    }}
+    
+    /* Métricas mejoradas */
     .stMetric {{
-        background-color: {COLOR_ACENTO_2};
-        padding: 15px;
-        border-radius: 10px;
+        background: linear-gradient(145deg, {COLOR_ACENTO_2} 0%, {COLOR_PRIMARIO} 100%);
+        padding: 20px;
+        border-radius: 15px;
         border-left: 5px solid {COLOR_DESTACADO};
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        transition: transform 0.3s ease;
+    }}
+    .stMetric:hover {{
+        transform: translateY(-5px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.4);
     }}
     .stMetric label {{
         color: {COLOR_SECUNDARIO} !important;
+        font-weight: 600;
+        font-size: 14px;
     }}
-    .stMetric value {{
+    .stMetric [data-testid="stMetricValue"] {{
         color: white !important;
+        font-size: 32px;
+        font-weight: bold;
     }}
+    
+    /* Ficha de jugador mejorada */
     .ficha-jugador {{
-        background-color: {COLOR_ACENTO_2};
-        padding: 20px;
-        border-radius: 10px;
-        border: 2px solid {COLOR_DESTACADO};
-        margin: 10px 0;
+        background: linear-gradient(145deg, {COLOR_ACENTO_2} 0%, {COLOR_PRIMARIO} 100%);
+        padding: 25px;
+        border-radius: 20px;
+        border: 3px solid {COLOR_DESTACADO};
+        margin: 15px 0;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        transition: all 0.3s ease;
     }}
+    .ficha-jugador:hover {{
+        transform: translateY(-8px);
+        box-shadow: 0 12px 40px rgba(255,167,38,0.3);
+    }}
+    
+    /* Nombres y títulos */
     .nombre-jugador {{
         color: {COLOR_DESTACADO};
-        font-size: 28px;
+        font-size: 32px;
         font-weight: bold;
-        margin-bottom: 10px;
+        margin-bottom: 15px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
     }}
     .info-jugador {{
         color: {COLOR_SECUNDARIO};
-        font-size: 16px;
+        font-size: 18px;
+        line-height: 1.6;
     }}
-    h1, h2, h3 {{
+    
+    /* Títulos principales */
+    h1 {{
         color: {COLOR_DESTACADO} !important;
+        font-size: 48px !important;
+        font-weight: 800 !important;
+        text-align: center;
+        text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+        margin-bottom: 30px !important;
     }}
-    /* Estilo para botones de jugadores */
-    div[data-testid="column"] button {{
-        white-space: pre-line;
-        height: auto;
-        min-height: 60px;
-        font-size: 14px;
+    h2 {{
+        color: {COLOR_SECUNDARIO} !important;
+        font-size: 32px !important;
+        font-weight: 700 !important;
+        border-bottom: 3px solid {COLOR_DESTACADO};
+        padding-bottom: 10px;
+        margin-top: 30px !important;
+    }}
+    h3 {{
+        color: {COLOR_ACENTO_1} !important;
+        font-size: 24px !important;
+        font-weight: 600 !important;
+    }}
+    
+    /* Botones mejorados */
+    .stButton > button {{
+        background: linear-gradient(145deg, {COLOR_SECUNDARIO} 0%, {COLOR_ACENTO_1} 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 24px;
+        font-size: 16px;
+        font-weight: 600;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        transition: all 0.3s ease;
+    }}
+    .stButton > button:hover {{
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(30,136,229,0.5);
+        background: linear-gradient(145deg, {COLOR_ACENTO_1} 0%, {COLOR_SECUNDARIO} 100%);
+    }}
+    
+    /* Tabs mejorados */
+    .stTabs [data-baseweb="tab-list"] {{
+        gap: 10px;
+        background-color: {COLOR_ACENTO_2};
         padding: 10px;
+        border-radius: 15px;
+    }}
+    .stTabs [data-baseweb="tab"] {{
+        background-color: transparent;
+        border-radius: 10px;
+        color: {COLOR_SECUNDARIO};
+        font-weight: 600;
+        padding: 10px 20px;
+    }}
+    .stTabs [aria-selected="true"] {{
+        background: linear-gradient(145deg, {COLOR_DESTACADO} 0%, {COLOR_ADVERTENCIA} 100%);
+        color: {COLOR_PRIMARIO} !important;
+    }}
+    
+    /* DataFrames mejorados */
+    .stDataFrame {{
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }}
+    
+    /* Selectbox y inputs */
+    .stSelectbox, .stNumberInput, .stTextInput {{
+        background-color: {COLOR_ACENTO_2};
+        border-radius: 10px;
+    }}
+    
+    /* Sidebar mejorado */
+    [data-testid="stSidebar"] {{
+        background: linear-gradient(180deg, {COLOR_ACENTO_2} 0%, {COLOR_PRIMARIO} 100%);
+        border-right: 2px solid {COLOR_DESTACADO};
+    }}
+    
+    /* Alertas mejoradas */
+    .stAlert {{
+        border-radius: 12px;
+        border-left: 5px solid {COLOR_DESTACADO};
     }}
 </style>
 """, unsafe_allow_html=True)
@@ -328,10 +434,33 @@ def mostrar_ficha_jugador(jugador_id, jugador_nombre):
             st.write(f"Regate: {jugador.get('habilidad_regate', 'N/A')}")
             st.write(f"Pie débil: {jugador.get('pie_debil', 'N/A')} ⭐")
 
-# TÍTULO PRINCIPAL
-st.title("⚽ Dashboard de Scouting Inteligente FIFA")
-st.caption("Seminario Complexivo de Titulación | UniAndes | Profesor: Juan Felipe Nájera")
-st.subheader("Sistema de Análisis y Valoración de Jugadores Profesionales")
+# ============================================================================
+# HEADER PRINCIPAL MEJORADO
+# ============================================================================
+st.markdown(f"""
+<div style='text-align: center; padding: 30px; background: linear-gradient(135deg, {COLOR_SECUNDARIO} 0%, {COLOR_ACENTO_1} 100%); border-radius: 20px; margin-bottom: 30px; box-shadow: 0 8px 32px rgba(0,0,0,0.3);'>
+    <h1 style='color: white; font-size: 56px; margin: 0; text-shadow: 3px 3px 6px rgba(0,0,0,0.3);'>
+        ⚽ FIFA SCOUTING PRO
+    </h1>
+    <p style='color: rgba(255,255,255,0.9); font-size: 20px; margin: 15px 0; font-weight: 500;'>
+        Sistema Inteligente de Análisis y Valoración de Jugadores
+    </p>
+    <div style='display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-top: 20px;'>
+        <div style='background: rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 25px; backdrop-filter: blur(10px);'>
+            <span style='color: white; font-weight: 600;'>🤖 Machine Learning</span>
+        </div>
+        <div style='background: rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 25px; backdrop-filter: blur(10px);'>
+            <span style='color: white; font-weight: 600;'>📊 122,501 Jugadores</span>
+        </div>
+        <div style='background: rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 25px; backdrop-filter: blur(10px);'>
+            <span style='color: white; font-weight: 600;'>🎯 Random Forest</span>
+        </div>
+    </div>
+    <p style='color: rgba(255,255,255,0.7); font-size: 14px; margin-top: 20px; font-style: italic;'>
+        Universidad Regional Autónoma de los Andes (UniAndes) | Seminario Complexivo | Prof. Juan Felipe Nájera
+    </p>
+</div>
+""", unsafe_allow_html=True)
 
 # CREAR PESTAÑAS
 tab1, tab2, tab3 = st.tabs([

@@ -8,6 +8,8 @@ import os
 import time
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
+from io import BytesIO
+from PIL import Image
 
 # CONFIGURACIÓN DE LA PÁGINA
 st.set_page_config(
@@ -175,6 +177,128 @@ st.markdown(f"""
 </style>
 """, unsafe_allow_html=True)
 
+# ============================================================================
+# SISTEMA DE CACHÉ DE IMÁGENES DE JUGADORES
+# ============================================================================
+
+# Directorio base para imágenes (fuera de Docker, persistente)
+IMAGENES_DIR = "/app/datos/imagenes"
+IMAGEN_GENERICA = "/app/datos/imagenes/jugador_generico.png"
+
+def descargar_imagen_generica():
+    """Descarga una imagen genérica de jugador si no existe"""
+    if os.path.exists(IMAGEN_GENERICA):
+        return
+    
+    try:
+        # URL de imagen genérica de futbolista (silueta profesional)
+        url_generica = "https://cdn.pixabay.com/photo/2016/11/14/17/39/person-1824144_960_720.png"
+        
+        response = requests.get(url_generica, timeout=5)
+        if response.status_code == 200:
+            os.makedirs(os.path.dirname(IMAGEN_GENERICA), exist_ok=True)
+            with open(IMAGEN_GENERICA, 'wb') as f:
+                f.write(response.content)
+            print("✅ Imagen genérica descargada")
+        else:
+            print(f"⚠️  No se pudo descargar imagen genérica (Status: {response.status_code})")
+    except Exception as e:
+        print(f"❌ Error descargando imagen genérica: {e}")
+
+def generar_url_foto_sofifa(id_sofifa, año_fifa):
+    """
+    Genera la URL de la foto del jugador desde el CDN de SoFIFA
+    
+    Patrón descubierto:
+    https://cdn.sofifa.net/players/{AAA}/{BBB}/{YY}_240.png
+    
+    Donde:
+    - AAA = primeros 3 dígitos del id_sofifa (con padding de ceros)
+    - BBB = últimos 3 dígitos del id_sofifa (con padding de ceros)
+    - YY = últimos 2 dígitos del año (21 para 2021, 20 para 2020, etc.)
+    
+    Ejemplos:
+    - Messi (158023) FIFA 21: https://cdn.sofifa.net/players/158/023/21_240.png
+    - Ronaldo (20801) FIFA 21: https://cdn.sofifa.net/players/020/801/21_240.png
+    """
+    try:
+        # Convertir id a string y rellenar con ceros a la izquierda (6 dígitos)
+        id_str = str(int(id_sofifa)).zfill(6)
+        
+        # Extraer primeros 3 y últimos 3 dígitos
+        primeros_3 = id_str[:3]
+        ultimos_3 = id_str[-3:]
+        
+        # Extraer últimos 2 dígitos del año
+        año_2_digitos = str(int(año_fifa))[-2:]
+        
+        # Construir URL
+        url = f"https://cdn.sofifa.net/players/{primeros_3}/{ultimos_3}/{año_2_digitos}_240.png"
+        
+        return url, primeros_3, ultimos_3, año_2_digitos
+    except Exception as e:
+        print(f"❌ Error generando URL foto - ID: {id_sofifa}, Año: {año_fifa}, Error: {e}")
+        return None, None, None, None
+
+def obtener_foto_jugador(id_sofifa, año_fifa):
+    """
+    Obtiene la foto del jugador desde caché local o la descarga si no existe.
+    Utiliza estructura jerárquica: imagenes/{AAA}/{BBB}/{YY}_240.png
+    
+    Returns:
+        PIL.Image: Imagen del jugador o imagen genérica si no existe
+    """
+    try:
+        # Generar URL y estructura de carpetas
+        url, primeros_3, ultimos_3, año_2_digitos = generar_url_foto_sofifa(id_sofifa, año_fifa)
+        
+        if not url:
+            # Si falla generar URL, usar imagen genérica
+            if os.path.exists(IMAGEN_GENERICA):
+                return Image.open(IMAGEN_GENERICA)
+            return None
+        
+        # Ruta local con estructura jerárquica: imagenes/AAA/BBB/YY_240.png
+        ruta_local = os.path.join(IMAGENES_DIR, primeros_3, ultimos_3, f"{año_2_digitos}_240.png")
+        
+        # Si existe en caché, cargarla
+        if os.path.exists(ruta_local):
+            print(f"📁 Cargando desde caché: {ruta_local}")
+            return Image.open(ruta_local)
+        
+        # Si no existe, descargar desde SoFIFA
+        print(f"⬇️  Descargando: {url}")
+        response = requests.get(url, timeout=5)
+        
+        if response.status_code == 200:
+            # Crear directorio si no existe
+            os.makedirs(os.path.dirname(ruta_local), exist_ok=True)
+            
+            # Guardar imagen en caché
+            with open(ruta_local, 'wb') as f:
+                f.write(response.content)
+            
+            print(f"✅ Imagen guardada en: {ruta_local}")
+            
+            # Cargar y retornar imagen
+            return Image.open(BytesIO(response.content))
+        else:
+            # Foto no existe en SoFIFA, usar genérica
+            print(f"⚠️  Foto no disponible (Status: {response.status_code}), usando genérica")
+            if os.path.exists(IMAGEN_GENERICA):
+                return Image.open(IMAGEN_GENERICA)
+            return None
+            
+    except Exception as e:
+        print(f"❌ Error obteniendo foto: {e}")
+        # En caso de error, intentar usar imagen genérica
+        if os.path.exists(IMAGEN_GENERICA):
+            return Image.open(IMAGEN_GENERICA)
+        return None
+
+# Descargar imagen genérica al iniciar la app
+descargar_imagen_generica()
+
 # URLS DE LA API
 # Si está en Docker, usa la variable de entorno API_BASE_URL
 # Si está en desarrollo local, usa localhost
@@ -313,95 +437,6 @@ def crear_grafico_radar(jugador_data):
     
     return fig
 
-def generar_url_foto_sofifa(id_sofifa, año_fifa):
-    """
-    Genera URL de foto oficial de SoFIFA usando el patrón descubierto.
-    
-    Patrón URL: https://cdn.sofifa.net/players/{AAA}/{BBB}/{YY}_240.png
-    - AAA = primeros 3 dígitos del sofifa_id
-    - BBB = últimos 3 dígitos del sofifa_id
-    - YY = últimos 2 dígitos del año (21 para 2021, 20 para 2020, etc.)
-    
-    Ejemplo: id_sofifa=158023, año=2021
-    → https://cdn.sofifa.net/players/158/023/21_240.png
-    
-    Args:
-        id_sofifa: ID único del jugador en SoFIFA (ejemplo: 158023)
-        año_fifa: Año FIFA completo (ejemplo: 2021)
-    
-    Returns:
-        URL de la foto del jugador en CDN de SoFIFA
-    """
-    if not id_sofifa or pd.isna(id_sofifa):
-        return None
-    
-    # Convertir a string y rellenar con ceros si es necesario (6 dígitos)
-    id_str = str(int(id_sofifa)).zfill(6)
-    
-    # Extraer primeros 3 y últimos 3 dígitos
-    primeros_3 = id_str[:3]
-    ultimos_3 = id_str[-3:]
-    
-    # Últimos 2 dígitos del año (2021 → 21, 2020 → 20)
-    año_2_digitos = str(año_fifa)[-2:]
-    
-    # Construir URL
-    url_foto = f"https://cdn.sofifa.net/players/{primeros_3}/{ultimos_3}/{año_2_digitos}_240.png"
-    
-    return url_foto
-
-def obtener_imagen_jugador_fallback():
-    """
-    Retorna URL de imagen genérica de jugador de fútbol
-    Usa placeholder con ícono de jugador (PNG compatible)
-    """
-    # Múltiples opciones de íconos de jugador (PNG, alta disponibilidad)
-    opciones = [
-        "https://static.vecteezy.com/system/resources/previews/009/383/461/original/soccer-player-clipart-design-illustration-free-png.png",
-        "https://cdn-icons-png.flaticon.com/512/3774/3774299.png",
-        "https://cdn-icons-png.flaticon.com/512/53/53283.png"
-    ]
-    return opciones[0]  # Vecteezy: PNG transparente, sin restricciones
-
-def obtener_bandera_pais(nacionalidad):
-    """
-    Genera URL de bandera del país del jugador
-    API gratuita: Flagpedia (sin límites, sin auth)
-    
-    Args:
-        nacionalidad: País del jugador
-    
-    Returns:
-        Tuple (url_bandera_pequeña, nombre_pais)
-    """
-    # Mapeo de países a códigos ISO 3166-1 alpha-2
-    paises_iso = {
-        'Argentina': 'ar', 'Brazil': 'br', 'Spain': 'es', 'Germany': 'de',
-        'France': 'fr', 'England': 'gb-eng', 'Italy': 'it', 'Portugal': 'pt',
-        'Netherlands': 'nl', 'Belgium': 'be', 'Croatia': 'hr', 'Uruguay': 'uy',
-        'Colombia': 'co', 'Chile': 'cl', 'Mexico': 'mx', 'Poland': 'pl',
-        'Denmark': 'dk', 'Sweden': 'se', 'Norway': 'no', 'Austria': 'at',
-        'Switzerland': 'ch', 'Czech Republic': 'cz', 'Turkey': 'tr', 'Greece': 'gr',
-        'Russia': 'ru', 'Ukraine': 'ua', 'Serbia': 'rs', 'Scotland': 'gb-sct',
-        'Wales': 'gb-wls', 'Republic of Ireland': 'ie', 'Northern Ireland': 'gb-nir',
-        'Japan': 'jp', 'Korea Republic': 'kr', 'Australia': 'au', 'China PR': 'cn',
-        'United States': 'us', 'Canada': 'ca', 'Egypt': 'eg', 'Morocco': 'ma',
-        'Algeria': 'dz', 'Nigeria': 'ng', 'Senegal': 'sn', 'Ghana': 'gh',
-        'Cameroon': 'cm', 'Ivory Coast': 'ci', 'South Africa': 'za', 'Ecuador': 'ec',
-        'Peru': 'pe', 'Paraguay': 'py', 'Venezuela': 've', 'Bolivia': 'bo',
-        'Costa Rica': 'cr', 'Iceland': 'is', 'Finland': 'fi', 'Romania': 'ro',
-        'Hungary': 'hu', 'Slovakia': 'sk', 'Slovenia': 'si', 'Bosnia Herzegovina': 'ba',
-        'Albania': 'al', 'North Macedonia': 'mk', 'Montenegro': 'me', 'Bulgaria': 'bg'
-    }
-    
-    # Obtener código ISO del país
-    codigo_pais = paises_iso.get(nacionalidad, 'un')  # 'un' = United Nations (bandera genérica)
-    
-    # URL de bandera pequeña para mostrar en el caption (80x60px)
-    url_bandera = f"https://flagcdn.com/80x60/{codigo_pais}.png"
-    
-    return url_bandera, nacionalidad
-
 def mostrar_ficha_jugador(jugador_id, jugador_nombre):
     """Muestra la ficha detallada de un jugador con gráfico radar"""
     
@@ -423,35 +458,18 @@ def mostrar_ficha_jugador(jugador_id, jugador_nombre):
         col1, col2, col3 = st.columns([1, 2, 2])
         
         with col1:
-            # Foto del jugador con fallback inteligente (SoFIFA → ícono genérico)
-            nacionalidad = jugador.get("nacionalidad", "")
-            nombre = jugador.get("nombre_corto", "")
+            # Foto del jugador (desde caché local o descarga)
             id_sofifa = jugador.get("id_sofifa")
             año_datos = jugador.get("año_datos", 2021)
             
-            # Intentar generar URL de SoFIFA usando el patrón descubierto
-            url_foto_sofifa = generar_url_foto_sofifa(id_sofifa, año_datos)
-            
-            # Intentar mostrar foto de SoFIFA
-            foto_mostrada = False
-            if url_foto_sofifa:
-                try:
-                    st.image(url_foto_sofifa, width=200, caption=f"📸 {nombre}")
-                    foto_mostrada = True
-                except:
-                    pass  # Si falla, intentar con ícono genérico
-            
-            # Si no se pudo mostrar foto de SoFIFA, usar ícono genérico con bandera
-            if not foto_mostrada:
-                url_jugador = obtener_imagen_jugador_fallback()
-                url_bandera, pais = obtener_bandera_pais(nacionalidad)
-                st.markdown(f"""
-                <div style='position: relative; width: 200px; margin: 0 auto;'>
-                    <img src='{url_jugador}' style='width: 100%; height: auto; display: block; border-radius: 10px;'/>
-                    <img src='{url_bandera}' style='position: absolute; bottom: 8px; right: 8px; width: 40px; height: auto; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.3);'/>
-                </div>
-                <p style='text-align: center; margin-top: 5px; font-size: 0.9em;'>⚽ {pais}</p>
-                """, unsafe_allow_html=True)
+            if id_sofifa and año_datos:
+                img = obtener_foto_jugador(id_sofifa, año_datos)
+                if img:
+                    st.image(img, width=200)
+                else:
+                    st.info("Sin foto disponible")
+            else:
+                st.info("Sin foto disponible")
             
             # Información básica
             st.markdown("##### Información")
@@ -569,34 +587,17 @@ def mostrar_modal_jugador(jugador_id, jugador_nombre, año_fifa):
         col1, col2 = st.columns([1, 2])
         
         with col1:
-            # Foto del jugador con fallback inteligente (SoFIFA → ícono genérico)
-            nacionalidad = jugador.get("nacionalidad", "")
-            nombre = jugador.get("nombre_corto", "")
+            # Foto del jugador (desde caché local o descarga)
             id_sofifa = jugador.get("id_sofifa")
             
-            # Intentar generar URL de SoFIFA usando el patrón descubierto
-            url_foto_sofifa = generar_url_foto_sofifa(id_sofifa, año_fifa)
-            
-            # Intentar mostrar foto de SoFIFA
-            foto_mostrada = False
-            if url_foto_sofifa:
-                try:
-                    st.image(url_foto_sofifa, width=250, caption=f"📸 {nombre}")
-                    foto_mostrada = True
-                except:
-                    pass  # Si falla, intentar con ícono genérico
-            
-            # Si no se pudo mostrar foto de SoFIFA, usar ícono genérico con bandera
-            if not foto_mostrada:
-                url_jugador = obtener_imagen_jugador_fallback()
-                url_bandera, pais = obtener_bandera_pais(nacionalidad)
-                st.markdown(f"""
-                <div style='position: relative; width: 250px; margin: 0 auto;'>
-                    <img src='{url_jugador}' style='width: 100%; height: auto; display: block; border-radius: 10px;'/>
-                    <img src='{url_bandera}' style='position: absolute; bottom: 10px; right: 10px; width: 50px; height: auto; border-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.4);'/>
-                </div>
-                <p style='text-align: center; margin-top: 8px; font-size: 0.95em;'>⚽ {pais} • Foto no disponible</p>
-                """, unsafe_allow_html=True)
+            if id_sofifa and año_fifa:
+                img = obtener_foto_jugador(id_sofifa, año_fifa)
+                if img:
+                    st.image(img, width=250)
+                else:
+                    st.info("📷 Sin foto disponible")
+            else:
+                st.info("📷 Sin foto disponible")
             
             # Info básica en tarjetas
             st.markdown(f"""

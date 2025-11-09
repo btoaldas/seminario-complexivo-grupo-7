@@ -1,0 +1,13 @@
+[server]
+enableCORS = false
+enableXsrfProtection = false
+
+[browser]
+# Permitir cargar imágenes externas desde HTTPS (como cdn.sofifa.net)
+serverAddress = "0.0.0.0"
+gatherUsageStats = false
+
+# Configuración crítica para cargar contenido externo (HTTPS) en HTTP local
+[client]
+showErrorDetails = true
+toolbarMode = "minimal"

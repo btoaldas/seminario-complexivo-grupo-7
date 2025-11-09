@@ -15,6 +15,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY frontend/ ./frontend/
 
+# Copiar configuración de Streamlit para permitir contenido externo (HTTPS CDN)
+COPY frontend/.streamlit /root/.streamlit
+
 EXPOSE 8501
 
-CMD ["streamlit", "run", "frontend/dashboard_scouting_fifa.py", "--server.port=8501", "--server.address=0.0.0.0"]
+CMD ["streamlit", "run", "frontend/dashboard_scouting_fifa.py", "--server.port=8501", "--server.address=0.0.0.0", "--server.enableCORS=false"]

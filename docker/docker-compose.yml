@@ -31,6 +31,8 @@
       - TZ=America/Guayaquil
       - LANG=C.UTF-8
       - API_BASE_URL=http://backend:8000
+    volumes:
+      - ../datos:/app/datos
     depends_on:
       backend:
         condition: service_healthy

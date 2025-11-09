@@ -1,0 +1,6 @@
+# Ignorar todas las imágenes descargadas (caché)
+*
+
+# Excepto este archivo y la imagen genérica
+!.gitignore
+!jugador_generico.png

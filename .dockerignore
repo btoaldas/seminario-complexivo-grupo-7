@@ -1,3 +1,12 @@
+# ============================================
+# ⚡ OPTIMIZACIÓN CRÍTICA: EXCLUIR MODELO 5GB
+# ============================================
+datos/modelos/*.joblib
+datos/modelos/*.pkl
+datos/modelos/*.h5
+datos/originales/*.xlsx
+datos/originales/*.csv
+
 .git
 .github
 .venv
@@ -8,9 +17,7 @@ __pycache__
 .pytest_cache
 dist
 build
-data
 notebooks
-scripts
 anterior
 backups
 documentos

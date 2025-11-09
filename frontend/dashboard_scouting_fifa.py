@@ -6,6 +6,7 @@ import requests
 import pandas as pd
 import os
 import time
+import base64
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 from io import BytesIO
@@ -1147,62 +1148,66 @@ with tab1:
                         # Obtener foto en miniatura del jugador
                         img_miniatura = obtener_foto_jugador(jugador_id, año_jugador)
                         
+                        # Convertir imagen a base64 para el botón
                         if img_miniatura:
-                            # Redimensionar a miniatura (60x60 para lista)
                             img_miniatura.thumbnail((60, 60), Image.Resampling.LANCZOS)
-                            
-                            # Convertir imagen a base64 para embeber en HTML
-                            import base64
-                            from io import BytesIO
                             buffered = BytesIO()
                             img_miniatura.save(buffered, format="PNG")
                             img_base64 = base64.b64encode(buffered.getvalue()).decode()
-                            
-                            # Botón HTML personalizado con foto y texto integrados
-                            st.markdown(f"""
-                            <div style='text-align: center; cursor: pointer;'>
-                                <img src='data:image/png;base64,{img_base64}' 
-                                     style='width: 60px; height: 60px; border-radius: 8px; 
-                                            box-shadow: 0 2px 6px rgba(0,0,0,0.3); 
-                                            transition: transform 0.2s;'
-                                     onmouseover='this.style.transform="scale(1.05)"'
-                                     onmouseout='this.style.transform="scale(1)"' />
-                                <p style='margin: 5px 0 0 0; font-size: 11px; color: {COLOR_SECUNDARIO}; font-weight: 500;'>
-                                    Ver ficha
-                                </p>
-                            </div>
-                            """, unsafe_allow_html=True)
-                            
-                            # Botón invisible para manejar el click (encima del HTML)
-                            if st.button("🔍", key=f"ficha_{idx_global}_{jugador_id}", help=f"Ver ficha completa de {nombre}", label_visibility="hidden"):
-                                st.session_state.modal_jugador_id = jugador_id
-                                st.session_state.modal_jugador_nombre = nombre
-                                st.session_state.modal_jugador_año = año_jugador
-                                st.session_state.mostrar_modal = True
-                                st.rerun()
-                        else:
-                            # Fallback: botón con ícono genérico
-                            st.markdown(f"""
-                            <div style='text-align: center;'>
-                                <div style='width: 60px; height: 60px; margin: 0 auto;
-                                            background: linear-gradient(135deg, {COLOR_ACENTO_2} 0%, {COLOR_PRIMARIO} 100%);
-                                            border-radius: 8px; display: flex; align-items: center; justify-content: center;
-                                            font-size: 30px; box-shadow: 0 2px 6px rgba(0,0,0,0.3);'>
-                                    ⚽
+                            # Construir contenido del botón con foto + texto
+                            boton_contenido = f"""
+                                <div style='display: flex; flex-direction: column; align-items: center; gap: 8px;'>
+                                    <img src="data:image/png;base64,{img_base64}" 
+                                         style="width: 60px; height: 60px; border-radius: 8px;">
+                                    <span style='font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;'>
+                                        Ver Ficha
+                                    </span>
                                 </div>
-                                <p style='margin: 5px 0 0 0; font-size: 11px; color: {COLOR_SECUNDARIO}; font-weight: 500;'>
-                                    Ver ficha
-                                </p>
-                            </div>
-                            """, unsafe_allow_html=True)
-                            
-                            # Botón invisible para manejar el click
-                            if st.button("🔍", key=f"ficha_{idx_global}_{jugador_id}", help=f"Ver ficha completa de {nombre}", label_visibility="hidden"):
-                                st.session_state.modal_jugador_id = jugador_id
-                                st.session_state.modal_jugador_nombre = nombre
-                                st.session_state.modal_jugador_año = año_jugador
-                                st.session_state.mostrar_modal = True
-                                st.rerun()
+                            """
+                        else:
+                            # Fallback con ícono genérico + texto
+                            boton_contenido = f"""
+                                <div style='display: flex; flex-direction: column; align-items: center; gap: 8px;'>
+                                    <div style='width: 60px; height: 60px; 
+                                                background: linear-gradient(135deg, {COLOR_ACENTO_2} 0%, {COLOR_PRIMARIO} 100%);
+                                                border-radius: 8px; display: flex; align-items: center; justify-content: center;
+                                                font-size: 30px;'>⚽</div>
+                                    <span style='font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;'>
+                                        Ver Ficha
+                                    </span>
+                                </div>
+                            """
+                        
+                        # CSS personalizado para el botón con el mismo diseño del div
+                        st.markdown(f"""
+                            <style>
+                            button[kind="primary"][data-testid*="baseButton"][p-id*="btn_ficha_{idx_global}_{jugador_id}"] {{
+                                background: linear-gradient(135deg, {COLOR_PRIMARIO} 0%, #1e40af 100%) !important;
+                                border: 2px solid {COLOR_ACENTO_1} !important;
+                                border-radius: 12px !important;
+                                padding: 12px 8px !important;
+                                transition: all 0.3s ease !important;
+                                box-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
+                            }}
+                            button[kind="primary"][data-testid*="baseButton"][p-id*="btn_ficha_{idx_global}_{jugador_id}"]:hover {{
+                                transform: scale(1.05) !important;
+                                box-shadow: 0 4px 12px rgba(59,130,246,0.4) !important;
+                            }}
+                            </style>
+                        """, unsafe_allow_html=True)
+                        
+                        # Botón real de Streamlit con foto y texto integrados
+                        if st.button(
+                            boton_contenido,
+                            key=f"btn_ficha_{idx_global}_{jugador_id}",
+                            use_container_width=True,
+                            type="primary"
+                        ):
+                            st.session_state.modal_jugador_id = jugador_id
+                            st.session_state.modal_jugador_nombre = nombre
+                            st.session_state.modal_jugador_año = año_jugador
+                            st.session_state.mostrar_modal = True
+                            st.rerun()
                     
                     with col_vals[2]:
                         st.markdown(f"<span class='jugador-nombre'>{jugador.get('nombre_corto', 'N/A')}</span>", unsafe_allow_html=True)

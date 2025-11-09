@@ -313,6 +313,40 @@ def crear_grafico_radar(jugador_data):
     
     return fig
 
+def obtener_imagen_fallback(nacionalidad, nombre_jugador=""):
+    """
+    Genera URL de imagen de fallback usando bandera del país
+    API gratuita: Flagpedia (sin límites, sin auth)
+    """
+    # Mapeo de países a códigos ISO 3166-1 alpha-2
+    paises_iso = {
+        'Argentina': 'ar', 'Brazil': 'br', 'Spain': 'es', 'Germany': 'de',
+        'France': 'fr', 'England': 'gb-eng', 'Italy': 'it', 'Portugal': 'pt',
+        'Netherlands': 'nl', 'Belgium': 'be', 'Croatia': 'hr', 'Uruguay': 'uy',
+        'Colombia': 'co', 'Chile': 'cl', 'Mexico': 'mx', 'Poland': 'pl',
+        'Denmark': 'dk', 'Sweden': 'se', 'Norway': 'no', 'Austria': 'at',
+        'Switzerland': 'ch', 'Czech Republic': 'cz', 'Turkey': 'tr', 'Greece': 'gr',
+        'Russia': 'ru', 'Ukraine': 'ua', 'Serbia': 'rs', 'Scotland': 'gb-sct',
+        'Wales': 'gb-wls', 'Republic of Ireland': 'ie', 'Northern Ireland': 'gb-nir',
+        'Japan': 'jp', 'Korea Republic': 'kr', 'Australia': 'au', 'China PR': 'cn',
+        'United States': 'us', 'Canada': 'ca', 'Egypt': 'eg', 'Morocco': 'ma',
+        'Algeria': 'dz', 'Nigeria': 'ng', 'Senegal': 'sn', 'Ghana': 'gh',
+        'Cameroon': 'cm', 'Ivory Coast': 'ci', 'South Africa': 'za', 'Ecuador': 'ec',
+        'Peru': 'pe', 'Paraguay': 'py', 'Venezuela': 've', 'Bolivia': 'bo',
+        'Costa Rica': 'cr', 'Iceland': 'is', 'Finland': 'fi', 'Romania': 'ro',
+        'Hungary': 'hu', 'Slovakia': 'sk', 'Slovenia': 'si', 'Bosnia Herzegovina': 'ba',
+        'Albania': 'al', 'North Macedonia': 'mk', 'Montenegro': 'me', 'Bulgaria': 'bg'
+    }
+    
+    # Obtener código ISO del país
+    codigo_pais = paises_iso.get(nacionalidad, 'un')  # 'un' = United Nations (bandera genérica)
+    
+    # URL de Flagpedia (CDN gratuito, sin autenticación)
+    # Tamaño w640 = buena calidad sin ser pesada
+    url_bandera = f"https://flagcdn.com/w640/{codigo_pais}.png"
+    
+    return url_bandera
+
 def mostrar_ficha_jugador(jugador_id, jugador_nombre):
     """Muestra la ficha detallada de un jugador con gráfico radar"""
     
@@ -334,12 +368,22 @@ def mostrar_ficha_jugador(jugador_id, jugador_nombre):
         col1, col2, col3 = st.columns([1, 2, 2])
         
         with col1:
-            # Foto del jugador
+            # Foto del jugador con fallback a bandera del país
             url_foto = jugador.get("url_foto_jugador", "")
+            nacionalidad = jugador.get("nacionalidad", "")
+            nombre = jugador.get("nombre_corto", "")
+            
             if url_foto:
-                st.image(url_foto, width=200)
+                try:
+                    st.image(url_foto, width=200, caption=f"{nombre}")
+                except:
+                    # Si falla la foto original, usar bandera
+                    url_fallback = obtener_imagen_fallback(nacionalidad, nombre)
+                    st.image(url_fallback, width=200, caption=f"🏴 {nacionalidad}")
             else:
-                st.info("Sin foto disponible")
+                # Mostrar bandera del país como imagen por defecto
+                url_fallback = obtener_imagen_fallback(nacionalidad, nombre)
+                st.image(url_fallback, width=200, caption=f"🏴 {nacionalidad}")
             
             # Información básica
             st.markdown("##### Información")
@@ -457,12 +501,24 @@ def mostrar_modal_jugador(jugador_id, jugador_nombre, año_fifa):
         col1, col2 = st.columns([1, 2])
         
         with col1:
-            # Foto del jugador
+            # Foto del jugador con fallback a bandera del país
             url_foto = jugador.get("url_foto_jugador", "")
+            nacionalidad = jugador.get("nacionalidad", "")
+            nombre = jugador.get("nombre_corto", "")
+            
             if url_foto:
-                st.image(url_foto, width=250)
+                try:
+                    st.image(url_foto, width=250, caption=f"📸 {nombre}")
+                except:
+                    # Si falla la foto original, usar bandera
+                    url_fallback = obtener_imagen_fallback(nacionalidad, nombre)
+                    st.image(url_fallback, width=250, caption=f"🏴 {nacionalidad}")
+                    st.caption("⚽ Foto no disponible - Mostrando bandera del país")
             else:
-                st.info("📷 Sin foto disponible")
+                # Mostrar bandera del país como imagen por defecto
+                url_fallback = obtener_imagen_fallback(nacionalidad, nombre)
+                st.image(url_fallback, width=250, caption=f"🏴 {nacionalidad}")
+                st.caption("⚽ Foto no disponible - Mostrando bandera del país")
             
             # Info básica en tarjetas
             st.markdown(f"""

@@ -1282,36 +1282,40 @@ else:
 def mostrar_presentacion_completa():
     """Modal de presentación a pantalla completa sin márgenes ni transparencias"""
     
-    # CSS EXTREMO: Margen negro ultra delgado, iframe expandido al máximo
+    # CSS MÁXIMO: CERO márgenes negros, iframe a pantalla completa absoluta
     st.markdown("""
     <style>
-        /* MODAL: 100% sin márgenes, fondo negro minimalista */
+        /* MODAL: CERO padding, CERO margin, 100% viewport */
         [data-testid="stDialog"] {
-            padding: 2px !important;
+            padding: 0 !important;
             margin: 0 !important;
             max-width: 100vw !important;
             width: 100vw !important;
             max-height: 100vh !important;
             height: 100vh !important;
-            border: 1px solid #111 !important;
+            border: none !important;
             box-shadow: none !important;
-            background: #000 !important;
+            background: transparent !important;
+            overflow: hidden !important;
         }
         
-        /* Contenedor interno - padding mínimo de 2px */
+        /* Contenedor interno - CERO padding */
         [data-testid="stDialog"] > div {
-            padding: 2px !important;
+            padding: 0 !important;
             margin: 0 !important;
             border: none !important;
-            background: #000 !important;
-            width: 100% !important;
-            max-width: 100% !important;
+            background: transparent !important;
+            width: 100vw !important;
+            max-width: 100vw !important;
+            height: 100vh !important;
+            overflow: hidden !important;
         }
         
-        /* Todos los divs internos - padding ultrafino */
+        /* TODOS los divs sin padding/margin */
         [data-testid="stDialog"] div {
-            padding: 1px !important;
+            padding: 0 !important;
             margin: 0 !important;
+            background: transparent !important;
         }
         
         /* Eliminar headers */
@@ -1322,39 +1326,48 @@ def mostrar_presentacion_completa():
             display: none !important;
         }
         
-        /* Block principal - padding 1px */
+        /* Block principal - CERO todo */
         [data-testid="stDialog"] [data-testid="stVerticalBlock"] {
-            padding: 1px !important;
+            padding: 0 !important;
             margin: 0 !important;
             gap: 0 !important;
-            width: calc(100% - 2px) !important;
-            max-width: calc(100% - 2px) !important;
+            width: 100vw !important;
+            max-width: 100vw !important;
+            height: 100vh !important;
         }
         
-        /* Contenedor del componente HTML - sin padding */
+        /* Contenedor del componente HTML */
         [data-testid="stDialog"] [data-testid="stVerticalBlock"] > div {
             padding: 0 !important;
             margin: 0 !important;
-            width: 100% !important;
+            width: 100vw !important;
+            height: 100vh !important;
         }
         
-        /* IFRAME EXPANDIDO: Aprovecha el espacio del margen adelgazado */
+        /* IFRAME: Pantalla COMPLETA sin bordes */
         [data-testid="stDialog"] iframe {
-            border: 1px solid #222 !important;
+            border: none !important;
             margin: 0 !important;
             padding: 0 !important;
-            width: calc(100% + 4px) !important;
-            height: calc(96vh + 4px) !important;
+            width: 100vw !important;
+            height: 100vh !important;
             display: block !important;
-            position: relative !important;
-            left: -2px !important;
-            top: -2px !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
         }
         
-        /* Botón X semi-transparente */
+        /* Botón X flotante */
         [data-testid="stDialog"] button[aria-label="Close"] {
-            opacity: 0.3 !important;
-            border: 1px solid rgba(255,255,255,0.2) !important;
+            position: fixed !important;
+            top: 10px !important;
+            right: 10px !important;
+            z-index: 9999 !important;
+            opacity: 0.5 !important;
+            background: rgba(0,0,0,0.7) !important;
+            border: 1px solid rgba(255,255,255,0.3) !important;
         }
     </style>
     """, unsafe_allow_html=True)

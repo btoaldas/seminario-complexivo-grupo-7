@@ -106,11 +106,43 @@ TRADUCCIONES_NACIONALIDADES = {
     "South Africa": "Sudáfrica"
 }
 
+# DICCIONARIO SIMPLIFICADO DE POSICIONES (SIN EMOJI NI SIGLA ENTRE PARÉNTESIS)
+TRADUCCIONES_POSICIONES_SIMPLE = {
+    "GK": "Portero",
+    "CB": "Defensa Central",
+    "LB": "Lateral Izq.",
+    "RB": "Lateral Der.",
+    "LWB": "Carrilero Izq.",
+    "RWB": "Carrilero Der.",
+    "SW": "Líbero",
+    "CDM": "Pivote",
+    "DM": "Pivote",
+    "CM": "Centrocampista",
+    "LCM": "Centro Izq.",
+    "RCM": "Centro Der.",
+    "CAM": "Mediapunta",
+    "AM": "Med. Ofensivo",
+    "LAM": "Med. Izq.",
+    "RAM": "Med. Der.",
+    "LM": "Interior Izq.",
+    "RM": "Interior Der.",
+    "LW": "Extremo Izq.",
+    "RW": "Extremo Der.",
+    "CF": "Delantero",
+    "ST": "Delantero",
+    "LS": "Delantero Izq.",
+    "RS": "Delantero Der.",
+    "LF": "Delantero Izq.",
+    "RF": "Delantero Der."
+}
+
 # FUNCIÓN AUXILIAR PARA TRADUCIR POSICIONES
 def traducir_posicion(posicion_siglas):
     """
     Traduce las siglas de posición a texto descriptivo en español.
-    Maneja también posiciones múltiples separadas por comas.
+    
+    - Posición única: Muestra formato completo con emoji (ej: "⚽ Delantero Centro (ST)")
+    - Múltiples posiciones: Muestra versión simplificada (ej: "Delantero, Extremo Izq.")
     """
     if not posicion_siglas or posicion_siglas == 'N/A':
         return 'N/A'
@@ -118,10 +150,11 @@ def traducir_posicion(posicion_siglas):
     # Si hay múltiples posiciones separadas por coma
     if ',' in str(posicion_siglas):
         posiciones = [p.strip() for p in str(posicion_siglas).split(',')]
-        traducidas = [TRADUCCIONES_POSICIONES.get(p, p) for p in posiciones]
+        # Para múltiples posiciones, usar traducción simple y limpia
+        traducidas = [TRADUCCIONES_POSICIONES_SIMPLE.get(p, p) for p in posiciones]
         return ', '.join(traducidas)
     
-    # Posición única
+    # Posición única - formato completo con emoji
     return TRADUCCIONES_POSICIONES.get(str(posicion_siglas).strip(), posicion_siglas)
 
 # CONFIGURACIÓN DE LA PÁGINA
@@ -798,6 +831,7 @@ def mostrar_modal_jugador(jugador_id, jugador_nombre, año_fifa):
             st.session_state.modal_jugador_nombre = jugador_nombre
             st.session_state.modal_jugador_año = año_seleccionado
             st.session_state.mostrar_modal = True
+            st.session_state.modal_clic_reciente = True
             st.rerun()
     
     st.markdown("---")
@@ -970,10 +1004,21 @@ def mostrar_modal_jugador(jugador_id, jugador_nombre, año_fifa):
                     st.write(f"💰 Salario: €{salario:,.0f}")
                 with col_c2:
                     st.write(f"📋 Cláusula: €{jugador.get('clausula_rescision_eur', 0):,.0f}")
+                
+                # Botón para cerrar modal
+                st.markdown("---")
+                if st.button("❌ Cerrar", use_container_width=True, type="secondary"):
+                    st.session_state.mostrar_modal = False
+                    st.rerun()
     
     else:
         st.error("❌ No se pudo cargar la información del jugador")
         st.info("Intenta refrescar la página o selecciona otro jugador")
+        
+        # Botón para cerrar modal en caso de error
+        if st.button("❌ Cerrar", use_container_width=True, type="secondary"):
+            st.session_state.mostrar_modal = False
+            st.rerun()
 
 # ============================================================================
 # HEADER PRINCIPAL MEJORADO
@@ -1002,6 +1047,17 @@ st.markdown(f"""
     </p>
 </div>
 """, unsafe_allow_html=True)
+
+# RESETEAR MODAL AL INICIO (se activará solo con clic explícito en "Ficha")
+# Si no hay flag de "acabo de hacer clic", cerrar modal
+if 'modal_clic_reciente' not in st.session_state:
+    st.session_state.modal_clic_reciente = False
+
+if not st.session_state.modal_clic_reciente:
+    st.session_state.mostrar_modal = False
+else:
+    # Resetear el flag para la próxima ejecución
+    st.session_state.modal_clic_reciente = False
 
 # CREAR PESTAÑAS CON DISEÑO MEJORADO
 tab1, tab2, tab3 = st.tabs([
@@ -1088,7 +1144,7 @@ with tab1:
         # Filtro de posiciones (con traducciones al español)
         st.markdown("### ⚽ Posición en el Campo")
         posiciones_disponibles = posiciones_lista[:50]  # Top 50 posiciones
-        posiciones_traducidas = [TRADUCCIONES_POSICIONES.get(pos, pos) for pos in posiciones_disponibles]
+        posiciones_traducidas = [TRADUCCIONES_POSICIONES_SIMPLE.get(pos, pos) for pos in posiciones_disponibles]
         posiciones_seleccionadas_es = st.multiselect(
             "Selecciona posiciones:",
             options=posiciones_traducidas,
@@ -1098,7 +1154,7 @@ with tab1:
         # Convertir de español a inglés para la API
         posiciones_seleccionadas = []
         if posiciones_seleccionadas_es:
-            inverso_posiciones = {v: k for k, v in TRADUCCIONES_POSICIONES.items()}
+            inverso_posiciones = {v: k for k, v in TRADUCCIONES_POSICIONES_SIMPLE.items()}
             posiciones_seleccionadas = [inverso_posiciones.get(pos, pos) for pos in posiciones_seleccionadas_es]
         
         # Filtro de nacionalidades (con traducciones al español)
@@ -1455,6 +1511,7 @@ with tab1:
                             st.session_state.modal_jugador_nombre = nombre
                             st.session_state.modal_jugador_año = año_jugador
                             st.session_state.mostrar_modal = True
+                            st.session_state.modal_clic_reciente = True
                             st.rerun()
                     
                     with col_vals[2]:
@@ -1520,14 +1577,6 @@ with tab1:
                 if st.button("Siguiente ➡️ ", disabled=(st.session_state.pagina_actual == total_paginas), key="next_bottom"):
                     st.session_state.pagina_actual += 1
                     st.rerun()
-            
-            # ⚽ MODAL DE FICHA DE JUGADOR
-            if st.session_state.get('mostrar_modal', False):
-                mostrar_modal_jugador(
-                    st.session_state.get('modal_jugador_id'),
-                    st.session_state.get('modal_jugador_nombre', 'Jugador'),
-                    st.session_state.get('modal_jugador_año', 'N/A')
-                )
         else:
             st.info("No se encontraron jugadores con los criterios seleccionados")
 
@@ -1931,43 +1980,199 @@ with tab2:
     # OPORTUNIDADES DE MERCADO
     st.subheader("💎 Oportunidades de Mercado")
     
+    # Inicializar estados de paginación
+    if 'pagina_infravalorados' not in st.session_state:
+        st.session_state.pagina_infravalorados = 1
+    if 'pagina_sobrevalorados' not in st.session_state:
+        st.session_state.pagina_sobrevalorados = 1
+    
     col_oport1, col_oport2 = st.columns(2)
     
+    # ========== INFRAVALORADOS ==========
     with col_oport1:
-        st.markdown("##### Jugadores Infravalorados")
+        st.markdown("##### 💚 Jugadores Infravalorados")
         
         try:
-            response_infra = sesion_http.get(API_URL_INFRAVALORADOS, params={"top": 10}, timeout=30)
+            response_infra = sesion_http.get(API_URL_INFRAVALORADOS, params={"top": 50}, timeout=30)
             if response_infra.status_code == 200:
                 data_infra = response_infra.json()
                 jugadores_infra = data_infra.get("top_jugadores", [])
                 
                 if jugadores_infra:
-                    for i, jug in enumerate(jugadores_infra[:5], 1):
-                        st.write(f"{i}. **{jug.get('nombre_corto')}** ({jug.get('club')})")
-                        st.write(f"   Real: €{jug.get('valor_mercado_eur', 0):,.0f} → Predicho: €{jug.get('valor_predicho_eur', 0):,.0f}")
-                        st.write(f"   Diferencia: +{jug.get('diferencia_porcentual', 0):.1f}%")
-                        st.markdown("---")
+                    # Paginación
+                    items_por_pagina = 5
+                    inicio = (st.session_state.pagina_infravalorados - 1) * items_por_pagina
+                    fin = inicio + items_por_pagina
+                    jugadores_pagina = jugadores_infra[inicio:fin]
+                    total_paginas = (len(jugadores_infra) + items_por_pagina - 1) // items_por_pagina
+                    
+                    # Mostrar jugadores
+                    for i, jug in enumerate(jugadores_pagina, inicio + 1):
+                        jugador_id = jug.get('id_sofifa')  # Corregido: usar id_sofifa
+                        
+                        # Extraer año de la URL de sofifa (ej: /170002 -> año 17 -> 2017)
+                        url_jugador = jug.get('url_jugador', '')
+                        año_jugador = 2021  # Por defecto
+                        if url_jugador:
+                            import re
+                            match = re.search(r'/(\d{2})(\d{4})$', url_jugador)
+                            if match:
+                                año_fifa = int(match.group(1))
+                                # Convertir código FIFA a año (17 -> 2017, 18 -> 2018, etc)
+                                if año_fifa < 50:  # Asumimos años 20xx
+                                    año_jugador = 2000 + año_fifa
+                                else:  # Años 19xx
+                                    año_jugador = 1900 + año_fifa
+                        
+                        foto_url = ''  # API no devuelve foto en este endpoint
+                        nombre = jug.get('nombre_corto', 'N/A')
+                        
+                        # Contenedor con estilo
+                        st.markdown(f"""
+                        <div style='background: linear-gradient(135deg, rgba(39, 174, 96, 0.1) 0%, rgba(46, 204, 113, 0.05) 100%);
+                             padding: 15px; border-radius: 10px; margin-bottom: 10px; border-left: 4px solid #27ae60;'>
+                        """, unsafe_allow_html=True)
+                        
+                        col_foto, col_info, col_btn = st.columns([1, 3, 1])
+                        
+                        with col_foto:
+                            # Reutilizar el mismo código de foto de la lista de resultados
+                            if foto_url and foto_url not in ['N/A', '', 'nan']:
+                                img_html = f'<img src="{foto_url}" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #27ae60;">'
+                            else:
+                                img_html = '<div style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid #27ae60;">⚽</div>'
+                            
+                            foto_html = f"""
+                            <div style='display: flex; justify-content: center; align-items: center; height: 100%;'>
+                                {img_html}
+                            </div>
+                            """
+                            st.markdown(foto_html, unsafe_allow_html=True)
+                        
+                        with col_info:
+                            st.markdown(f"**{i}. {nombre}** ({jug.get('club', 'N/A')})")
+                            st.write(f"Real: €{jug.get('valor_mercado_eur', 0):,.0f} → Predicho: €{jug.get('valor_predicho_eur', 0):,.0f}")
+                            st.write(f"💰 Diferencia: +{jug.get('diferencia_porcentual', 0):.1f}%")
+                        
+                        with col_btn:
+                            if st.button("Ficha", key=f"btn_infra_{jugador_id}", type="primary", use_container_width=True):
+                                st.session_state.modal_jugador_id = jugador_id
+                                st.session_state.modal_jugador_nombre = nombre
+                                st.session_state.modal_jugador_año = año_jugador
+                                st.session_state.mostrar_modal = True
+                                st.session_state.modal_clic_reciente = True
+                                st.rerun()
+                        
+                        st.markdown("</div>", unsafe_allow_html=True)
+                    
+                    # Controles de paginación
+                    st.markdown("---")
+                    col_pag1, col_pag2, col_pag3 = st.columns([1, 2, 1])
+                    with col_pag1:
+                        if st.button("⬅️ Anterior", disabled=(st.session_state.pagina_infravalorados == 1), key="prev_infra"):
+                            st.session_state.pagina_infravalorados -= 1
+                            st.rerun()
+                    with col_pag2:
+                        st.markdown(f"<p style='text-align: center;'>Página {st.session_state.pagina_infravalorados} de {total_paginas}</p>", unsafe_allow_html=True)
+                    with col_pag3:
+                        if st.button("Siguiente ➡️", disabled=(st.session_state.pagina_infravalorados == total_paginas), key="next_infra"):
+                            st.session_state.pagina_infravalorados += 1
+                            st.rerun()
                 else:
                     st.info("No hay jugadores infravalorados en este momento")
         except Exception as e:
             st.error(f"Error: {e}")
     
+    # ========== SOBREVALORADOS ==========
     with col_oport2:
-        st.markdown("##### Jugadores Sobrevalorados")
+        st.markdown("##### 🔴 Jugadores Sobrevalorados")
         
         try:
-            response_sobre = sesion_http.get(API_URL_SOBREVALORADOS, params={"top": 10}, timeout=30)
+            response_sobre = sesion_http.get(API_URL_SOBREVALORADOS, params={"top": 50}, timeout=30)
             if response_sobre.status_code == 200:
                 data_sobre = response_sobre.json()
                 jugadores_sobre = data_sobre.get("top_jugadores", [])
                 
                 if jugadores_sobre:
-                    for i, jug in enumerate(jugadores_sobre[:5], 1):
-                        st.write(f"{i}. **{jug.get('nombre_corto')}** ({jug.get('club')})")
-                        st.write(f"   Real: €{jug.get('valor_mercado_eur', 0):,.0f} → Predicho: €{jug.get('valor_predicho_eur', 0):,.0f}")
-                        st.write(f"   Diferencia: {jug.get('diferencia_porcentual', 0):.1f}%")
-                        st.markdown("---")
+                    # Paginación
+                    items_por_pagina = 5
+                    inicio = (st.session_state.pagina_sobrevalorados - 1) * items_por_pagina
+                    fin = inicio + items_por_pagina
+                    jugadores_pagina = jugadores_sobre[inicio:fin]
+                    total_paginas = (len(jugadores_sobre) + items_por_pagina - 1) // items_por_pagina
+                    
+                    # Mostrar jugadores
+                    for i, jug in enumerate(jugadores_pagina, inicio + 1):
+                        jugador_id = jug.get('id_sofifa')  # Corregido: usar id_sofifa
+                        
+                        # Extraer año de la URL de sofifa (ej: /210008 -> año 21 -> 2021)
+                        url_jugador = jug.get('url_jugador', '')
+                        año_jugador = 2021  # Por defecto
+                        if url_jugador:
+                            import re
+                            match = re.search(r'/(\d{2})(\d{4})$', url_jugador)
+                            if match:
+                                año_fifa = int(match.group(1))
+                                # Convertir código FIFA a año (17 -> 2017, 18 -> 2018, 21 -> 2021, etc)
+                                if año_fifa < 50:  # Asumimos años 20xx
+                                    año_jugador = 2000 + año_fifa
+                                else:  # Años 19xx
+                                    año_jugador = 1900 + año_fifa
+                        
+                        foto_url = ''  # API no devuelve foto en este endpoint
+                        nombre = jug.get('nombre_corto', 'N/A')
+                        
+                        # Contenedor con estilo
+                        st.markdown(f"""
+                        <div style='background: linear-gradient(135deg, rgba(231, 76, 60, 0.1) 0%, rgba(192, 57, 43, 0.05) 100%);
+                             padding: 15px; border-radius: 10px; margin-bottom: 10px; border-left: 4px solid #e74c3c;'>
+                        """, unsafe_allow_html=True)
+                        
+                        col_foto, col_info, col_btn = st.columns([1, 3, 1])
+                        
+                        with col_foto:
+                            # Reutilizar el mismo código de foto
+                            if foto_url and foto_url not in ['N/A', '', 'nan']:
+                                img_html = f'<img src="{foto_url}" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #e74c3c;">'
+                            else:
+                                img_html = '<div style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid #e74c3c;">⚽</div>'
+                            
+                            foto_html = f"""
+                            <div style='display: flex; justify-content: center; align-items: center; height: 100%;'>
+                                {img_html}
+                            </div>
+                            """
+                            st.markdown(foto_html, unsafe_allow_html=True)
+                        
+                        with col_info:
+                            st.markdown(f"**{i}. {nombre}** ({jug.get('club', 'N/A')})")
+                            st.write(f"Real: €{jug.get('valor_mercado_eur', 0):,.0f} → Predicho: €{jug.get('valor_predicho_eur', 0):,.0f}")
+                            st.write(f"📉 Diferencia: {jug.get('diferencia_porcentual', 0):.1f}%")
+                        
+                        with col_btn:
+                            if st.button("Ficha", key=f"btn_sobre_{jugador_id}", type="primary", use_container_width=True):
+                                st.session_state.modal_jugador_id = jugador_id
+                                st.session_state.modal_jugador_nombre = nombre
+                                st.session_state.modal_jugador_año = año_jugador
+                                st.session_state.mostrar_modal = True
+                                st.session_state.modal_clic_reciente = True
+                                st.rerun()
+                        
+                        st.markdown("</div>", unsafe_allow_html=True)
+                    
+                    # Controles de paginación
+                    st.markdown("---")
+                    col_pag1, col_pag2, col_pag3 = st.columns([1, 2, 1])
+                    with col_pag1:
+                        if st.button("⬅️ Anterior", disabled=(st.session_state.pagina_sobrevalorados == 1), key="prev_sobre"):
+                            st.session_state.pagina_sobrevalorados -= 1
+                            st.rerun()
+                    with col_pag2:
+                        st.markdown(f"<p style='text-align: center;'>Página {st.session_state.pagina_sobrevalorados} de {total_paginas}</p>", unsafe_allow_html=True)
+                    with col_pag3:
+                        if st.button("Siguiente ➡️", disabled=(st.session_state.pagina_sobrevalorados == total_paginas), key="next_sobre"):
+                            st.session_state.pagina_sobrevalorados += 1
+                            st.rerun()
                 else:
                     st.info("No hay jugadores sobrevalorados en este momento")
         except Exception as e:
@@ -2112,6 +2317,16 @@ with tab3:
         except requests.exceptions.RequestException as e:
             with col_resultado:
                 st.error(f"Error de conexión con la API: {e}")
+
+# ============================================================================
+# MODAL GLOBAL (funciona en cualquier tab)
+# ============================================================================
+if st.session_state.get('mostrar_modal', False):
+    mostrar_modal_jugador(
+        st.session_state.get('modal_jugador_id'),
+        st.session_state.get('modal_jugador_nombre', 'Jugador'),
+        st.session_state.get('modal_jugador_año', 'N/A')
+    )
 
 # FOOTER
 st.markdown("---")

@@ -436,6 +436,7 @@ def obtener_escudo_club(nombre_club):
         "Villarreal": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/102.png&h=200&w=200",
         "Real Sociedad": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/89.png&h=200&w=200",
         "Real Betis": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/244.png&h=200&w=200",
+        "Athletic Bilbao": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/244.png&h=200&w=200",
         
         # Inglaterra - Premier League
         "Manchester United": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/360.png&h=200&w=200",
@@ -449,6 +450,13 @@ def obtener_escudo_club(nombre_club):
         "Everton": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/368.png&h=200&w=200",
         "Aston Villa": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/362.png&h=200&w=200",
         "Newcastle United": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/361.png&h=200&w=200",
+        "Brighton": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/331.png&h=200&w=200",
+        "Brentford": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/337.png&h=200&w=200",
+        "Fulham": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/370.png&h=200&w=200",
+        "Wolves": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/380.png&h=200&w=200",
+        "Crystal Palace": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/384.png&h=200&w=200",
+        "Southampton": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/376.png&h=200&w=200",
+        "Leeds United": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/357.png&h=200&w=200",
         
         # Italia - Serie A
         "Juventus": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/111.png&h=200&w=200",
@@ -459,6 +467,9 @@ def obtener_escudo_club(nombre_club):
         "Lazio": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/110.png&h=200&w=200",
         "Atalanta": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/102.png&h=200&w=200",
         "Fiorentina": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/100.png&h=200&w=200",
+        "Torino": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/109.png&h=200&w=200",
+        "Sampdoria": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/108.png&h=200&w=200",
+        "Udinese": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/112.png&h=200&w=200",
         
         # Alemania - Bundesliga
         "Bayern Munich": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/132.png&h=200&w=200",
@@ -466,15 +477,37 @@ def obtener_escudo_club(nombre_club):
         "RB Leipzig": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/11420.png&h=200&w=200",
         "Bayer Leverkusen": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/131.png&h=200&w=200",
         "Wolfsburg": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/171.png&h=200&w=200",
+        "Eintracht Frankfurt": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/125.png&h=200&w=200",
+        "Borussia Monchengladbach": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/135.png&h=200&w=200",
+        "Stuttgart": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/134.png&h=200&w=200",
+        "Schalke 04": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/130.png&h=200&w=200",
         
         # Francia - Ligue 1
         "Paris Saint Germain": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/160.png&h=200&w=200",
         "Lyon": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/167.png&h=200&w=200",
         "Marseille": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/176.png&h=200&w=200",
         "Monaco": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/174.png&h=200&w=200",
+        "Lille": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/166.png&h=200&w=200",
+        "Rennes": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/169.png&h=200&w=200",
         
         # Portugal
         "FC Porto": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/182.png&h=200&w=200",
+        
+        # Holanda - Eredivisie
+        "Ajax": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/139.png&h=200&w=200",
+        "PSV": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/147.png&h=200&w=200",
+        "Feyenoord": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/140.png&h=200&w=200",
+        
+        # Escocia
+        "Celtic": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/273.png&h=200&w=200",
+        "Rangers": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/274.png&h=200&w=200",
+        
+        # Bélgica
+        "Club Brugge": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/304.png&h=200&w=200",
+        "Anderlecht": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/232.png&h=200&w=200",
+        
+        # Turquía
+        "Fenerbahce": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/606.png&h=200&w=200",
     }
     
     # Buscar coincidencia exacta
@@ -533,6 +566,11 @@ def obtener_escudo_liga(nombre_liga):
         # Segunda División
         "English League Championship": "https://a.espncdn.com/combiner/i?img=/i/leaguelogos/soccer/500/24.png&h=200&w=200",
         "Championship": "https://a.espncdn.com/combiner/i?img=/i/leaguelogos/soccer/500/24.png&h=200&w=200",
+        
+        # Ligas Europeas Adicionales
+        "Swiss Super League": "https://a.espncdn.com/combiner/i?img=/i/leaguelogos/soccer/500/16.png&h=200&w=200",
+        "Norwegian Eliteserien": "https://a.espncdn.com/combiner/i?img=/i/leaguelogos/soccer/500/41.png&h=200&w=200",
+        "Swedish Allsvenskan": "https://a.espncdn.com/combiner/i?img=/i/leaguelogos/soccer/500/42.png&h=200&w=200",
     }
     
     # Búsqueda exacta

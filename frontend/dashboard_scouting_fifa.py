@@ -1250,6 +1250,42 @@ else:
     # Resetear el flag para la próxima ejecución
     st.session_state.modal_clic_reciente = False
 
+# MODAL DE PRESENTACIÓN DE DEFENSA (PANTALLA COMPLETA)
+if 'mostrar_presentacion' not in st.session_state:
+    st.session_state.mostrar_presentacion = False
+
+if st.session_state.mostrar_presentacion:
+    @st.dialog("🎓 Presentación de Defensa del Proyecto - Proyecto Final de Graduación", width="large")
+    def mostrar_presentacion_defensa():
+        # Botón para cerrar
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col3:
+            if st.button("❌ Cerrar Presentación", use_container_width=True, type="secondary"):
+                st.session_state.mostrar_presentacion = False
+                st.rerun()
+        
+        st.info("💡 **Tips:** Desplázate con scroll o rueda del mouse. Usa el menú de navegación para saltar entre secciones. Para mejor experiencia, abre en pantalla completa (F11).")
+        
+        # Cargar HTML desde archivo
+        ruta_presentacion = os.path.join(os.path.dirname(__file__), "presentacion_defensa.html")
+        
+        try:
+            with open(ruta_presentacion, "r", encoding="utf-8") as f:
+                presentacion_html = f.read()
+            
+            # Renderizar la presentación HTML en un iframe completo
+            components.html(presentacion_html, height=800, scrolling=True)
+            
+        except FileNotFoundError:
+            st.error("❌ No se encontró el archivo de presentación. Por favor, asegúrate de que 'presentacion_defensa.html' esté en la carpeta frontend/")
+            st.info("🔗 Alternativamente, abre el archivo directamente desde la raíz del proyecto.")
+            
+            if st.button("🔄 Recargar Dashboard", use_container_width=True):
+                st.session_state.mostrar_presentacion = False
+                st.rerun()
+    
+    mostrar_presentacion_defensa()
+
 # CREAR PESTAÑAS CON DISEÑO MEJORADO
 tab1, tab2, tab3 = st.tabs([
     "🔍  Búsqueda Inteligente",
@@ -1310,6 +1346,13 @@ with tab1:
             <h2 style='color: white !important; margin: 0;'>🎯 Filtros Avanzados</h2>
         </div>
         """, unsafe_allow_html=True)
+        
+        # BOTÓN DE PRESENTACIÓN DE DEFENSA
+        st.markdown("---")
+        if st.button("🎓 📊 PRESENTACIÓN DE DEFENSA", use_container_width=True, type="primary"):
+            st.session_state.mostrar_presentacion = True
+        
+        st.markdown("---")
         
         # ⚽ FILTRO DE AÑO FIFA (NUEVO)
         st.markdown("### 📅 Año FIFA")

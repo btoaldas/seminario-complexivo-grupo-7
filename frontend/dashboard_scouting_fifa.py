@@ -1276,6 +1276,68 @@ else:
     categorias_edad = []
 
 # ============================================================================
+# FUNCIÓN MODAL DE PRESENTACIÓN DEL PROYECTO
+# ============================================================================
+@st.dialog(" ", width="large")
+def mostrar_presentacion_completa():
+    """Muestra la presentación del proyecto en un modal de pantalla completa sin márgenes"""
+    
+    # CSS para eliminar TODOS los márgenes y padding del modal
+    st.markdown("""
+    <style>
+        /* Eliminar padding del dialog */
+        [data-testid="stDialog"] {
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        
+        /* Eliminar márgenes del contenedor principal del modal */
+        [data-testid="stDialog"] > div {
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        
+        /* Ajustar el modal al máximo ancho */
+        [data-testid="stDialog"] {
+            max-width: 98vw !important;
+            width: 98vw !important;
+        }
+        
+        /* Eliminar header del modal si existe */
+        [data-testid="stDialog"] h1,
+        [data-testid="stDialog"] h2,
+        [data-testid="stDialog"] h3 {
+            display: none !important;
+        }
+        
+        /* Maximizar el iframe */
+        [data-testid="stDialog"] iframe {
+            border: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    try:
+        # Cargar el HTML de la presentación
+        ruta_presentacion = os.path.join(os.path.dirname(__file__), 'presentacion_defensa.html')
+        
+        if os.path.exists(ruta_presentacion):
+            with open(ruta_presentacion, 'r', encoding='utf-8') as f:
+                html_content = f.read()
+            
+            # Mostrar el HTML sin ningún elemento adicional, altura casi pantalla completa
+            components.html(html_content, height=850, scrolling=True)
+            
+        else:
+            st.error(f"❌ No se encontró el archivo de presentación")
+            
+    except Exception as e:
+        st.error(f"Error: {str(e)}")
+
+# ============================================================================
 # TAB 1: BÚSQUEDA INTELIGENTE
 # ============================================================================
 with tab1:
@@ -2538,14 +2600,41 @@ with tab3:
 # TAB 4: PRESENTACIÓN DEL PROYECTO DE GRADUACIÓN
 # ============================================================================
 with tab4:
+    # Inicializar y activar el modal automáticamente al entrar al tab
+    if 'mostrar_presentacion' not in st.session_state:
+        st.session_state.mostrar_presentacion = False
+    
+    # Detectar si es la primera vez que se entra al tab4
+    if 'tab4_visitado' not in st.session_state:
+        st.session_state.tab4_visitado = False
+    
+    # Si no se ha visitado antes, activar el modal automáticamente
+    if not st.session_state.tab4_visitado:
+        st.session_state.tab4_visitado = True
+        st.session_state.mostrar_presentacion = True
+        st.rerun()
+    
+    # Mensaje simple mientras el modal no está abierto
     st.markdown(f"""
-    <div style='text-align: center; padding: 30px; background: linear-gradient(135deg, {COLOR_SECUNDARIO} 0%, {COLOR_ACENTO_1} 100%); border-radius: 20px; margin-bottom: 30px;'>
-        <h1 style='color: white !important; margin: 0; font-size: 3rem;'>🎓 Presentación del Proyecto</h1>
-        <h2 style='color: white; margin: 15px 0 5px 0; opacity: 0.95; font-size: 1.8rem;'>Sistema de Scouting y Valoración de Jugadores FIFA</h2>
-        <p style='color: white; margin: 10px 0 0 0; opacity: 0.9; font-size: 1.2rem;'>Proyecto Final de Graduación - Grupo 7</p>
-        <p style='color: white; margin: 5px 0 0 0; opacity: 0.85;'>Universidad Regional Autónoma de los Andes (UniAndes)</p>
+    <div style='text-align: center; padding: 60px 20px; background: linear-gradient(135deg, {COLOR_SECUNDARIO} 0%, {COLOR_ACENTO_1} 100%); border-radius: 20px;'>
+        <h1 style='color: white !important; margin: 0 0 20px 0; font-size: 3rem;'>🎓 Presentación del Proyecto</h1>
+        <p style='color: white; opacity: 0.95; font-size: 1.3rem; margin-bottom: 30px;'>
+            Sistema de Scouting y Valoración de Jugadores FIFA
+        </p>
     </div>
     """, unsafe_allow_html=True)
+    
+    st.markdown("<br><br>", unsafe_allow_html=True)
+    
+    # Botón para volver a abrir el modal si se cerró
+    col_centro1, col_boton_modal, col_centro2 = st.columns([1, 2, 1])
+    
+    with col_boton_modal:
+        if st.button("🚀 Abrir Presentación Completa", use_container_width=True, type="primary", key="btn_abrir_presentacion"):
+            st.session_state.mostrar_presentacion = True
+            st.rerun()
+    
+    st.markdown("<br><br>", unsafe_allow_html=True)
     
     # Instrucciones de navegación
     col_info1, col_info2, col_info3 = st.columns(3)
@@ -2574,116 +2663,23 @@ with tab4:
         `presentacion_defensa.html`
         """)
     
-    st.markdown("---")
-    
-    # Leer y mostrar la presentación HTML embebida
-    try:
-        ruta_presentacion = os.path.join(os.path.dirname(__file__), 'presentacion_defensa.html')
-        
-        if os.path.exists(ruta_presentacion):
-            with open(ruta_presentacion, 'r', encoding='utf-8') as f:
-                html_content = f.read()
-            
-            # Agregar nota informativa antes del iframe
-            st.markdown(f"""
-            <div style='background: {COLOR_ACENTO_2}; padding: 20px; border-radius: 15px; border-left: 5px solid {COLOR_DESTACADO}; margin-bottom: 20px;'>
-                <p style='color: white; margin: 0; font-size: 1.1rem;'>
-                    📺 <strong>Presentación interactiva embebida:</strong> Desplázate verticalmente para ver todas las secciones de la defensa del proyecto.
-                    Cada sección está diseñada para ocupar pantalla completa en modo presentación.
-                </p>
-            </div>
-            """, unsafe_allow_html=True)
-            
-            # Mostrar el HTML en un componente con altura ajustada
-            components.html(html_content, height=900, scrolling=True)
-            
-            st.markdown("---")
-            
-            # Información adicional en columnas
-            col_equipo, col_datos = st.columns(2)
-            
-            with col_equipo:
-                st.markdown(f"""
-                <div style='background: {COLOR_ACENTO_2}; padding: 25px; border-radius: 15px; height: 100%;'>
-                    <h3 style='color: {COLOR_DESTACADO}; margin-bottom: 15px;'>👥 Equipo - Grupo 7</h3>
-                    <p style='color: white; line-height: 1.8; margin: 5px 0;'>• Alberto Alexander Aldás Villacrés</p>
-                    <p style='color: white; line-height: 1.8; margin: 5px 0;'>• Cristian Joel Riofrío Medina</p>
-                    <p style='color: white; line-height: 1.8; margin: 5px 0;'>• Wilson Fernando Saavedra Álvarez</p>
-                    <p style='color: {COLOR_ACENTO_1}; margin-top: 15px; font-weight: bold;'>Ingeniería de Software</p>
-                    <p style='color: white; opacity: 0.9;'>Noviembre 2025</p>
-                </div>
-                """, unsafe_allow_html=True)
-            
-            with col_datos:
-                st.markdown(f"""
-                <div style='background: {COLOR_ACENTO_2}; padding: 25px; border-radius: 15px; height: 100%;'>
-                    <h3 style='color: {COLOR_DESTACADO}; margin-bottom: 15px;'>📊 Datos del Proyecto</h3>
-                    <p style='color: white; line-height: 1.8; margin: 5px 0;'><strong>Tipo:</strong> Aprendizaje Supervisado - Regresión</p>
-                    <p style='color: white; line-height: 1.8; margin: 5px 0;'><strong>Modelo:</strong> Random Forest (4000 árboles)</p>
-                    <p style='color: white; line-height: 1.8; margin: 5px 0;'><strong>Precisión:</strong> R² = 65-98%</p>
-                    <p style='color: white; line-height: 1.8; margin: 5px 0;'><strong>Dataset:</strong> 122,501 jugadores FIFA</p>
-                    <p style='color: white; line-height: 1.8; margin: 5px 0;'><strong>Stack:</strong> Python, FastAPI, Streamlit, Docker</p>
-                </div>
-                """, unsafe_allow_html=True)
-            
-            st.markdown("<br>", unsafe_allow_html=True)
-            
-            # Botón para abrir en nueva pestaña (archivo externo)
-            st.markdown(f"""
-            <div style='text-align: center; padding: 20px;'>
-                <p style='color: white; font-size: 1.1rem; margin-bottom: 15px;'>
-                    Para una experiencia óptima en la defensa formal, abre la presentación en pantalla completa:
-                </p>
-                <a href="/frontend/presentacion_defensa.html" target="_blank" style='
-                    display: inline-block;
-                    background: linear-gradient(135deg, {COLOR_DESTACADO} 0%, {COLOR_SECUNDARIO} 100%);
-                    color: white;
-                    padding: 15px 40px;
-                    border-radius: 30px;
-                    text-decoration: none;
-                    font-weight: bold;
-                    font-size: 1.2rem;
-                    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-                    transition: transform 0.3s ease;
-                '>
-                    🖥️ Abrir Presentación en Pantalla Completa
-                </a>
-            </div>
-            """, unsafe_allow_html=True)
-            
-        else:
-            st.error(f"❌ No se encontró el archivo de presentación en: `{ruta_presentacion}`")
-            st.info("ℹ️ Asegúrate de que el archivo `presentacion_defensa.html` esté en la carpeta `frontend/`")
-            
-            # Instrucciones de solución
-            st.markdown("""
-            ### 🔧 Solución:
-            
-            ```powershell
-            # Desde la raíz del proyecto
-            Copy-Item "presentacion_defensa.html" "frontend/presentacion_defensa.html"
-            
-            # Reconstruir frontend
-            cd docker
-            docker-compose build frontend
-            docker-compose up -d frontend
-            ```
-            """)
-    
-    except Exception as e:
-        st.error(f"❌ Error al cargar la presentación: {str(e)}")
-        with st.expander("🔍 Ver detalles del error"):
-            st.exception(e)
+
 
 # ============================================================================
-# MODAL GLOBAL (funciona en cualquier tab)
+# MODALES GLOBALES (funcionan en cualquier tab)
 # ============================================================================
+
+# Modal de ficha de jugador
 if st.session_state.get('mostrar_modal', False):
     mostrar_modal_jugador(
         st.session_state.get('modal_jugador_id'),
         st.session_state.get('modal_jugador_nombre', 'Jugador'),
         st.session_state.get('modal_jugador_año', 'N/A')
     )
+
+# Modal de presentación del proyecto
+if st.session_state.get('mostrar_presentacion', False):
+    mostrar_presentacion_completa()
 
 # FOOTER
 st.markdown("---")

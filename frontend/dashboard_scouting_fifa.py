@@ -165,6 +165,15 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# VERIFICAR SI SE DEBE ABRIR MODAL (desde query params o botón header)
+query_params = st.query_params
+if "presentacion" in query_params:
+    if 'mostrar_presentacion' not in st.session_state:
+        st.session_state.mostrar_presentacion = False
+    st.session_state.mostrar_presentacion = True
+    # Limpiar query param después de leer
+    st.query_params.clear()
+
 # PALETA DE COLORES MODERNA
 COLOR_PRIMARIO = "#0A1929"  # Azul oscuro elegante
 COLOR_SECUNDARIO = "#1E88E5"  # Azul brillante
@@ -175,12 +184,42 @@ COLOR_EXITO = "#66BB6A"  # Verde
 COLOR_PELIGRO = "#EF5350"  # Rojo
 COLOR_ADVERTENCIA = "#FDD835"  # Amarillo
 
-# CSS PERSONALIZADO MEJORADO
+# CSS PERSONALIZADO MEJORADO + BOTÓN EN HEADER NATIVO
 st.markdown(f"""
 <style>
     /* Fondo principal */
     .stApp {{
         background: linear-gradient(135deg, {COLOR_PRIMARIO} 0%, {COLOR_ACENTO_2} 100%);
+    }}
+    
+    /* BOTÓN DE PRESENTACIÓN EN HEADER NATIVO DE STREAMLIT */
+    header[data-testid="stHeader"] {{
+        background: rgba(10, 25, 41, 0.95) !important;
+        backdrop-filter: blur(10px) !important;
+    }}
+    
+    /* Estilos para el botón inyectado con JavaScript */
+    #btn-presentacion-header {{
+        position: fixed;
+        right: 20px;
+        top: 12px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 10px 24px;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        box-shadow: 0 2px 10px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        z-index: 999999;
+        border: 1px solid rgba(255,255,255,0.2);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }}
+    
+    #btn-presentacion-header:hover {{
+        transform: scale(1.05);
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.6);
     }}
     
     /* Métricas mejoradas */
@@ -373,6 +412,50 @@ st.markdown(f"""
         border-left: 5px solid {COLOR_DESTACADO};
     }}
 </style>
+
+<script>
+    // Inyectar botón de presentación en el header de Streamlit
+    function inyectarBotonPresentacion() {{
+        // Verificar si ya existe
+        if (document.getElementById('btn-presentacion-header')) {{
+            return;
+        }}
+        
+        // Crear el botón
+        const btn = document.createElement('button');
+        btn.id = 'btn-presentacion-header';
+        btn.innerHTML = '🎓 PRESENTACIÓN';
+        btn.onclick = function() {{
+            // Redirigir con query parameter para abrir modal
+            const url = new URL(window.location.href);
+            url.searchParams.set('presentacion', 'true');
+            window.location.href = url.toString();
+        }};
+        
+        // Agregar al body (se posiciona con CSS fixed)
+        document.body.appendChild(btn);
+    }}
+    
+    // Ejecutar cuando el DOM esté listo
+    if (document.readyState === 'loading') {{
+        document.addEventListener('DOMContentLoaded', inyectarBotonPresentacion);
+    }} else {{
+        inyectarBotonPresentacion();
+    }}
+    
+    // Re-inyectar después de cada re-render de Streamlit
+    window.addEventListener('load', function() {{
+        // Observar cambios en el DOM
+        const observer = new MutationObserver(function() {{
+            inyectarBotonPresentacion();
+        }});
+        
+        observer.observe(document.body, {{
+            childList: true,
+            subtree: true
+        }});
+    }});
+</script>
 """, unsafe_allow_html=True)
 
 # ============================================================================
@@ -1238,47 +1321,6 @@ st.markdown(f"""
     </p>
 </div>
 """, unsafe_allow_html=True)
-
-# BOTÓN FLOTANTE DE PRESENTACIÓN (ESQUINA SUPERIOR DERECHA)
-st.markdown("""
-<style>
-    /* Contenedor del botón flotante */
-    .presentacion-btn-container {
-        position: fixed;
-        top: 80px;
-        right: 20px;
-        z-index: 999;
-    }
-    
-    /* Estilos del botón de Streamlit cuando está en esta posición */
-    div[data-testid="column"] > div > div > button[kind="primary"] {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-        color: white !important;
-        font-weight: 600 !important;
-        font-size: 16px !important;
-        padding: 12px 24px !important;
-        border-radius: 30px !important;
-        border: 2px solid rgba(255,255,255,0.3) !important;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
-        transition: all 0.3s ease !important;
-    }
-    
-    div[data-testid="column"] > div > div > button[kind="primary"]:hover {
-        transform: translateY(-2px) !important;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.4) !important;
-        border-color: rgba(255,255,255,0.5) !important;
-    }
-</style>
-""", unsafe_allow_html=True)
-
-# Crear columnas para posicionar el botón a la derecha
-col_space, col_btn = st.columns([6, 1])
-with col_btn:
-    if st.button("🎓 PRESENTACIÓN", type="primary", key="btn_presentacion_header", use_container_width=True):
-        st.session_state.mostrar_presentacion = True
-        st.rerun()
-
-st.markdown("<br>", unsafe_allow_html=True)
 
 # RESETEAR MODAL AL INICIO (se activará solo con clic explícito en "Ficha")
 # Si no hay flag de "acabo de hacer clic", cerrar modal

@@ -431,6 +431,7 @@ def obtener_escudo_club(nombre_club):
         "FC Barcelona": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/83.png&h=200&w=200",
         "Real Madrid": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/86.png&h=200&w=200",
         "Atletico Madrid": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/1068.png&h=200&w=200",
+        "Atlético Madrid": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/1068.png&h=200&w=200",
         "Sevilla": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/92.png&h=200&w=200",
         "Valencia": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/94.png&h=200&w=200",
         "Villarreal": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/102.png&h=200&w=200",
@@ -473,6 +474,7 @@ def obtener_escudo_club(nombre_club):
         
         # Alemania - Bundesliga
         "Bayern Munich": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/132.png&h=200&w=200",
+        "FC Bayern München": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/132.png&h=200&w=200",
         "Borussia Dortmund": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/124.png&h=200&w=200",
         "RB Leipzig": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/11420.png&h=200&w=200",
         "Bayer Leverkusen": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/131.png&h=200&w=200",
@@ -484,6 +486,7 @@ def obtener_escudo_club(nombre_club):
         
         # Francia - Ligue 1
         "Paris Saint Germain": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/160.png&h=200&w=200",
+        "Paris Saint-Germain": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/160.png&h=200&w=200",
         "Lyon": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/167.png&h=200&w=200",
         "Marseille": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/176.png&h=200&w=200",
         "Monaco": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/174.png&h=200&w=200",

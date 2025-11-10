@@ -1262,31 +1262,52 @@ if st.session_state.mostrar_presentacion:
         with open(ruta_presentacion, "r", encoding="utf-8") as f:
             presentacion_html = f.read()
         
-        # Inyectar botón de cierre en el HTML original
-        # Buscar </body> y agregar botón antes de ese tag
+        # Inyectar botón de cierre minimalista en el HTML original
         boton_cierre = """
         <button id="btn-cerrar-presentacion" style="
             position: fixed;
-            top: 60px;
-            right: 20px;
+            top: 15px;
+            left: 15px;
             z-index: 10000;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: 2px solid white;
-            padding: 15px 30px;
-            border-radius: 30px;
-            font-size: 18px;
-            font-weight: bold;
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            border: 1px solid rgba(0,0,0,0.1);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 24px;
+            font-weight: normal;
             cursor: pointer;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
-            transition: all 0.3s;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            transition: all 0.2s;
+            line-height: 1;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         "
-        onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.5)';"
-        onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 6px 20px rgba(0,0,0,0.4)';"
-        onclick="window.location.href=window.location.href.split('?')[0]">
-            ❌ CERRAR Y VOLVER AL DASHBOARD
+        onmouseover="this.style.background='rgba(255, 255, 255, 1)'; this.style.transform='scale(1.05)';"
+        onmouseout="this.style.background='rgba(255, 255, 255, 0.95)'; this.style.transform='scale(1)';"
+        onclick="cerrarModal()">
+            ✕
         </button>
+        <script>
+            function cerrarModal() {
+                // Intentar comunicación con iframe padre (Streamlit)
+                try {
+                    // Opción 1: Recargar toda la página del padre
+                    if (window.parent && window.parent !== window) {
+                        window.parent.location.href = window.parent.location.href.split('?')[0];
+                    } else {
+                        // Opción 2: Recargar página actual
+                        window.location.href = window.location.href.split('?')[0];
+                    }
+                } catch (e) {
+                    // Fallback: recargar página actual
+                    window.location.reload();
+                }
+            }
+        </script>
         </body>
         """
         
@@ -1295,13 +1316,16 @@ if st.session_state.mostrar_presentacion:
         # Renderizar la presentación completa sin iframe de Streamlit
         st.markdown(f"""
         <style>
-            /* Ocultar TODOS los elementos de Streamlit */
+            /* Ocultar TODOS los elementos de Streamlit incluyendo SIDEBAR */
             header, footer, .stApp > header, [data-testid="stHeader"], 
             [data-testid="stToolbar"], .stDeployButton, 
             [data-testid="stDecoration"], [data-testid="stStatusWidget"],
-            #MainMenu, .stActionButton {{
+            #MainMenu, .stActionButton, [data-testid="stSidebar"],
+            [data-testid="collapsedControl"] {{
                 display: none !important;
                 visibility: hidden !important;
+                width: 0 !important;
+                min-width: 0 !important;
             }}
             
             /* Hacer que el contenedor principal ocupe 100% */
@@ -1309,6 +1333,7 @@ if st.session_state.mostrar_presentacion:
                 padding: 0 !important;
                 max-width: 100% !important;
                 margin: 0 !important;
+                margin-left: 0 !important;
             }}
             
             /* Eliminar padding del iframe */
@@ -1321,16 +1346,31 @@ if st.session_state.mostrar_presentacion:
                 left: 0 !important;
             }}
         </style>
+        <script>
+            // Cerrar sidebar automáticamente al cargar modal
+            window.parent.document.querySelector('[data-testid="collapsedControl"]')?.click();
+        </script>
         """, unsafe_allow_html=True)
         
         # Renderizar HTML completo ocupando toda la pantalla
-        components.html(presentacion_modificada, height=900, scrolling=True)
+        # Agregar listener para detectar clic en cerrar
+        resultado = components.html(presentacion_modificada, height=900, scrolling=True)
+        
+        # Si se detecta cierre, resetear estado
+        if resultado == "CERRAR":
+            st.session_state.mostrar_presentacion = False
+            st.rerun()
         
     except FileNotFoundError:
         st.error("❌ No se encontró el archivo de presentación.")
         if st.button("🔄 Recargar"):
             st.session_state.mostrar_presentacion = False
             st.rerun()
+else:
+    # Cuando NO está mostrando presentación, detectar si debe cerrarla
+    # (para cuando el usuario recarga la página)
+    if st.session_state.mostrar_presentacion:
+        st.session_state.mostrar_presentacion = False
 
 # CREAR PESTAÑAS CON DISEÑO MEJORADO
 tab1, tab2, tab3 = st.tabs([

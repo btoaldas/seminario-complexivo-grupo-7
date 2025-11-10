@@ -1313,7 +1313,8 @@ def mostrar_presentacion_completa():
             bottom: 0 !important;
             padding: 0 !important;
             margin: 0 !important;
-            max-width: 100vw !important;
+            max-width: none !important;
+            min-width: 100vw !important;
             width: 100vw !important;
             max-height: 100vh !important;
             height: 100vh !important;
@@ -1322,6 +1323,7 @@ def mostrar_presentacion_completa():
             background: transparent !important;
             overflow: hidden !important;
             z-index: 999999 !important;
+            transform: none !important;
         }
         
         /* Contenedor interno - CERO padding */
@@ -1331,16 +1333,21 @@ def mostrar_presentacion_completa():
             border: none !important;
             background: transparent !important;
             width: 100vw !important;
-            max-width: 100vw !important;
+            min-width: 100vw !important;
+            max-width: none !important;
             height: 100vh !important;
             overflow: hidden !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
         }
         
-        /* TODOS los divs sin padding/margin */
+        /* TODOS los divs sin padding/margin y SIN max-width */
         [data-testid="stDialog"] div {
             padding: 0 !important;
             margin: 0 !important;
             background: transparent !important;
+            max-width: none !important;
         }
         
         /* Eliminar headers */

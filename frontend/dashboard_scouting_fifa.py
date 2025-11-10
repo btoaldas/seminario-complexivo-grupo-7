@@ -412,6 +412,50 @@ def obtener_codigo_iso_pais(nacionalidad):
     
     return pais_iso_map.get(nacionalidad, nacionalidad.lower()[:2] if nacionalidad else "xx")
 
+def obtener_escudo_club(nombre_club):
+    """
+    Obtiene la URL del escudo del club de fútbol
+    
+    Args:
+        nombre_club: Nombre del club
+    
+    Returns:
+        str: URL del escudo o icono genérico
+    """
+    if not nombre_club or nombre_club in ['N/A', '', 'nan']:
+        return "⚽"  # Emoji genérico
+    
+    # Mapeo manual de clubes principales (más fiables)
+    escudos_manuales = {
+        "FC Barcelona": "https://upload.wikimedia.org/wikipedia/en/thumb/4/47/FC_Barcelona_%28crest%29.svg/100px-FC_Barcelona_%28crest%29.svg.png",
+        "Real Madrid": "https://upload.wikimedia.org/wikipedia/en/thumb/5/56/Real_Madrid_CF.svg/100px-Real_Madrid_CF.svg.png",
+        "Manchester United": "https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/Manchester_United_FC_crest.svg/100px-Manchester_United_FC_crest.svg.png",
+        "Liverpool": "https://upload.wikimedia.org/wikipedia/en/thumb/0/0c/Liverpool_FC.svg/100px-Liverpool_FC.svg.png",
+        "Bayern Munich": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg/100px-FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg.png",
+        "Paris Saint Germain": "https://upload.wikimedia.org/wikipedia/en/thumb/a/a7/Paris_Saint-Germain_F.C..svg/100px-Paris_Saint-Germain_F.C..svg.png",
+        "Chelsea": "https://upload.wikimedia.org/wikipedia/en/thumb/c/cc/Chelsea_FC.svg/100px-Chelsea_FC.svg.png",
+        "Manchester City": "https://upload.wikimedia.org/wikipedia/en/thumb/e/eb/Manchester_City_FC_badge.svg/100px-Manchester_City_FC_badge.svg.png",
+        "Juventus": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Juventus_FC_2017_logo.svg/100px-Juventus_FC_2017_logo.svg.png",
+        "Inter": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/FC_Internazionale_Milano_2021.svg/100px-FC_Internazionale_Milano_2021.svg.png",
+        "AC Milan": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Logo_of_AC_Milan.svg/100px-Logo_of_AC_Milan.svg.png",
+        "Atletico Madrid": "https://upload.wikimedia.org/wikipedia/en/thumb/f/f4/Atletico_Madrid_2017_logo.svg/100px-Atletico_Madrid_2017_logo.svg.png",
+        "Borussia Dortmund": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Borussia_Dortmund_logo.svg/100px-Borussia_Dortmund_logo.svg.png",
+        "Arsenal": "https://upload.wikimedia.org/wikipedia/en/thumb/5/53/Arsenal_FC.svg/100px-Arsenal_FC.svg.png",
+        "Tottenham Hotspur": "https://upload.wikimedia.org/wikipedia/en/thumb/b/b4/Tottenham_Hotspur.svg/100px-Tottenham_Hotspur.svg.png"
+    }
+    
+    # Buscar coincidencia exacta
+    if nombre_club in escudos_manuales:
+        return escudos_manuales[nombre_club]
+    
+    # Buscar coincidencia parcial (ej: "FC Barcelona" contiene "Barcelona")
+    for club, url in escudos_manuales.items():
+        if club.lower() in nombre_club.lower() or nombre_club.lower() in club.lower():
+            return url
+    
+    # Si no se encuentra, devolver emoji
+    return "⚽"
+
 def descargar_imagen_generica():
     """Descarga una imagen genérica de jugador si no existe"""
     if os.path.exists(IMAGEN_GENERICA):
@@ -674,11 +718,16 @@ def mostrar_ficha_jugador(jugador_id, jugador_nombre):
         jugador = perfil["jugador"]
         prediccion = perfil.get("prediccion_ml", {})
         
+        # Obtener escudo del club para top jugadores
+        club_top = jugador.get('club', 'Sin club')
+        escudo_club_top = obtener_escudo_club(club_top)
+        club_icon = f'<img src="{escudo_club_top}" style="width: 18px; height: 18px; vertical-align: middle; object-fit: contain;" onerror="this.style.display=\'none\'">' if escudo_club_top != "⚽" else "⚽"
+        
         st.markdown(f"""
         <div class="ficha-jugador">
             <div class="nombre-jugador">{jugador.get('nombre_corto', 'N/A')}</div>
             <div class="info-jugador">
-                {jugador.get('club', 'Sin club')} | {jugador.get('nacionalidad', 'N/A')} | {jugador.get('edad', 'N/A')} años
+                {club_icon} {club_top} | {jugador.get('nacionalidad', 'N/A')} | {jugador.get('edad', 'N/A')} años
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -864,10 +913,15 @@ def mostrar_modal_jugador(jugador_id, jugador_nombre, año_fifa):
             pais_iso_modal = obtener_codigo_iso_pais(nacionalidad_modal)
             bandera_url_modal = f"https://flagcdn.com/32x24/{pais_iso_modal}.png"
             
+            # Obtener escudo del club para el modal
+            club_modal = jugador.get('club', 'N/A')
+            escudo_club_modal = obtener_escudo_club(club_modal)
+            club_html = f'<img src="{escudo_club_modal}" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 5px; object-fit: contain;" onerror="this.style.display=\'none\'">' if escudo_club_modal != "⚽" else "🏟️"
+            
             st.markdown(f"""
             <div style='background: linear-gradient(135deg, {COLOR_ACENTO_2} 0%, {COLOR_PRIMARIO} 100%); 
                  padding: 15px; border-radius: 10px; margin: 10px 0; border-left: 4px solid {COLOR_ACENTO_1};'>
-                <p style='margin: 5px 0; color: {COLOR_SECUNDARIO};'><b>🏟️ Club:</b> {jugador.get('club', 'N/A')}</p>
+                <p style='margin: 5px 0; color: {COLOR_SECUNDARIO};'><b>{club_html} Club:</b> {club_modal}</p>
                 <p style='margin: 5px 0; color: {COLOR_SECUNDARIO};'><b>🏆 Liga:</b> {jugador.get('liga', 'N/A')}</p>
                 <p style='margin: 5px 0; color: {COLOR_SECUNDARIO};'>
                     <b><img src="{bandera_url_modal}" style="width: 24px; height: 18px; vertical-align: middle; margin-right: 5px;" onerror="this.style.display='none'"> Nacionalidad:</b> {nacionalidad_modal}
@@ -1539,7 +1593,16 @@ with tab1:
                     
                     with col_vals[6]:
                         club = jugador.get('club', 'N/A')
-                        st.markdown(f"<div style='color: #7890a8;'>{club}</div>", unsafe_allow_html=True)
+                        escudo_club = obtener_escudo_club(club)
+                        if escudo_club == "⚽":
+                            st.markdown(f"<div style='color: #7890a8;'>{escudo_club} {club}</div>", unsafe_allow_html=True)
+                        else:
+                            st.markdown(f"""
+                            <div style='display: flex; align-items: center; gap: 8px;'>
+                                <img src="{escudo_club}" style="width: 24px; height: 24px; object-fit: contain;" onerror="this.style.display='none'">
+                                <span style='color: #7890a8;'>{club}</span>
+                            </div>
+                            """, unsafe_allow_html=True)
                     
                     with col_vals[7]:
                         liga = jugador.get('liga', 'N/A')
@@ -2050,7 +2113,10 @@ with tab2:
                             st.markdown(foto_html, unsafe_allow_html=True)
                         
                         with col_info:
-                            st.markdown(f"**{i}. {nombre}** ({jug.get('club', 'N/A')})")
+                            club_infra = jug.get('club', 'N/A')
+                            escudo_club_infra = obtener_escudo_club(club_infra)
+                            club_icon_infra = f'<img src="{escudo_club_infra}" style="width: 18px; height: 18px; vertical-align: middle; object-fit: contain;" onerror="this.style.display=\'none\'">' if escudo_club_infra != "⚽" else "⚽"
+                            st.markdown(f"**{i}. {nombre}** ({club_icon_infra} {club_infra})", unsafe_allow_html=True)
                             st.write(f"Real: €{jug.get('valor_mercado_eur', 0):,.0f} → Predicho: €{jug.get('valor_predicho_eur', 0):,.0f}")
                             st.write(f"💰 Diferencia: +{jug.get('diferencia_porcentual', 0):.1f}%")
                         
@@ -2145,7 +2211,10 @@ with tab2:
                             st.markdown(foto_html, unsafe_allow_html=True)
                         
                         with col_info:
-                            st.markdown(f"**{i}. {nombre}** ({jug.get('club', 'N/A')})")
+                            club_sobre = jug.get('club', 'N/A')
+                            escudo_club_sobre = obtener_escudo_club(club_sobre)
+                            club_icon_sobre = f'<img src="{escudo_club_sobre}" style="width: 18px; height: 18px; vertical-align: middle; object-fit: contain;" onerror="this.style.display=\'none\'">' if escudo_club_sobre != "⚽" else "⚽"
+                            st.markdown(f"**{i}. {nombre}** ({club_icon_sobre} {club_sobre})", unsafe_allow_html=True)
                             st.write(f"Real: €{jug.get('valor_mercado_eur', 0):,.0f} → Predicho: €{jug.get('valor_predicho_eur', 0):,.0f}")
                             st.write(f"📉 Diferencia: {jug.get('diferencia_porcentual', 0):.1f}%")
                         

@@ -165,16 +165,6 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# VERIFICAR SI SE DEBE ABRIR MODAL (desde query params o botón header)
-query_params = st.query_params
-if "presentacion" in query_params:
-    # Limpiar query param primero
-    st.query_params.clear()
-    # Establecer flag para mostrar presentación
-    st.session_state.mostrar_presentacion = True
-    # Forzar recarga inmediata
-    st.rerun()
-
 # PALETA DE COLORES MODERNA
 COLOR_PRIMARIO = "#0A1929"  # Azul oscuro elegante
 COLOR_SECUNDARIO = "#1E88E5"  # Azul brillante
@@ -185,42 +175,12 @@ COLOR_EXITO = "#66BB6A"  # Verde
 COLOR_PELIGRO = "#EF5350"  # Rojo
 COLOR_ADVERTENCIA = "#FDD835"  # Amarillo
 
-# CSS PERSONALIZADO MEJORADO + BOTÓN EN HEADER NATIVO
+# CSS PERSONALIZADO MEJORADO
 st.markdown(f"""
 <style>
     /* Fondo principal */
     .stApp {{
         background: linear-gradient(135deg, {COLOR_PRIMARIO} 0%, {COLOR_ACENTO_2} 100%);
-    }}
-    
-    /* BOTÓN DE PRESENTACIÓN EN HEADER NATIVO DE STREAMLIT */
-    header[data-testid="stHeader"] {{
-        background: rgba(10, 25, 41, 0.95) !important;
-        backdrop-filter: blur(10px) !important;
-    }}
-    
-    /* Estilos para el botón inyectado con JavaScript */
-    #btn-presentacion-header {{
-        position: fixed;
-        right: 165px;  /* 35px más a la izquierda para no tapar menú hamburguesa */
-        top: 12px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 10px 24px;
-        border-radius: 25px;
-        font-weight: 600;
-        font-size: 14px;
-        cursor: pointer;
-        box-shadow: 0 2px 10px rgba(102, 126, 234, 0.4);
-        transition: all 0.3s ease;
-        z-index: 999999;
-        border: 1px solid rgba(255,255,255,0.2);
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }}
-    
-    #btn-presentacion-header:hover {{
-        transform: scale(1.05);
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.6);
     }}
     
     /* Métricas mejoradas */
@@ -414,48 +374,6 @@ st.markdown(f"""
     }}
 </style>
 """, unsafe_allow_html=True)
-
-# INYECTAR BOTÓN EN HEADER CON JAVASCRIPT (usando components.html para ejecutar JS)
-components.html("""
-<script>
-    // Inyectar botón de presentación en el header de Streamlit (iframe padre)
-    (function() {
-        // Acceder al documento padre desde el iframe
-        const parentDoc = window.parent.document;
-        
-        // Eliminar botón existente si existe (para recrear con evento actualizado)
-        const existingBtn = parentDoc.getElementById('btn-presentacion-header');
-        if (existingBtn) {
-            existingBtn.remove();
-        }
-        
-        // Crear el botón
-        const btn = parentDoc.createElement('button');
-        btn.id = 'btn-presentacion-header';
-        btn.innerHTML = '🎓 PRESENTACIÓN';
-        
-        // Usar addEventListener en lugar de onclick para mejor compatibilidad
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            console.log('🎓 Botón clickeado - abriendo presentación');
-            
-            // Redirigir con query parameter para abrir modal
-            const url = new URL(window.parent.location.href);
-            url.searchParams.set('presentacion', 'true');
-            
-            console.log('📍 Nueva URL:', url.toString());
-            
-            window.parent.location.href = url.toString();
-        });
-        
-        // Agregar al body del padre (se posiciona con CSS fixed)
-        parentDoc.body.appendChild(btn);
-        console.log('✅ Botón de presentación inyectado en header');
-    })();
-</script>
-""", height=0)
 
 # ============================================================================
 # SISTEMA DE CACHÉ DE IMÁGENES DE JUGADORES
@@ -1520,6 +1438,14 @@ with tab1:
             <h2 style='color: white !important; margin: 0;'>🎯 Filtros Avanzados</h2>
         </div>
         """, unsafe_allow_html=True)
+        
+        # BOTÓN DE PRESENTACIÓN DE DEFENSA
+        st.markdown("---")
+        if st.button("🎓 PRESENTACIÓN", use_container_width=True, type="primary", key="btn_presentacion"):
+            st.session_state.mostrar_presentacion = True
+            st.rerun()  # Forzar recarga inmediata
+        
+        st.markdown("---")
         
         # ⚽ FILTRO DE AÑO FIFA (NUEVO)
         st.markdown("### 📅 Año FIFA")

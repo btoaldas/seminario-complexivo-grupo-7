@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚽ Sistema de Scouting FIFA - Proyecto de Graduación</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+
+        /* Cada sección ocupa pantalla completa */
+        section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 60px 40px;
+            position: relative;
+        }
+
+        /* Navegación fija */
+        nav {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 25px;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        nav a {
+            margin: 0 10px;
+            text-decoration: none;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: #0066cc;
+        }
+
+        /* Portada */
+        #portada {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+        }
+
+        #portada h1 {
+            font-size: 4.5rem;
+            margin-bottom: 20px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            animation: fadeInUp 1s ease;
+        }
+
+        #portada .subtitle {
+            font-size: 1.8rem;
+            margin-bottom: 40px;
+            opacity: 0.95;
+            animation: fadeInUp 1.2s ease;
+        }
+
+        #portada .university {
+            font-size: 1.4rem;
+            margin-top: 40px;
+            font-weight: 600;
+            animation: fadeInUp 1.4s ease;
+        }
+
+        #portada .authors {
+            margin-top: 60px;
+            font-size: 1.2rem;
+            line-height: 2;
+            animation: fadeInUp 1.6s ease;
+        }
+
+        /* Contexto */
+        #contexto {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .content-box {
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .content-box h2 {
+            font-size: 3.5rem;
+            margin-bottom: 40px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .info-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+        }
+
+        .info-card h3 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-card p, .info-card ul {
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .info-card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .info-card li:before {
+            content: "✓ ";
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        /* Problema */
+        #problema {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .problem-container {
+            max-width: 1100px;
+            text-align: center;
+        }
+
+        .problem-box {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 50px;
+            border-radius: 25px;
+            margin: 30px 0;
+        }
+
+        .problem-box h3 {
+            font-size: 2.2rem;
+            margin-bottom: 25px;
+        }
+
+        .problem-box p {
+            font-size: 1.3rem;
+            line-height: 1.9;
+        }
+
+        /* Datos */
+        #datos {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: #333;
+        }
+
+        .data-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: scale(1.05);
+        }
+
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: #f5576c;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 1.2rem;
+            color: #666;
+            font-weight: 600;
+        }
+
+        /* Machine Learning */
+        #ml {
+            background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+            color: white;
+        }
+
+        .ml-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 50px;
+            max-width: 1000px;
+        }
+
+        .model-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            border: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .model-card.winner {
+            border-color: #4ade80;
+            box-shadow: 0 0 30px rgba(74, 222, 128, 0.4);
+        }
+
+        .model-card h3 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .accuracy {
+            font-size: 4rem;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #4ade80;
+        }
+
+        .model-details {
+            text-align: left;
+            margin-top: 25px;
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        /* Metodología */
+        #metodologia {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #333;
+        }
+
+        .methodology-timeline {
+            max-width: 900px;
+            margin-top: 50px;
+        }
+
+        .phase {
+            background: white;
+            padding: 30px 40px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            border-left: 6px solid #667eea;
+            transition: transform 0.3s;
+        }
+
+        .phase:hover {
+            transform: translateX(10px);
+        }
+
+        .phase-number {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 45px;
+            font-weight: bold;
+            font-size: 1.3rem;
+            margin-right: 20px;
+        }
+
+        .phase h3 {
+            display: inline-block;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+
+        .phase-tech {
+            color: #666;
+            font-size: 1rem;
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        .phase-description {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            margin-top: 15px;
+        }
+
+        /* Tecnologías */
+        #tecnologias {
+            background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+            color: #333;
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+            max-width: 1200px;
+        }
+
+        .tech-category {
+            background: white;
+            padding: 35px;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .tech-category h3 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .tech-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .tech-list li {
+            padding: 12px 0;
+            font-size: 1.1rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tech-list li:before {
+            content: "🔹";
+            font-size: 1.2rem;
+        }
+
+        /* Resultados */
+        #resultados {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            color: #333;
+        }
+
+        .results-showcase {
+            max-width: 1200px;
+            margin-top: 50px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 35px;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            text-align: center;
+        }
+
+        .feature-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: #f5576c;
+        }
+
+        .feature-card p {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: #666;
+        }
+
+        /* Arquitectura */
+        #arquitectura {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .architecture-diagram {
+            max-width: 1000px;
+            margin-top: 50px;
+            text-align: center;
+        }
+
+        .arch-layer {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 35px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+        }
+
+        .arch-layer h3 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .arch-components {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .component {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px 30px;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        /* Conclusiones */
+        #conclusiones {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .conclusions-box {
+            max-width: 1100px;
+        }
+
+        .conclusion-item {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 35px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            font-size: 1.3rem;
+            line-height: 1.9;
+            border-left: 6px solid #4ade80;
+        }
+
+        .conclusion-item:before {
+            content: "✓";
+            font-size: 2rem;
+            font-weight: bold;
+            color: #4ade80;
+            margin-right: 15px;
+        }
+
+        /* Footer */
+        #footer {
+            background: #1a1a1a;
+            color: white;
+            text-align: center;
+            padding: 60px 40px;
+            min-height: auto;
+        }
+
+        #footer h2 {
+            font-size: 3rem;
+            margin-bottom: 30px;
+        }
+
+        .team-members {
+            font-size: 1.4rem;
+            line-height: 2.5;
+            margin-bottom: 40px;
+        }
+
+        .institution {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-top: 40px;
+            color: #4ade80;
+        }
+
+        /* Animaciones */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            section {
+                padding: 40px 20px;
+            }
+
+            #portada h1 {
+                font-size: 2.5rem;
+            }
+
+            #portada .subtitle {
+                font-size: 1.2rem;
+            }
+
+            .content-box h2 {
+                font-size: 2.5rem;
+            }
+
+            .ml-comparison {
+                grid-template-columns: 1fr;
+            }
+
+            nav {
+                top: 10px;
+                right: 10px;
+                padding: 10px 15px;
+            }
+
+            nav a {
+                font-size: 11px;
+                margin: 0 5px;
+            }
+        }
+
+        /* Scroll indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+            font-size: 2rem;
+            opacity: 0.7;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0) translateX(-50%);
+            }
+            40% {
+                transform: translateY(-20px) translateX(-50%);
+            }
+            60% {
+                transform: translateY(-10px) translateX(-50%);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navegación -->
+    <nav>
+        <a href="#portada">Inicio</a>
+        <a href="#contexto">Contexto</a>
+        <a href="#problema">Problema</a>
+        <a href="#datos">Datos</a>
+        <a href="#ml">ML</a>
+        <a href="#metodologia">Metodología</a>
+        <a href="#resultados">Resultados</a>
+        <a href="#footer">Equipo</a>
+    </nav>
+
+    <!-- PORTADA -->
+    <section id="portada">
+        <h1>⚽ Sistema de Scouting y Valoración<br>de Jugadores de Fútbol FIFA</h1>
+        <p class="subtitle">Predicción de Valor de Mercado mediante Machine Learning</p>
+        <div class="university">
+            <p>UNIVERSIDAD REGIONAL AUTÓNOMA DE LOS ANDES</p>
+            <p style="font-size: 1.2rem; margin-top: 15px; opacity: 0.9;">UNIANDES</p>
+        </div>
+        <div class="authors">
+            <p><strong>Grupo 7 - Seminario Complexivo</strong></p>
+            <p>Proyecto Final de Graduación - Ingeniería de Software</p>
+            <p style="margin-top: 20px; font-size: 1.1rem;">Noviembre 2025</p>
+        </div>
+        <div class="scroll-indicator">↓</div>
+    </section>
+
+    <!-- CONTEXTO ACADÉMICO -->
+    <section id="contexto">
+        <div class="content-box">
+            <h2>📚 Contexto Académico</h2>
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3>📖 Asignatura</h3>
+                    <p><strong>ANALÍTICA CON PYTHON</strong></p>
+                    <p style="margin-top: 15px;">Seminario Complexivo para Graduación</p>
+                </div>
+                <div class="info-card">
+                    <h3>🎯 Tema del Caso</h3>
+                    <p><strong>Sistema de Scouting y Valoración de Jugadores de Fútbol Profesional</strong></p>
+                </div>
+                <div class="info-card">
+                    <h3>🔬 Tipo de Problema</h3>
+                    <p><strong>Aprendizaje Supervisado</strong></p>
+                    <p style="margin-top: 10px;">Técnica: <strong>Regresión</strong></p>
+                </div>
+                <div class="info-card">
+                    <h3>🎓 Objetivo Académico</h3>
+                    <p>Desarrollar un sistema completo de Machine Learning aplicado a analítica deportiva, desde la recolección de datos hasta el despliegue en producción.</p>
+                </div>
+                <div class="info-card">
+                    <h3>👥 Equipo</h3>
+                    <ul>
+                        <li>Alberto Alexander Aldás Villacrés</li>
+                        <li>Cristian Joel Riofrío Medina</li>
+                        <li>Wilson Fernando Saavedra Álvarez</li>
+                    </ul>
+                </div>
+                <div class="info-card">
+                    <h3>🏆 Alcance</h3>
+                    <p>Sistema end-to-end con pipeline de datos, análisis exploratorio, modelo ML, API REST, dashboard interactivo y despliegue con Docker.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PROBLEMA -->
+    <section id="problema">
+        <div class="content-box problem-container">
+            <h2>🎯 Definición del Problema</h2>
+            
+            <div class="problem-box">
+                <h3>⚠️ Problemática Principal</h3>
+                <p>Los clubes de fútbol y agencias de scouting necesitan identificar <strong>talento potencialmente infravalorado</strong> en un mercado saturado con más de <strong>122,000 jugadores profesionales</strong>. El proceso manual de evaluación es costoso, lento y subjetivo.</p>
+            </div>
+
+            <div class="problem-box">
+                <h3>💡 Solución Propuesta</h3>
+                <p>Desarrollar un <strong>sistema inteligente de scouting</strong> que utilice <strong>Machine Learning (Regresión)</strong> para predecir el valor de mercado real de un jugador basándose en sus atributos técnicos y físicos, permitiendo identificar oportunidades donde el <strong>valor predicho supere al valor actual</strong>.</p>
+            </div>
+
+            <div class="problem-box">
+                <h3>🎪 Variable Objetivo</h3>
+                <p><strong style="font-size: 1.5rem; color: #4ade80;">valor_mercado_eur</strong></p>
+                <p style="margin-top: 15px;">Predecir el valor de mercado en euros de un jugador basándose en más de 100 atributos técnicos, físicos y características del jugador.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- DATOS -->
+    <section id="datos">
+        <div class="content-box">
+            <h2>📊 Dataset y Variables</h2>
+            
+            <div class="data-stats">
+                <div class="stat-card">
+                    <div class="stat-number">122,501</div>
+                    <div class="stat-label">Jugadores Únicos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">73</div>
+                    <div class="stat-label">Columnas Procesadas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">7</div>
+                    <div class="stat-label">Versiones FIFA<br>(2015-2021)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">84</div>
+                    <div class="stat-label">Features ML<br>(numéricas + categóricas)</div>
+                </div>
+            </div>
+
+            <div class="info-grid" style="margin-top: 50px;">
+                <div class="info-card" style="background: white; color: #333;">
+                    <h3 style="color: #f5576c;">📥 Fuente de Datos</h3>
+                    <p><strong>Kaggle Dataset:</strong> FIFA 21 Complete Player Dataset</p>
+                    <p style="margin-top: 10px; font-size: 0.95rem;">Datos recopilados del videojuego FIFA, la base de datos más completa de atributos de futbolistas profesionales a nivel mundial.</p>
+                </div>
+                
+                <div class="info-card" style="background: white; color: #333;">
+                    <h3 style="color: #f5576c;">🔑 Variables Principales</h3>
+                    <ul style="text-align: left;">
+                        <li><strong>Atributos Técnicos:</strong> Pases, regates, tiros, defensa</li>
+                        <li><strong>Atributos Físicos:</strong> Velocidad, fuerza, resistencia</li>
+                        <li><strong>Métricas:</strong> Overall, potencial, edad</li>
+                        <li><strong>Contexto:</strong> Club, liga, nacionalidad, posición</li>
+                    </ul>
+                </div>
+
+                <div class="info-card" style="background: white; color: #333;">
+                    <h3 style="color: #f5576c;">✨ Features Creadas</h3>
+                    <ul style="text-align: left;">
+                        <li>calidad_promedio</li>
+                        <li>diferencia_potencial</li>
+                        <li>categoria_edad</li>
+                        <li>categoria_posicion</li>
+                        <li>ratio_valor_salario</li>
+                        <li>anos_contrato_restantes</li>
+                        <li>categoria_reputacion</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MACHINE LEARNING -->
+    <section id="ml">
+        <div class="content-box">
+            <h2>🤖 Machine Learning: Selección del Modelo</h2>
+            
+            <div class="ml-comparison">
+                <div class="model-card">
+                    <h3>📊 Regresión Lineal</h3>
+                    <p style="font-size: 1.1rem; opacity: 0.9;">Modelo Baseline</p>
+                    <div class="accuracy" style="color: #fbbf24;">35-45%</div>
+                    <div class="model-details">
+                        <p><strong>Configuración:</strong></p>
+                        <ul style="list-style: none; padding: 0;">
+                            <li>✓ fit_intercept=True</li>
+                            <li>✓ n_jobs=-1 (paralelización)</li>
+                            <li>✓ Entrenamiento rápido (&lt;1 min)</li>
+                        </ul>
+                        <p style="margin-top: 20px;"><strong>Resultado:</strong> R² = 0.35-0.45</p>
+                        <p style="margin-top: 10px; opacity: 0.8;">❌ Insuficiente para relaciones no lineales</p>
+                    </div>
+                </div>
+
+                <div class="model-card winner">
+                    <h3>🌲 Random Forest Regressor</h3>
+                    <p style="font-size: 1.1rem; opacity: 0.9;">⭐ Modelo Ganador</p>
+                    <div class="accuracy">65-98%</div>
+                    <div class="model-details">
+                        <p><strong>Configuración:</strong></p>
+                        <ul style="list-style: none; padding: 0;">
+                            <li>✓ 4000 estimadores (árboles)</li>
+                            <li>✓ max_depth=30</li>
+                            <li>✓ min_samples_split=10</li>
+                            <li>✓ Validación OOB activa</li>
+                            <li>✓ 84 features totales</li>
+                        </ul>
+                        <p style="margin-top: 20px;"><strong>Resultado:</strong> R² = 0.65-0.98</p>
+                        <p style="margin-top: 10px; color: #4ade80;">✅ Modelo seleccionado para producción</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="problem-box" style="margin-top: 50px; max-width: 900px;">
+                <h3>🎯 ¿Por qué Random Forest?</h3>
+                <p style="text-align: left; font-size: 1.2rem; line-height: 2;">
+                    ✓ <strong>Captura relaciones no lineales</strong> entre atributos y valor de mercado<br>
+                    ✓ <strong>Robusto ante outliers</strong> (jugadores estrella con valores extremos)<br>
+                    ✓ <strong>Maneja múltiples features</strong> categóricas y numéricas simultáneamente<br>
+                    ✓ <strong>No requiere normalización</strong> de datos<br>
+                    ✓ <strong>Proporciona importancia de variables</strong> para interpretabilidad<br>
+                    ✓ <strong>Validación OOB interna</strong> sin necesidad de cross-validation adicional
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- METODOLOGÍA -->
+    <section id="metodologia">
+        <div class="content-box">
+            <h2>🔬 Metodología: 6 Fases del Proyecto</h2>
+            
+            <div class="methodology-timeline">
+                <div class="phase">
+                    <span class="phase-number">1</span>
+                    <h3>Pipeline de Limpieza de Datos</h3>
+                    <p class="phase-tech">🛠️ Tecnologías: Python, Pandas, NumPy, OpenPyXL</p>
+                    <p class="phase-description">
+                        <strong>Proceso:</strong> Carga de 7 hojas Excel (FIFA 15-21), unificación en un DataFrame único, renombrado de 106→73 columnas al español, eliminación de duplicados y columnas con &gt;70% nulos, normalización monetaria (M, K → EUR), normalización temporal (ISO 8601), imputación inteligente por posición, creación de 7 nuevas features.
+                    </p>
+                    <p class="phase-description" style="margin-top: 10px;">
+                        <strong>Salida:</strong> <code>datos/procesados/fifa_limpio.csv</code> (122,501 jugadores procesados)
+                    </p>
+                </div>
+
+                <div class="phase">
+                    <span class="phase-number">2</span>
+                    <h3>Análisis Exploratorio de Datos (EDA)</h3>
+                    <p class="phase-tech">📊 Tecnologías: Jupyter Notebook, Matplotlib, Seaborn, Plotly</p>
+                    <p class="phase-description">
+                        <strong>Análisis:</strong> Estadísticas descriptivas (media, mediana, desviación), distribución de valores de mercado, correlaciones entre atributos técnicos y precio, identificación de outliers, análisis por posición/liga/edad, visualizaciones interactivas (histogramas, boxplots, scatter plots, heatmaps).
+                    </p>
+                    <p class="phase-description" style="margin-top: 10px;">
+                        <strong>Objetivo:</strong> Determinar qué variables incluir en el modelo ML y detectar patrones clave.
+                    </p>
+                </div>
+
+                <div class="phase">
+                    <span class="phase-number">3</span>
+                    <h3>Entrenamiento de Modelos ML</h3>
+                    <p class="phase-tech">🤖 Tecnologías: Scikit-learn, Joblib</p>
+                    <p class="phase-description">
+                        <strong>Preprocesamiento:</strong> Selección de 14 features base (11 numéricas + 3 categóricas), aplicación de OneHotEncoding (resultando en 84 features totales), división train/test 75/25, encoding especial para 954 clubes únicos.
+                    </p>
+                    <p class="phase-description" style="margin-top: 10px;">
+                        <strong>Modelos:</strong> Entrenamiento de Regresión Lineal (baseline) y Random Forest (4000 árboles, max_depth=30). Evaluación con R², MAE, RMSE. Selección del mejor modelo (Random Forest con R²=0.65-0.98).
+                    </p>
+                    <p class="phase-description" style="margin-top: 10px;">
+                        <strong>Salida:</strong> 3 archivos Joblib (modelo.joblib, encoder.joblib, club_encoding.joblib) - Total: ~1GB
+                    </p>
+                </div>
+
+                <div class="phase">
+                    <span class="phase-number">4</span>
+                    <h3>Desarrollo de API REST</h3>
+                    <p class="phase-tech">🌐 Tecnologías: FastAPI, Uvicorn, Pydantic</p>
+                    <p class="phase-description">
+                        <strong>Arquitectura:</strong> API asíncrona con 8 endpoints, validación de datos con Pydantic, carga de modelos ML en memoria al iniciar, respuestas en formato JSON, documentación automática con Swagger/OpenAPI.
+                    </p>
+                    <p class="phase-description" style="margin-top: 10px;">
+                        <strong>Endpoints principales:</strong><br>
+                        • GET <code>/jugadores/buscar</code> - Búsqueda con filtros avanzados<br>
+                        • POST <code>/ml/predecir</code> - Predicción de valor de mercado<br>
+                        • GET <code>/jugadores/infravalorados</code> - Top oportunidades del mercado
+                    </p>
+                    <p class="phase-description" style="margin-top: 10px;">
+                        <strong>Performance:</strong> Respuestas en &lt;1 segundo, preparado para producción.
+                    </p>
+                </div>
+
+                <div class="phase">
+                    <span class="phase-number">5</span>
+                    <h3>Dashboard Interactivo</h3>
+                    <p class="phase-tech">📊 Tecnologías: Streamlit, Plotly, Requests</p>
+                    <p class="phase-description">
+                        <strong>Funcionalidades:</strong> 3 pestañas interactivas (Búsqueda y Análisis, Predicción ML, Oportunidades de Mercado), filtros dinámicos por posición/liga/club/edad, tabla de resultados con escudos de clubes y ligas (62 clubes, 19 ligas desde ESPN CDN), tarjeta especial de jugador con foto y gráfico radar de 6 atributos, formulario de predicción ML con validación en tiempo real, visualizaciones interactivas con Plotly (distribuciones, comparaciones, tendencias).
+                    </p>
+                    <p class="phase-description" style="margin-top: 10px;">
+                        <strong>Integración:</strong> Conectado a API REST para todas las consultas y predicciones.
+                    </p>
+                </div>
+
+                <div class="phase">
+                    <span class="phase-number">6</span>
+                    <h3>Despliegue en Producción (Docker)</h3>
+                    <p class="phase-tech">🐳 Tecnologías: Docker, Docker Compose</p>
+                    <p class="phase-description">
+                        <strong>Arquitectura:</strong> 2 contenedores independientes (backend:8000, frontend:8501), imágenes base Python 3.11-slim, volumen externo para datos (<code>datos/</code> montado como read-only), optimización con caché de dependencias, orquestación con docker-compose, configuración de timezone (America/Guayaquil).
+                    </p>
+                    <p class="phase-description" style="margin-top: 10px;">
+                        <strong>Ventajas:</strong> Portabilidad completa, escalabilidad horizontal, despliegue en cualquier servidor, rollback instantáneo, aislamiento de dependencias.
+                    </p>
+                    <p class="phase-description" style="margin-top: 10px;">
+                        <strong>Comandos:</strong> <code>docker-compose up --build</code> para levantar todo el sistema.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TECNOLOGÍAS -->
+    <section id="tecnologias">
+        <div class="content-box">
+            <h2>🛠️ Stack Tecnológico Completo</h2>
+            
+            <div class="tech-grid">
+                <div class="tech-category">
+                    <h3>🐍 Core Python</h3>
+                    <ul class="tech-list">
+                        <li>Python 3.11</li>
+                        <li>venv (Entorno Virtual)</li>
+                    </ul>
+                </div>
+
+                <div class="tech-category">
+                    <h3>📊 Data Processing</h3>
+                    <ul class="tech-list">
+                        <li>Pandas 2.3.3</li>
+                        <li>NumPy 2.3.4</li>
+                        <li>OpenPyXL 3.1.5</li>
+                    </ul>
+                </div>
+
+                <div class="tech-category">
+                    <h3>🤖 Machine Learning</h3>
+                    <ul class="tech-list">
+                        <li>Scikit-learn 1.7.2</li>
+                        <li>Joblib 1.4.2</li>
+                        <li>Random Forest</li>
+                    </ul>
+                </div>
+
+                <div class="tech-category">
+                    <h3>🌐 Backend API</h3>
+                    <ul class="tech-list">
+                        <li>FastAPI 0.121.1</li>
+                        <li>Uvicorn 0.38.0</li>
+                        <li>Pydantic 2.10.6</li>
+                    </ul>
+                </div>
+
+                <div class="tech-category">
+                    <h3>🎨 Frontend</h3>
+                    <ul class="tech-list">
+                        <li>Streamlit 1.50.0</li>
+                        <li>Plotly 6.4.0</li>
+                        <li>Requests 2.32.3</li>
+                    </ul>
+                </div>
+
+                <div class="tech-category">
+                    <h3>📓 Data Science</h3>
+                    <ul class="tech-list">
+                        <li>Jupyter 7.0.1</li>
+                        <li>Matplotlib 3.9.4</li>
+                        <li>Seaborn 0.13.2</li>
+                    </ul>
+                </div>
+
+                <div class="tech-category">
+                    <h3>🐳 DevOps</h3>
+                    <ul class="tech-list">
+                        <li>Docker</li>
+                        <li>Docker Compose</li>
+                        <li>Git / GitHub</li>
+                    </ul>
+                </div>
+
+                <div class="tech-category">
+                    <h3>🔧 Utilidades</h3>
+                    <ul class="tech-list">
+                        <li>PowerShell</li>
+                        <li>VS Code</li>
+                        <li>Kaggle API</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- RESULTADOS -->
+    <section id="resultados">
+        <div class="content-box">
+            <h2>🎯 Resultados y Logros del Sistema</h2>
+            
+            <div class="results-showcase">
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🎯</div>
+                        <h3>Precisión del Modelo</h3>
+                        <p><strong style="font-size: 2rem; color: #4ade80;">65-98%</strong></p>
+                        <p style="margin-top: 15px;">R² Score entre 0.65 y 0.98 dependiendo del rango de precios. El modelo explica hasta el 98% de la variabilidad en valores de jugadores elite.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <h3>Performance API</h3>
+                        <p><strong style="font-size: 2rem; color: #4ade80;">&lt;1 seg</strong></p>
+                        <p style="margin-top: 15px;">Respuestas instantáneas en todos los endpoints. Predicciones ML en menos de 1 segundo. Sistema optimizado para producción.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <h3>Cobertura de Datos</h3>
+                        <p><strong style="font-size: 2rem; color: #f5576c;">122,501</strong></p>
+                        <p style="margin-top: 15px;">Jugadores profesionales analizados desde FIFA 15 hasta FIFA 21. Base de datos completa y actualizada.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">🔍</div>
+                        <h3>Identificación de Talentos</h3>
+                        <p style="margin-top: 15px;">Sistema capaz de detectar jugadores <strong>infravalorados</strong> con precisión del 80%, identificando oportunidades donde el valor predicho supera significativamente al valor de mercado actual.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">🎨</div>
+                        <h3>Interfaz Interactiva</h3>
+                        <p style="margin-top: 15px;">Dashboard con 3 pestañas, filtros dinámicos, escudos de 62 clubes y 19 ligas, tarjetas de jugador con gráficos radar, visualizaciones con Plotly.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">🐳</div>
+                        <h3>Despliegue Profesional</h3>
+                        <p style="margin-top: 15px;">Sistema completamente dockerizado, listo para producción, escalable horizontalmente, portable a cualquier servidor. Documentación completa con Swagger.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-grid" style="margin-top: 60px;">
+                <div class="info-card" style="background: white; color: #333;">
+                    <h3 style="color: #667eea;">📈 Métricas del Modelo</h3>
+                    <ul style="text-align: left;">
+                        <li><strong>R² Score:</strong> 0.65 - 0.98 (65%-98%)</li>
+                        <li><strong>MAE:</strong> Error medio absoluto minimizado</li>
+                        <li><strong>RMSE:</strong> Raíz del error cuadrático medio bajo</li>
+                        <li><strong>Validación OOB:</strong> Score interno confirmado</li>
+                    </ul>
+                </div>
+
+                <div class="info-card" style="background: white; color: #333;">
+                    <h3 style="color: #667eea;">✅ Criterios Cumplidos</h3>
+                    <ul style="text-align: left;">
+                        <li>Pipeline procesa 122,501 jugadores ✓</li>
+                        <li>Modelo alcanza R² &gt; 0.65 ✓</li>
+                        <li>API responde en &lt;1 segundo ✓</li>
+                        <li>Sistema completamente dockerizado ✓</li>
+                        <li>Identifica jugadores infravalorados ✓</li>
+                    </ul>
+                </div>
+
+                <div class="info-card" style="background: white; color: #333;">
+                    <h3 style="color: #667eea;">🎯 Casos de Uso</h3>
+                    <ul style="text-align: left;">
+                        <li>Scouts deportivos profesionales</li>
+                        <li>Clubes de fútbol para fichajes</li>
+                        <li>Analistas deportivos</li>
+                        <li>Jugadores FIFA (modo carrera/UT)</li>
+                        <li>Investigación en analítica deportiva</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ARQUITECTURA -->
+    <section id="arquitectura">
+        <div class="content-box">
+            <h2>🏗️ Arquitectura del Sistema</h2>
+            
+            <div class="architecture-diagram">
+                <div class="arch-layer">
+                    <h3>📁 Capa de Datos</h3>
+                    <div class="arch-components">
+                        <div class="component">FIFA.xlsx<br>(7 hojas)</div>
+                        <div class="component">fifa_limpio.csv<br>(122,501 jugadores)</div>
+                        <div class="component">Modelos ML<br>(3 archivos Joblib)</div>
+                    </div>
+                </div>
+
+                <div class="arch-layer">
+                    <h3>🔄 Capa de Procesamiento</h3>
+                    <div class="arch-components">
+                        <div class="component">Pipeline Limpieza<br>(6 módulos)</div>
+                        <div class="component">EDA Jupyter<br>(Análisis)</div>
+                        <div class="component">Entrenamiento ML<br>(3 módulos)</div>
+                    </div>
+                </div>
+
+                <div class="arch-layer">
+                    <h3>🌐 Capa de Aplicación</h3>
+                    <div class="arch-components">
+                        <div class="component">🐳 Backend API<br>FastAPI:8000</div>
+                        <div class="component">🐳 Frontend<br>Streamlit:8501</div>
+                    </div>
+                </div>
+
+                <div class="arch-layer">
+                    <h3>👥 Capa de Usuarios</h3>
+                    <div class="arch-components">
+                        <div class="component">Dashboard Web<br>(Navegador)</div>
+                        <div class="component">API REST<br>(HTTP Requests)</div>
+                        <div class="component">Swagger Docs<br>(/docs)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="problem-box" style="margin-top: 50px;">
+                <h3>🐳 Ventajas del Despliegue Docker</h3>
+                <p style="text-align: left; font-size: 1.2rem; line-height: 2;">
+                    ✓ <strong>Portabilidad:</strong> Funciona en cualquier servidor (Linux, Windows, Mac)<br>
+                    ✓ <strong>Aislamiento:</strong> Dependencias encapsuladas, sin conflictos<br>
+                    ✓ <strong>Escalabilidad:</strong> Fácil replicación de contenedores<br>
+                    ✓ <strong>Consistencia:</strong> Mismo entorno en desarrollo y producción<br>
+                    ✓ <strong>Optimización:</strong> Datos externos como volumen read-only<br>
+                    ✓ <strong>Mantenimiento:</strong> Rollback y actualizaciones instantáneas
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONCLUSIONES -->
+    <section id="conclusiones">
+        <div class="content-box conclusions-box">
+            <h2>🎓 Conclusiones y Logros</h2>
+            
+            <div class="conclusion-item">
+                Se desarrolló exitosamente un <strong>sistema completo end-to-end</strong> de Machine Learning aplicado a analítica deportiva, cumpliendo con todos los requisitos académicos del Seminario Complexivo.
+            </div>
+
+            <div class="conclusion-item">
+                El modelo <strong>Random Forest con 4000 árboles</strong> demostró ser superior a la regresión lineal baseline, alcanzando una precisión de <strong>65-98% (R²=0.65-0.98)</strong> en la predicción del valor de mercado de jugadores.
+            </div>
+
+            <div class="conclusion-item">
+                Se logró procesar y limpiar exitosamente <strong>122,501 registros</strong> de jugadores profesionales desde 7 versiones de FIFA (2015-2021), aplicando técnicas avanzadas de ingeniería de características.
+            </div>
+
+            <div class="conclusion-item">
+                La <strong>API REST desarrollada con FastAPI</strong> proporciona 8 endpoints funcionales con tiempos de respuesta menores a 1 segundo, cumpliendo estándares de producción.
+            </div>
+
+            <div class="conclusion-item">
+                El <strong>dashboard interactivo con Streamlit</strong> ofrece una experiencia de usuario intuitiva con filtros avanzados, visualizaciones dinámicas y tarjetas personalizadas de jugadores.
+            </div>
+
+            <div class="conclusion-item">
+                El sistema identifica con precisión del 80% jugadores <strong>potencialmente infravalorados</strong>, proporcionando valor real para scouts y clubes deportivos.
+            </div>
+
+            <div class="conclusion-item">
+                La <strong>arquitectura dockerizada</strong> garantiza portabilidad, escalabilidad y facilidad de despliegue en cualquier entorno de producción.
+            </div>
+
+            <div class="conclusion-item">
+                El proyecto demuestra competencias en <strong>Data Science, Machine Learning, Desarrollo Backend/Frontend y DevOps</strong>, integrando el stack tecnológico completo de Python para analítica.
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <section id="footer">
+        <h2>👥 Equipo de Desarrollo - Grupo 7</h2>
+        
+        <div class="team-members">
+            <p><strong>Alberto Alexander Aldás Villacrés</strong></p>
+            <p><strong>Cristian Joel Riofrío Medina</strong></p>
+            <p><strong>Wilson Fernando Saavedra Álvarez</strong></p>
+        </div>
+
+        <div class="institution">
+            <p>UNIVERSIDAD REGIONAL AUTÓNOMA DE LOS ANDES</p>
+            <p style="font-size: 1.2rem; margin-top: 10px;">UNIANDES</p>
+        </div>
+
+        <div style="margin-top: 50px; font-size: 1.2rem;">
+            <p><strong>Asignatura:</strong> Analítica con Python</p>
+            <p style="margin-top: 10px;"><strong>Carrera:</strong> Ingeniería de Software</p>
+            <p style="margin-top: 10px;"><strong>Tipo de Trabajo:</strong> Proyecto Final de Graduación - Seminario Complexivo</p>
+            <p style="margin-top: 20px; color: #4ade80; font-size: 1.4rem;"><strong>Noviembre 2025</strong></p>
+        </div>
+
+        <div style="margin-top: 60px; padding-top: 40px; border-top: 1px solid rgba(255,255,255,0.2);">
+            <p style="font-size: 2rem;">⚽ 🚀 🤖</p>
+            <p style="margin-top: 20px; font-size: 1.1rem; opacity: 0.8;">
+                Sistema de Scouting y Valoración de Jugadores FIFA<br>
+                Powered by Machine Learning & Python
+            </p>
+        </div>
+    </section>
+
+    <script>
+        // Smooth scrolling para navegación
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            });
+        });
+
+        // Ocultar scroll indicator después de scroll
+        window.addEventListener('scroll', function() {
+            const indicator = document.querySelector('.scroll-indicator');
+            if (indicator && window.scrollY > 100) {
+                indicator.style.opacity = '0';
+            }
+        });
+    </script>
+
+</body>
+</html>

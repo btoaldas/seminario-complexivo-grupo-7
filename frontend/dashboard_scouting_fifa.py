@@ -1250,6 +1250,69 @@ else:
     # Resetear el flag para la próxima ejecución
     st.session_state.modal_clic_reciente = False
 
+# BOTÓN DE PRESENTACIÓN DEL PROYECTO EN LA PARTE SUPERIOR
+col_titulo, col_boton = st.columns([4, 1])
+
+with col_titulo:
+    st.markdown(f"""
+    <div style='text-align: center; padding: 15px; background: linear-gradient(135deg, {COLOR_SECUNDARIO} 0%, {COLOR_ACENTO_1} 100%); border-radius: 15px; margin-bottom: 10px;'>
+        <h1 style='color: white !important; margin: 0; font-size: 2.5rem;'>⚽ FIFA Scouting Pro - Dashboard ML</h1>
+        <p style='color: white; margin: 5px 0 0 0; opacity: 0.9;'>Sistema Inteligente de Scouting y Valoración de Jugadores</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col_boton:
+    # Inicializar estado de presentación
+    if 'mostrar_presentacion' not in st.session_state:
+        st.session_state.mostrar_presentacion = False
+    
+    # Botón para abrir/cerrar presentación con estilo
+    st.markdown("<br>", unsafe_allow_html=True)  # Espaciado vertical
+    if st.button("🎓 Ver Presentación", use_container_width=True, type="primary"):
+        st.session_state.mostrar_presentacion = not st.session_state.mostrar_presentacion
+
+# MODAL DE PRESENTACIÓN DEL PROYECTO
+@st.dialog("🎓 Presentación del Proyecto - Sistema de Scouting FIFA", width="large")
+def mostrar_presentacion_proyecto():
+    """Modal que muestra la presentación HTML embebida del proyecto de graduación"""
+    
+    # Leer el archivo HTML de la presentación
+    try:
+        ruta_presentacion = os.path.join(os.path.dirname(__file__), 'presentacion_defensa.html')
+        
+        if os.path.exists(ruta_presentacion):
+            with open(ruta_presentacion, 'r', encoding='utf-8') as f:
+                html_content = f.read()
+            
+            # Agregar instrucciones de navegación
+            st.markdown("""
+            ### 📌 Navegación
+            - **Scroll** o **flechas ↓↑** para desplazarte entre secciones
+            - Cada sección ocupa pantalla completa
+            - Usa el **menú superior derecho** para saltar a secciones específicas
+            
+            ---
+            """)
+            
+            # Mostrar el HTML en un iframe con altura ajustada
+            components.html(html_content, height=800, scrolling=True)
+            
+            st.markdown("---")
+            st.info("💡 **Tip:** Para ver la presentación en pantalla completa, abre el archivo `presentacion_defensa.html` directamente en tu navegador.")
+            
+        else:
+            st.error(f"❌ No se encontró el archivo de presentación en: {ruta_presentacion}")
+            st.info("Asegúrate de que el archivo `presentacion_defensa.html` esté en la carpeta `frontend/`")
+    
+    except Exception as e:
+        st.error(f"❌ Error al cargar la presentación: {str(e)}")
+        st.exception(e)
+
+# Mostrar modal si el estado está activo
+if st.session_state.mostrar_presentacion:
+    mostrar_presentacion_proyecto()
+    st.session_state.mostrar_presentacion = False  # Resetear después de mostrar
+
 # CREAR PESTAÑAS CON DISEÑO MEJORADO
 tab1, tab2, tab3 = st.tabs([
     "🔍  Búsqueda Inteligente",

@@ -1280,9 +1280,9 @@ else:
 # ============================================================================
 @st.dialog(" ", width="large")
 def mostrar_presentacion_completa():
-    """Modal de presentación a pantalla completa sin márgenes"""
+    """Modal de presentación a pantalla completa sin márgenes ni transparencias"""
     
-    # CSS AGRESIVO para eliminar ABSOLUTAMENTE TODO margen/padding/borde
+    # CSS ULTRA AGRESIVO para eliminar el espacio transparente lateral
     st.markdown("""
     <style>
         /* MODAL: Ocupar 100% sin márgenes */
@@ -1295,14 +1295,23 @@ def mostrar_presentacion_completa():
             height: 100vh !important;
             border: none !important;
             box-shadow: none !important;
+            background: #000 !important;
         }
         
-        /* Contenedor interno del modal */
+        /* Contenedor interno del modal - ELIMINAR PADDING LATERAL */
         [data-testid="stDialog"] > div {
             padding: 0 !important;
             margin: 0 !important;
             border: none !important;
-            background: transparent !important;
+            background: #000 !important;
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+        
+        /* Todos los divs internos sin padding */
+        [data-testid="stDialog"] div {
+            padding: 0 !important;
+            margin: 0 !important;
         }
         
         /* Eliminar TODOS los elementos del header */
@@ -1313,27 +1322,39 @@ def mostrar_presentacion_completa():
             display: none !important;
         }
         
-        /* Block principal del modal */
+        /* Block principal del modal - SIN PADDING NI GAP */
         [data-testid="stDialog"] [data-testid="stVerticalBlock"] {
             padding: 0 !important;
             margin: 0 !important;
             gap: 0 !important;
+            width: 100% !important;
+            max-width: 100% !important;
         }
         
-        /* IFRAME: Sin bordes, 100% ancho y alto */
+        /* Contenedor del componente HTML */
+        [data-testid="stDialog"] [data-testid="stVerticalBlock"] > div {
+            padding: 0 !important;
+            margin: 0 !important;
+            width: 100% !important;
+        }
+        
+        /* IFRAME: Ocupar TODO el espacio disponible */
         [data-testid="stDialog"] iframe {
             border: none !important;
             margin: 0 !important;
             padding: 0 !important;
             width: 100% !important;
-            height: 95vh !important;
+            height: 96vh !important;
             display: block !important;
+            position: relative !important;
+            left: 0 !important;
+            right: 0 !important;
         }
         
-        /* Eliminar botón X de cierre (queda ESC) */
+        /* Botón X de cierre semi-transparente */
         [data-testid="stDialog"] button[aria-label="Close"] {
             opacity: 0.3 !important;
-            border: 1px solid rgba(255,255,255,0.3) !important;
+            border: 1px solid rgba(255,255,255,0.2) !important;
         }
     </style>
     """, unsafe_allow_html=True)

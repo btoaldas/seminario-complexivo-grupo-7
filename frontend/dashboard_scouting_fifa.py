@@ -13,22 +13,47 @@ from io import BytesIO
 from PIL import Image
 
 # DICCIONARIOS DE TRADUCCIÓN (INGLÉS → ESPAÑOL)
+# Diccionario expandido con todas las posiciones y combinaciones posibles
 TRADUCCIONES_POSICIONES = {
-    "GK": "Portero",
-    "CB": "Defensa Central",
-    "LB": "Lateral Izquierdo",
-    "RB": "Lateral Derecho",
-    "LWB": "Carrilero Izquierdo",
-    "RWB": "Carrilero Derecho",
-    "CDM": "Pivote Defensivo",
-    "CM": "Centrocampista",
-    "CAM": "Mediapunta",
-    "LM": "Interior Izquierdo",
-    "RM": "Interior Derecho",
-    "LW": "Extremo Izquierdo",
-    "RW": "Extremo Derecho",
-    "CF": "Mediapunta Adelantado",
-    "ST": "Delantero Centro"
+    # Portero
+    "GK": "🥅 Portero (GK)",
+    
+    # Defensas
+    "CB": "🛡️ Defensa Central (CB)",
+    "LB": "⬅️ Lateral Izquierdo (LB)",
+    "RB": "➡️ Lateral Derecho (RB)",
+    "LWB": "⬅️ Carrilero Izquierdo (LWB)",
+    "RWB": "➡️ Carrilero Derecho (RWB)",
+    "SW": "🛡️ Líbero (SW)",
+    
+    # Mediocentros Defensivos
+    "CDM": "🔒 Pivote Defensivo (CDM)",
+    "DM": "🔒 Mediocentro Defensivo (DM)",
+    
+    # Mediocentros
+    "CM": "⚙️ Centrocampista (CM)",
+    "LCM": "⚙️ Centrocampista Izquierdo (LCM)",
+    "RCM": "⚙️ Centrocampista Derecho (RCM)",
+    
+    # Mediocentros Ofensivos
+    "CAM": "🎯 Mediapunta (CAM)",
+    "AM": "🎯 Mediocentro Ofensivo (AM)",
+    "LAM": "🎯 Mediapunta Izquierdo (LAM)",
+    "RAM": "🎯 Mediapunta Derecho (RAM)",
+    
+    # Extremos/Interiores
+    "LM": "⬅️ Interior Izquierdo (LM)",
+    "RM": "➡️ Interior Derecho (RM)",
+    "LW": "⬅️ Extremo Izquierdo (LW)",
+    "RW": "➡️ Extremo Derecho (RW)",
+    
+    # Delanteros
+    "CF": "⚡ Mediapunta Adelantado (CF)",
+    "ST": "⚽ Delantero Centro (ST)",
+    "LS": "⚽ Delantero Izquierdo (LS)",
+    "RS": "⚽ Delantero Derecho (RS)",
+    "LF": "⚽ Delantero Izquierdo (LF)",
+    "RF": "⚽ Delantero Derecho (RF)"
 }
 
 TRADUCCIONES_NACIONALIDADES = {
@@ -1032,13 +1057,25 @@ with tab1:
         
         st.markdown("---")  # Separador visual
         
+        # ⚽ FILTRO POR NOMBRE (NUEVO)
+        st.markdown("### 🔍 Buscar por Nombre")
+        nombre_busqueda = st.text_input(
+            "Nombre del jugador:",
+            placeholder="Ej: Messi, Neymar, Ronaldo...",
+            help="Búsqueda flexible: funciona con mayúsculas/minúsculas, con o sin tildes, y por nombre parcial"
+        )
+        
+        st.markdown("---")  # Separador visual
+        
         # Filtro de posiciones (con traducciones al español)
+        st.markdown("### ⚽ Posición en el Campo")
         posiciones_disponibles = posiciones_lista[:50]  # Top 50 posiciones
         posiciones_traducidas = [TRADUCCIONES_POSICIONES.get(pos, pos) for pos in posiciones_disponibles]
         posiciones_seleccionadas_es = st.multiselect(
-            "Posiciones:",
+            "Selecciona posiciones:",
             options=posiciones_traducidas,
-            default=None
+            default=None,
+            placeholder="Selecciona una o más posiciones"
         )
         # Convertir de español a inglés para la API
         posiciones_seleccionadas = []
@@ -1047,12 +1084,14 @@ with tab1:
             posiciones_seleccionadas = [inverso_posiciones.get(pos, pos) for pos in posiciones_seleccionadas_es]
         
         # Filtro de nacionalidades (con traducciones al español)
+        st.markdown("### 🌍 Nacionalidad")
         nacionalidades_disponibles = nacionalidades_lista[:30]  # Top 30
         nacionalidades_traducidas = [TRADUCCIONES_NACIONALIDADES.get(nac, nac) for nac in nacionalidades_disponibles]
         nacionalidades_seleccionadas_es = st.multiselect(
-            "Nacionalidades:",
+            "Selecciona nacionalidades:",
             options=nacionalidades_traducidas,
-            default=None
+            default=None,
+            placeholder="Selecciona uno o más países"
         )
         # Convertir de español a inglés para la API
         nacionalidades_seleccionadas = []
@@ -1120,6 +1159,10 @@ with tab1:
         # ⚽ FILTRO DE AÑO (NUEVO)
         if año_filtro != "Todos":
             params["año_datos"] = año_filtro
+        
+        # ⚽ FILTRO POR NOMBRE (NUEVO)
+        if nombre_busqueda and nombre_busqueda.strip():
+            params["nombre"] = nombre_busqueda.strip()
         
         if posiciones_seleccionadas:
             params["posiciones_jugador"] = posiciones_seleccionadas

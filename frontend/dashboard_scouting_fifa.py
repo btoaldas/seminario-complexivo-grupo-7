@@ -456,6 +456,63 @@ def obtener_escudo_club(nombre_club):
     # Si no se encuentra, devolver emoji
     return "⚽"
 
+def obtener_escudo_liga(nombre_liga):
+    """
+    Obtiene la URL del escudo de la liga de fútbol.
+    Retorna la URL del escudo o un emoji si no se encuentra.
+    """
+    if not nombre_liga or nombre_liga in ['N/A', '', 'nan']:
+        return "🏆"
+    
+    # Diccionario de escudos de las principales ligas
+    escudos_ligas = {
+        # España
+        "Spain Primera Division": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/LaLiga_EA_Sports_2023_Vertical_Logo.svg/100px-LaLiga_EA_Sports_2023_Vertical_Logo.svg.png",
+        "La Liga": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/LaLiga_EA_Sports_2023_Vertical_Logo.svg/100px-LaLiga_EA_Sports_2023_Vertical_Logo.svg.png",
+        
+        # Inglaterra
+        "English Premier League": "https://upload.wikimedia.org/wikipedia/en/thumb/f/f2/Premier_League_Logo.svg/100px-Premier_League_Logo.svg.png",
+        "Premier League": "https://upload.wikimedia.org/wikipedia/en/thumb/f/f2/Premier_League_Logo.svg/100px-Premier_League_Logo.svg.png",
+        
+        # Italia
+        "Italian Serie A": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Serie_A_logo_2022.svg/100px-Serie_A_logo_2022.svg.png",
+        "Serie A": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Serie_A_logo_2022.svg/100px-Serie_A_logo_2022.svg.png",
+        
+        # Alemania
+        "German 1. Bundesliga": "https://upload.wikimedia.org/wikipedia/en/thumb/d/df/Bundesliga_logo_%282017%29.svg/100px-Bundesliga_logo_%282017%29.svg.png",
+        "Bundesliga": "https://upload.wikimedia.org/wikipedia/en/thumb/d/df/Bundesliga_logo_%282017%29.svg/100px-Bundesliga_logo_%282017%29.svg.png",
+        
+        # Francia
+        "French Ligue 1": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Ligue_1_Logo.svg/100px-Ligue_1_Logo.svg.png",
+        "Ligue 1": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Ligue_1_Logo.svg/100px-Ligue_1_Logo.svg.png",
+        
+        # Portugal
+        "Portuguese Liga ZON SAGRES": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Liga_Portugal_Betclic_logo.svg/100px-Liga_Portugal_Betclic_logo.svg.png",
+        "Liga Portugal": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Liga_Portugal_Betclic_logo.svg/100px-Liga_Portugal_Betclic_logo.svg.png",
+        
+        # Países Bajos
+        "Dutch Eredivisie": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Eredivisie_Logo.svg/100px-Eredivisie_Logo.svg.png",
+        "Eredivisie": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Eredivisie_Logo.svg/100px-Eredivisie_Logo.svg.png",
+        
+        # Champions League
+        "UEFA Champions League": "https://upload.wikimedia.org/wikipedia/en/thumb/b/bf/UEFA_Champions_League_logo_2.svg/100px-UEFA_Champions_League_logo_2.svg.png",
+        
+        # Europa League
+        "UEFA Europa League": "https://upload.wikimedia.org/wikipedia/en/thumb/0/03/UEFA_Europa_League_logo.svg/100px-UEFA_Europa_League_logo.svg.png",
+    }
+    
+    # Búsqueda exacta
+    if nombre_liga in escudos_ligas:
+        return escudos_ligas[nombre_liga]
+    
+    # Búsqueda parcial (case insensitive)
+    for liga, url in escudos_ligas.items():
+        if liga.lower() in nombre_liga.lower() or nombre_liga.lower() in liga.lower():
+            return url
+    
+    # Si no se encuentra, retornar emoji
+    return "🏆"
+
 def descargar_imagen_generica():
     """Descarga una imagen genérica de jugador si no existe"""
     if os.path.exists(IMAGEN_GENERICA):
@@ -918,11 +975,16 @@ def mostrar_modal_jugador(jugador_id, jugador_nombre, año_fifa):
             escudo_club_modal = obtener_escudo_club(club_modal)
             club_html = f'<img src="{escudo_club_modal}" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 5px; object-fit: contain;" onerror="this.style.display=\'none\'">' if escudo_club_modal != "⚽" else "🏟️"
             
+            # Obtener escudo de la liga para el modal
+            liga_modal = jugador.get('liga', 'N/A')
+            escudo_liga_modal = obtener_escudo_liga(liga_modal)
+            liga_html = f'<img src="{escudo_liga_modal}" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 5px; object-fit: contain;" onerror="this.style.display=\'none\'">' if escudo_liga_modal != "🏆" else "🏆"
+            
             st.markdown(f"""
             <div style='background: linear-gradient(135deg, {COLOR_ACENTO_2} 0%, {COLOR_PRIMARIO} 100%); 
                  padding: 15px; border-radius: 10px; margin: 10px 0; border-left: 4px solid {COLOR_ACENTO_1};'>
                 <p style='margin: 5px 0; color: {COLOR_SECUNDARIO};'><b>{club_html} Club:</b> {club_modal}</p>
-                <p style='margin: 5px 0; color: {COLOR_SECUNDARIO};'><b>🏆 Liga:</b> {jugador.get('liga', 'N/A')}</p>
+                <p style='margin: 5px 0; color: {COLOR_SECUNDARIO};'><b>{liga_html} Liga:</b> {liga_modal}</p>
                 <p style='margin: 5px 0; color: {COLOR_SECUNDARIO};'>
                     <b><img src="{bandera_url_modal}" style="width: 24px; height: 18px; vertical-align: middle; margin-right: 5px;" onerror="this.style.display='none'"> Nacionalidad:</b> {nacionalidad_modal}
                 </p>
@@ -1606,7 +1668,16 @@ with tab1:
                     
                     with col_vals[7]:
                         liga = jugador.get('liga', 'N/A')
-                        st.markdown(f"<div style='color: #7890a8; font-size: 0.9em;'>{liga}</div>", unsafe_allow_html=True)
+                        escudo_liga = obtener_escudo_liga(liga)
+                        if escudo_liga == "🏆":
+                            st.markdown(f"<div style='color: #7890a8; font-size: 0.9em;'>{escudo_liga} {liga}</div>", unsafe_allow_html=True)
+                        else:
+                            st.markdown(f"""
+                            <div style='display: flex; align-items: center; gap: 8px;'>
+                                <img src="{escudo_liga}" style="width: 24px; height: 24px; object-fit: contain;" onerror="this.style.display='none'">
+                                <span style='color: #7890a8; font-size: 0.9em;'>{liga}</span>
+                            </div>
+                            """, unsafe_allow_html=True)
                     
                     with col_vals[8]:
                         posicion = traducir_posicion(jugador.get('posiciones_jugador', 'N/A'))

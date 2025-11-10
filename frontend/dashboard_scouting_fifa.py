@@ -1250,41 +1250,87 @@ else:
     # Resetear el flag para la próxima ejecución
     st.session_state.modal_clic_reciente = False
 
-# MODAL DE PRESENTACIÓN DE DEFENSA (PANTALLA COMPLETA)
+# MODAL DE PRESENTACIÓN DE DEFENSA (HTML PURO - 100% PANTALLA SIN STREAMLIT)
 if 'mostrar_presentacion' not in st.session_state:
     st.session_state.mostrar_presentacion = False
 
 if st.session_state.mostrar_presentacion:
-    @st.dialog("🎓 Presentación de Defensa del Proyecto - Proyecto Final de Graduación", width="large")
-    def mostrar_presentacion_defensa():
-        # Botón para cerrar
-        col1, col2, col3 = st.columns([1, 2, 1])
-        with col3:
-            if st.button("❌ Cerrar Presentación", use_container_width=True, type="secondary"):
-                st.session_state.mostrar_presentacion = False
-                st.rerun()
-        
-        st.info("💡 **Tips:** Desplázate con scroll o rueda del mouse. Usa el menú de navegación para saltar entre secciones. Para mejor experiencia, abre en pantalla completa (F11).")
-        
-        # Cargar HTML desde archivo
-        ruta_presentacion = os.path.join(os.path.dirname(__file__), "presentacion_defensa.html")
-        
-        try:
-            with open(ruta_presentacion, "r", encoding="utf-8") as f:
-                presentacion_html = f.read()
-            
-            # Renderizar la presentación HTML en un iframe completo
-            components.html(presentacion_html, height=800, scrolling=True)
-            
-        except FileNotFoundError:
-            st.error("❌ No se encontró el archivo de presentación. Por favor, asegúrate de que 'presentacion_defensa.html' esté en la carpeta frontend/")
-            st.info("🔗 Alternativamente, abre el archivo directamente desde la raíz del proyecto.")
-            
-            if st.button("🔄 Recargar Dashboard", use_container_width=True):
-                st.session_state.mostrar_presentacion = False
-                st.rerun()
+    # Cargar HTML desde archivo
+    ruta_presentacion = os.path.join(os.path.dirname(__file__), "presentacion_defensa.html")
     
-    mostrar_presentacion_defensa()
+    try:
+        with open(ruta_presentacion, "r", encoding="utf-8") as f:
+            presentacion_html = f.read()
+        
+        # Inyectar botón de cierre en el HTML original
+        # Buscar </body> y agregar botón antes de ese tag
+        boton_cierre = """
+        <button id="btn-cerrar-presentacion" style="
+            position: fixed;
+            top: 60px;
+            right: 20px;
+            z-index: 10000;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: 2px solid white;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+            transition: all 0.3s;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        "
+        onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.5)';"
+        onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 6px 20px rgba(0,0,0,0.4)';"
+        onclick="window.location.href=window.location.href.split('?')[0]">
+            ❌ CERRAR Y VOLVER AL DASHBOARD
+        </button>
+        </body>
+        """
+        
+        presentacion_modificada = presentacion_html.replace("</body>", boton_cierre)
+        
+        # Renderizar la presentación completa sin iframe de Streamlit
+        st.markdown(f"""
+        <style>
+            /* Ocultar TODOS los elementos de Streamlit */
+            header, footer, .stApp > header, [data-testid="stHeader"], 
+            [data-testid="stToolbar"], .stDeployButton, 
+            [data-testid="stDecoration"], [data-testid="stStatusWidget"],
+            #MainMenu, .stActionButton {{
+                display: none !important;
+                visibility: hidden !important;
+            }}
+            
+            /* Hacer que el contenedor principal ocupe 100% */
+            .main, .block-container, section[data-testid="stMain"] {{
+                padding: 0 !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+            }}
+            
+            /* Eliminar padding del iframe */
+            iframe {{
+                border: none !important;
+                width: 100vw !important;
+                height: 100vh !important;
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+            }}
+        </style>
+        """, unsafe_allow_html=True)
+        
+        # Renderizar HTML completo ocupando toda la pantalla
+        components.html(presentacion_modificada, height=900, scrolling=True)
+        
+    except FileNotFoundError:
+        st.error("❌ No se encontró el archivo de presentación.")
+        if st.button("🔄 Recargar"):
+            st.session_state.mostrar_presentacion = False
+            st.rerun()
 
 # CREAR PESTAÑAS CON DISEÑO MEJORADO
 tab1, tab2, tab3 = st.tabs([

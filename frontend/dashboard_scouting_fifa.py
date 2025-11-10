@@ -1282,10 +1282,15 @@ else:
 def mostrar_presentacion_completa():
     """Modal de presentación a pantalla completa sin márgenes ni transparencias"""
     
-    # CSS MÁXIMO: CERO márgenes negros, iframe a pantalla completa absoluta
+    # CSS DEFINITIVO: Sin desplazamiento lateral, centrado perfecto
     st.markdown("""
     <style>
-        /* MODAL: CERO padding, CERO margin, 100% viewport */
+        /* Ocultar sidebar cuando modal está abierto */
+        [data-testid="stDialog"] ~ [data-testid="stSidebar"] {
+            display: none !important;
+        }
+        
+        /* MODAL: Ocupar toda la ventana real del navegador */
         [data-testid="stDialog"] {
             padding: 0 !important;
             margin: 0 !important;
@@ -1295,27 +1300,34 @@ def mostrar_presentacion_completa():
             height: 100vh !important;
             border: none !important;
             box-shadow: none !important;
-            background: transparent !important;
+            background: #000 !important;
             overflow: hidden !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            z-index: 9998 !important;
         }
         
-        /* Contenedor interno - CERO padding */
+        /* Contenedor interno sin desplazamientos */
         [data-testid="stDialog"] > div {
             padding: 0 !important;
-            margin: 0 !important;
+            margin: 0 auto !important;
             border: none !important;
-            background: transparent !important;
-            width: 100vw !important;
-            max-width: 100vw !important;
-            height: 100vh !important;
+            background: #000 !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            height: 100% !important;
             overflow: hidden !important;
         }
         
-        /* TODOS los divs sin padding/margin */
+        /* TODOS los divs centrados sin márgenes */
         [data-testid="stDialog"] div {
             padding: 0 !important;
             margin: 0 !important;
             background: transparent !important;
+            box-sizing: border-box !important;
         }
         
         /* Eliminar headers */
@@ -1326,37 +1338,40 @@ def mostrar_presentacion_completa():
             display: none !important;
         }
         
-        /* Block principal - CERO todo */
+        /* Block principal centrado */
         [data-testid="stDialog"] [data-testid="stVerticalBlock"] {
             padding: 0 !important;
-            margin: 0 !important;
+            margin: 0 auto !important;
             gap: 0 !important;
-            width: 100vw !important;
-            max-width: 100vw !important;
-            height: 100vh !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            height: 100% !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
         }
         
-        /* Contenedor del componente HTML */
+        /* Contenedor del componente HTML centrado */
         [data-testid="stDialog"] [data-testid="stVerticalBlock"] > div {
             padding: 0 !important;
-            margin: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
+            margin: 0 auto !important;
+            width: 100% !important;
+            height: 100% !important;
+            max-width: 100vw !important;
         }
         
-        /* IFRAME: Pantalla COMPLETA sin bordes */
+        /* IFRAME CENTRADO sin scroll horizontal */
         [data-testid="stDialog"] iframe {
             border: none !important;
-            margin: 0 !important;
+            margin: 0 auto !important;
             padding: 0 !important;
-            width: 100vw !important;
+            width: 100% !important;
+            max-width: 100vw !important;
             height: 100vh !important;
             display: block !important;
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            bottom: 0 !important;
+            position: relative !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
         }
         
         /* Botón X flotante */
@@ -1368,6 +1383,10 @@ def mostrar_presentacion_completa():
             opacity: 0.5 !important;
             background: rgba(0,0,0,0.7) !important;
             border: 1px solid rgba(255,255,255,0.3) !important;
+        }
+        
+        [data-testid="stDialog"] button[aria-label="Close"]:hover {
+            opacity: 1 !important;
         }
     </style>
     """, unsafe_allow_html=True)

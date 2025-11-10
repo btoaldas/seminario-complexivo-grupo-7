@@ -1262,7 +1262,7 @@ if st.session_state.mostrar_presentacion:
         with open(ruta_presentacion, "r", encoding="utf-8") as f:
             presentacion_html = f.read()
         
-        # Inyectar botón de cierre minimalista en el HTML original
+        # Inyectar botón de cierre minimalista + script de comunicación con Streamlit
         boton_cierre = """
         <button id="btn-cerrar-presentacion" style="
             position: fixed;
@@ -1293,20 +1293,33 @@ if st.session_state.mostrar_presentacion:
         </button>
         <script>
             function cerrarModal() {
-                // Intentar comunicación con iframe padre (Streamlit)
-                try {
-                    // Opción 1: Recargar toda la página del padre
-                    if (window.parent && window.parent !== window) {
-                        window.parent.location.href = window.parent.location.href.split('?')[0];
-                    } else {
-                        // Opción 2: Recargar página actual
-                        window.location.href = window.location.href.split('?')[0];
+                // Enviar señal a Streamlit para cerrar modal
+                window.parent.postMessage({
+                    type: 'streamlit:setComponentValue',
+                    key: 'cerrar_modal_signal',
+                    value: true
+                }, '*');
+                
+                // Forzar recarga de la página padre después de 100ms
+                setTimeout(function() {
+                    try {
+                        // Acceder al location del padre
+                        const parentUrl = window.parent.location;
+                        const currentUrl = parentUrl.href;
+                        const baseUrl = currentUrl.split('?')[0];
+                        window.parent.location.href = baseUrl;
+                    } catch (e) {
+                        console.error('Error al cerrar:', e);
+                        // Fallback: intentar recargar desde el iframe
+                        window.top.location.reload();
                     }
-                } catch (e) {
-                    // Fallback: recargar página actual
-                    window.location.reload();
-                }
+                }, 100);
             }
+            
+            // Enviar mensaje de carga completa
+            window.addEventListener('load', function() {
+                console.log('Presentación cargada completamente');
+            });
         </script>
         </body>
         """
@@ -1353,24 +1366,17 @@ if st.session_state.mostrar_presentacion:
         """, unsafe_allow_html=True)
         
         # Renderizar HTML completo ocupando toda la pantalla
-        # Agregar listener para detectar clic en cerrar
-        resultado = components.html(presentacion_modificada, height=900, scrolling=True)
+        # El script en el HTML se encarga de cerrar recargando la página padre
+        components.html(presentacion_modificada, height=900, scrolling=True)
         
-        # Si se detecta cierre, resetear estado
-        if resultado == "CERRAR":
-            st.session_state.mostrar_presentacion = False
-            st.rerun()
+        # Este código no se ejecutará porque el script recarga la página
+        # pero está como fallback de seguridad
         
     except FileNotFoundError:
         st.error("❌ No se encontró el archivo de presentación.")
         if st.button("🔄 Recargar"):
             st.session_state.mostrar_presentacion = False
             st.rerun()
-else:
-    # Cuando NO está mostrando presentación, detectar si debe cerrarla
-    # (para cuando el usuario recarga la página)
-    if st.session_state.mostrar_presentacion:
-        st.session_state.mostrar_presentacion = False
 
 # CREAR PESTAÑAS CON DISEÑO MEJORADO
 tab1, tab2, tab3 = st.tabs([
@@ -1435,8 +1441,9 @@ with tab1:
         
         # BOTÓN DE PRESENTACIÓN DE DEFENSA
         st.markdown("---")
-        if st.button("🎓 📊 PRESENTACIÓN DE DEFENSA", use_container_width=True, type="primary"):
+        if st.button("🎓 📊 PRESENTACIÓN DE DEFENSA", use_container_width=True, type="primary", key="btn_presentacion"):
             st.session_state.mostrar_presentacion = True
+            st.rerun()  # Forzar recarga inmediata
         
         st.markdown("---")
         

@@ -12,9 +12,11 @@
         }
 
         html, body {
-            width: 100%;
-            max-width: 100%;
+            width: 100vw;
+            max-width: none;
             overflow-x: hidden;
+            margin: 0;
+            padding: 0;
         }
 
         body {
@@ -101,7 +103,6 @@
         }
 
         .content-box {
-            max-width: 100%;
             width: 100%;
             padding: 0 20px;
             box-sizing: border-box;
@@ -166,7 +167,6 @@
         }
 
         .problem-container {
-            max-width: 100%;
             width: 100%;
             padding: 0 20px;
             box-sizing: border-box;
@@ -241,7 +241,6 @@
             grid-template-columns: 1fr 1fr;
             gap: 40px;
             margin-top: 50px;
-            max-width: 100%;
             width: 100%;
             padding: 0 20px;
             box-sizing: border-box;
@@ -288,7 +287,6 @@
         }
 
         .methodology-timeline {
-            max-width: 100%;
             width: 100%;
             padding: 0 20px;
             box-sizing: border-box;
@@ -354,7 +352,6 @@
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 30px;
             margin-top: 50px;
-            max-width: 100%;
             width: 100%;
             padding: 0 20px;
             box-sizing: border-box;
@@ -401,7 +398,6 @@
         }
 
         .results-showcase {
-            max-width: 100%;
             width: 100%;
             padding: 0 20px;
             box-sizing: border-box;
@@ -446,7 +442,6 @@
         }
 
         .architecture-diagram {
-            max-width: 100%;
             width: 100%;
             padding: 0 20px;
             box-sizing: border-box;
@@ -490,7 +485,6 @@
         }
 
         .conclusions-box {
-            max-width: 100%;
             width: 100%;
             padding: 0 20px;
             box-sizing: border-box;
@@ -802,7 +796,7 @@
                 </div>
             </div>
 
-            <div class="problem-box" style="margin-top: 50px; max-width: 100%;">
+            <div class="problem-box" style="margin-top: 50px;">
                 <h3>🎯 ¿Por qué Random Forest?</h3>
                 <p style="text-align: left; font-size: 1.2rem; line-height: 2;">
                     ✓ <strong>Captura relaciones no lineales</strong> entre atributos y valor de mercado<br>

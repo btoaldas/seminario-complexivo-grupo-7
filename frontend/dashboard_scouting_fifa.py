@@ -952,23 +952,12 @@ with tab1:
         </div>
         """, unsafe_allow_html=True)
         
-        # 🔍 FILTRO DE BÚSQUEDA POR NOMBRE (NUEVO)
+        # 🔍 FILTRO DE BÚSQUEDA POR NOMBRE
         st.markdown("### 🔍 Búsqueda por Nombre")
         nombre_buscar = st.text_input(
             "Buscar jugador:",
             placeholder="Ej: Messi, Cristiano, Neymar...",
             help="Busca por nombre completo o parcial del jugador"
-        )
-        
-        st.markdown("---")  # Separador visual
-        
-        # 💎 FILTRO POR ESTADO DE VALORACIÓN (NUEVO)
-        st.markdown("### 💎 Estado de Valoración")
-        estados_valoracion = st.multiselect(
-            "Selecciona estado(s):",
-            options=["Todos", "Infravalorado", "Justo", "Sobrevalorado"],
-            default=["Todos"],
-            help="Filtra jugadores según su relación valor de mercado vs predicción ML"
         )
         
         st.markdown("---")  # Separador visual
@@ -1055,16 +1044,11 @@ with tab1:
             "orden_descendente": orden_desc
         }
         
-        # 🔍 FILTRO DE NOMBRE (NUEVO)
+        # 🔍 FILTRO DE NOMBRE
         if nombre_buscar and nombre_buscar.strip():
             params["nombre"] = nombre_buscar.strip()
         
-        # 💎 FILTRO DE ESTADO VALORACIÓN (NUEVO)
-        # Si no está "Todos" o está vacío, aplicar filtro específico
-        if estados_valoracion and "Todos" not in estados_valoracion:
-            params["estados_valoracion"] = estados_valoracion
-        
-        # ⚽ FILTRO DE AÑO (NUEVO)
+        # ⚽ FILTRO DE AÑO
         if año_filtro != "Todos":
             params["año_datos"] = año_filtro
         
@@ -1122,40 +1106,11 @@ with tab1:
             # Convertir a DataFrame para mejor visualización
             df_resultados = pd.DataFrame(jugadores)
             
-            # 💎 CALCULAR ESTADO DE VALORACIÓN USANDO PREDICCIÓN ML DEL BACKEND
-            def calcular_estado_valoracion(row):
-                """
-                Calcula si está infravalorado, sobrevalorado o justo
-                Usa la predicción del modelo ML que viene desde el backend
-                """
-                valor_mercado = row.get("valor_mercado_eur", 0)
-                valor_predicho = row.get("valor_predicho_eur", None)
-                
-                # Si no hay predicción ML, devolver "Sin datos"
-                if valor_predicho is None or valor_predicho == 0 or valor_mercado == 0:
-                    return "Sin datos"
-                
-                # Calcular diferencia porcentual
-                # Positivo = predicción mayor que mercado = Infravalorado (oportunidad)
-                # Negativo = mercado mayor que predicción = Sobrevalorado
-                diferencia = (valor_predicho - valor_mercado) / valor_mercado * 100
-                
-                # Clasificar según umbrales del 15% (mismo criterio que el backend)
-                if diferencia > 15:
-                    return "📈 Infravalorado"
-                elif diferencia < -15:
-                    return "📉 Sobrevalorado"
-                else:
-                    return "⚖️ Justo"
-            
-            # Aplicar cálculo de estado
-            df_resultados["estado_valoracion"] = df_resultados.apply(calcular_estado_valoracion, axis=1)
-            
-            # Seleccionar columnas relevantes
+            # Seleccionar columnas relevantes (SIN estado_valoracion para mejor velocidad)
             columnas_mostrar = [
                 "nombre_corto", "edad", "nacionalidad", "club", "liga",
                 "posiciones_jugador", "valoracion_global", "potencial",
-                "estado_valoracion", "valor_mercado_eur"  # NUEVA COLUMNA estado_valoracion
+                "valor_mercado_eur"
             ]
             
             # ⚽ Agregar columna año_datos si existe
@@ -1167,10 +1122,10 @@ with tab1:
             # Renombrar columnas
             columnas_renombradas = [
                 "Nombre", "Edad", "Año FIFA", "Nacionalidad", "Club", "Liga",
-                "Posición", "Overall", "Potencial", "Estado Valoración", "Valor (€)"
+                "Posición", "Overall", "Potencial", "Valor (€)"
             ] if "año_datos" in df_resultados.columns else [
                 "Nombre", "Edad", "Nacionalidad", "Club", "Liga",
-                "Posición", "Overall", "Potencial", "Estado Valoración", "Valor (€)"
+                "Posición", "Overall", "Potencial", "Valor (€)"
             ]
             
             df_mostrar.columns = columnas_renombradas
@@ -1360,9 +1315,9 @@ with tab1:
             </style>
             """, unsafe_allow_html=True)
             
-            # Mostrar encabezados (con nueva columna Año FIFA y Estado Valoración)
-            col_headers = st.columns([0.5, 0.8, 2, 0.7, 0.7, 1.5, 1.5, 1.5, 1, 1, 1.2, 1.3])
-            headers = ["#", "Foto", "Nombre", "Edad", "Año FIFA", "Nacionalidad", "Club", "Liga", "Posición", "Overall", "Potencial", "Estado Valoración"]
+            # Mostrar encabezados (con columna Año FIFA)
+            col_headers = st.columns([0.5, 0.8, 2, 0.7, 0.7, 1.5, 1.5, 1.5, 1, 1, 1.2])
+            headers = ["#", "Foto", "Nombre", "Edad", "Año FIFA", "Nacionalidad", "Club", "Liga", "Posición", "Overall", "Potencial"]
             
             header_html = "<div class='tabla-header'>"
             for col, header in zip(col_headers, headers):
@@ -1378,7 +1333,7 @@ with tab1:
                 st.markdown("<div class='fila-jugador'>", unsafe_allow_html=True)
                 
                 with st.container():
-                    col_vals = st.columns([0.5, 1.2, 2.5, 0.7, 0.7, 1.5, 1.5, 1.5, 1, 1, 1, 1.3])
+                    col_vals = st.columns([0.5, 1.2, 2.5, 0.7, 0.7, 1.5, 1.5, 1.5, 1, 1, 1.2])
                     
                     with col_vals[0]:
                         st.markdown(f"<div style='text-align: center; font-size: 1.2em; color: #f0a818; font-weight: bold;'>{idx_global + 1}</div>", unsafe_allow_html=True)
@@ -1477,43 +1432,6 @@ with tab1:
                         potencial = jugador.get('potencial', 'N/A')
                         color_potencial = "#4CAF50" if potencial > overall else "#FF9800"
                         st.markdown(f"<div style='text-align: center; color: {color_potencial}; font-weight: bold;'>{potencial}</div>", unsafe_allow_html=True)
-                    
-                    # 💎 NUEVA COLUMNA: ESTADO DE VALORACIÓN (USA PREDICCIÓN ML DEL BACKEND)
-                    with col_vals[11]:
-                        valor_mercado = jugador.get("valor_mercado_eur", 0)
-                        valor_predicho = jugador.get("valor_predicho_eur", None)
-                        
-                        # Calcular estado usando predicción ML del backend
-                        if valor_predicho is None or valor_predicho == 0 or valor_mercado == 0:
-                            estado_clase = "estado-sin-datos"
-                            estado_texto = "Sin datos"
-                        else:
-                            # Diferencia porcentual: positivo = infravalorado, negativo = sobrevalorado
-                            diferencia = (valor_predicho - valor_mercado) / valor_mercado * 100
-                            
-                            if diferencia > 15:
-                                estado_clase = "estado-infravalorado"
-                                estado_texto = "📈 Infravalorado"
-                            elif diferencia < -15:
-                                estado_clase = "estado-sobrevalorado"
-                                estado_texto = "📉 Sobrevalorado"
-                            else:
-                                estado_clase = "estado-justo"
-                                estado_texto = "⚖️ Justo"
-                        
-                        # Contenedor con ancho controlado para evitar desbordamiento
-                        st.markdown(f"""
-                        <div style='
-                            display: flex;
-                            justify-content: center;
-                            align-items: center;
-                            width: 100%;
-                            max-width: 100%;
-                            overflow: hidden;
-                        '>
-                            <div class='{estado_clase}'>{estado_texto}</div>
-                        </div>
-                        """, unsafe_allow_html=True)
                 
                 # Cerrar wrapper de fila
                 st.markdown("</div>", unsafe_allow_html=True)

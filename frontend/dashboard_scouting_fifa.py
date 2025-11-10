@@ -1285,8 +1285,32 @@ def mostrar_presentacion_completa():
     # CSS MÁXIMO: CERO márgenes negros, iframe a pantalla completa absoluta
     st.markdown("""
     <style>
-        /* MODAL: CERO padding, CERO margin, 100% viewport */
+        /* FORZAR HTML/BODY a 100% sin márgenes cuando modal activo */
+        html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100vw !important;
+            max-width: 100vw !important;
+            overflow-x: hidden !important;
+        }
+        
+        /* Ocultar sidebar y main content de Streamlit */
+        [data-testid="stSidebar"] {
+            display: none !important;
+        }
+        
+        section[data-testid="stAppViewContainer"] {
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        
+        /* MODAL: Position fixed que ignore TODO el layout */
         [data-testid="stDialog"] {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
             padding: 0 !important;
             margin: 0 !important;
             max-width: 100vw !important;
@@ -1297,6 +1321,7 @@ def mostrar_presentacion_completa():
             box-shadow: none !important;
             background: transparent !important;
             overflow: hidden !important;
+            z-index: 999999 !important;
         }
         
         /* Contenedor interno - CERO padding */

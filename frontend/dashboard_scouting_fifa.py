@@ -12,6 +12,75 @@ from urllib3.util.retry import Retry
 from io import BytesIO
 from PIL import Image
 
+# DICCIONARIOS DE TRADUCCIÓN (INGLÉS → ESPAÑOL)
+TRADUCCIONES_POSICIONES = {
+    "GK": "Portero",
+    "CB": "Defensa Central",
+    "LB": "Lateral Izquierdo",
+    "RB": "Lateral Derecho",
+    "LWB": "Carrilero Izquierdo",
+    "RWB": "Carrilero Derecho",
+    "CDM": "Pivote Defensivo",
+    "CM": "Centrocampista",
+    "CAM": "Mediapunta",
+    "LM": "Interior Izquierdo",
+    "RM": "Interior Derecho",
+    "LW": "Extremo Izquierdo",
+    "RW": "Extremo Derecho",
+    "CF": "Mediapunta Adelantado",
+    "ST": "Delantero Centro"
+}
+
+TRADUCCIONES_NACIONALIDADES = {
+    "Argentina": "Argentina",
+    "Brazil": "Brasil",
+    "Spain": "España",
+    "France": "Francia",
+    "Germany": "Alemania",
+    "England": "Inglaterra",
+    "Italy": "Italia",
+    "Portugal": "Portugal",
+    "Netherlands": "Países Bajos",
+    "Belgium": "Bélgica",
+    "Uruguay": "Uruguay",
+    "Colombia": "Colombia",
+    "Chile": "Chile",
+    "Mexico": "México",
+    "Croatia": "Croacia",
+    "Poland": "Polonia",
+    "Austria": "Austria",
+    "Switzerland": "Suiza",
+    "Sweden": "Suecia",
+    "Denmark": "Dinamarca",
+    "Norway": "Noruega",
+    "United States": "Estados Unidos",
+    "Canada": "Canadá",
+    "Japan": "Japón",
+    "Korea Republic": "Corea del Sur",
+    "Australia": "Australia",
+    "Serbia": "Serbia",
+    "Turkey": "Turquía",
+    "Russia": "Rusia",
+    "Ukraine": "Ucrania",
+    "Czech Republic": "República Checa",
+    "Greece": "Grecia",
+    "Romania": "Rumanía",
+    "Scotland": "Escocia",
+    "Wales": "Gales",
+    "Ireland": "Irlanda",
+    "Northern Ireland": "Irlanda del Norte",
+    "Egypt": "Egipto",
+    "Nigeria": "Nigeria",
+    "Senegal": "Senegal",
+    "Cameroon": "Camerún",
+    "Ghana": "Ghana",
+    "Ivory Coast": "Costa de Marfil",
+    "Algeria": "Argelia",
+    "Morocco": "Marruecos",
+    "Tunisia": "Túnez",
+    "South Africa": "Sudáfrica"
+}
+
 # CONFIGURACIÓN DE LA PÁGINA
 st.set_page_config(
     page_title="⚽ FIFA Scouting Pro | Dashboard ML",
@@ -952,17 +1021,7 @@ with tab1:
         </div>
         """, unsafe_allow_html=True)
         
-        # 🔍 FILTRO DE BÚSQUEDA POR NOMBRE
-        st.markdown("### 🔍 Búsqueda por Nombre")
-        nombre_buscar = st.text_input(
-            "Buscar jugador:",
-            placeholder="Ej: Messi, Cristiano, Neymar...",
-            help="Busca por nombre completo o parcial del jugador"
-        )
-        
-        st.markdown("---")  # Separador visual
-        
-        # ⚽ FILTRO DE AÑO FIFA
+        # ⚽ FILTRO DE AÑO FIFA (NUEVO)
         st.markdown("### 📅 Año FIFA")
         año_filtro = st.selectbox(
             "Selecciona el año:",
@@ -973,19 +1032,33 @@ with tab1:
         
         st.markdown("---")  # Separador visual
         
-        # Filtro de posiciones
-        posiciones_seleccionadas = st.multiselect(
+        # Filtro de posiciones (con traducciones al español)
+        posiciones_disponibles = posiciones_lista[:50]  # Top 50 posiciones
+        posiciones_traducidas = [TRADUCCIONES_POSICIONES.get(pos, pos) for pos in posiciones_disponibles]
+        posiciones_seleccionadas_es = st.multiselect(
             "Posiciones:",
-            options=posiciones_lista[:50],  # Top 50 posiciones
+            options=posiciones_traducidas,
             default=None
         )
+        # Convertir de español a inglés para la API
+        posiciones_seleccionadas = []
+        if posiciones_seleccionadas_es:
+            inverso_posiciones = {v: k for k, v in TRADUCCIONES_POSICIONES.items()}
+            posiciones_seleccionadas = [inverso_posiciones.get(pos, pos) for pos in posiciones_seleccionadas_es]
         
-        # Filtro de nacionalidades
-        nacionalidades_seleccionadas = st.multiselect(
+        # Filtro de nacionalidades (con traducciones al español)
+        nacionalidades_disponibles = nacionalidades_lista[:30]  # Top 30
+        nacionalidades_traducidas = [TRADUCCIONES_NACIONALIDADES.get(nac, nac) for nac in nacionalidades_disponibles]
+        nacionalidades_seleccionadas_es = st.multiselect(
             "Nacionalidades:",
-            options=nacionalidades_lista[:30],  # Top 30
+            options=nacionalidades_traducidas,
             default=None
         )
+        # Convertir de español a inglés para la API
+        nacionalidades_seleccionadas = []
+        if nacionalidades_seleccionadas_es:
+            inverso_nacionalidades = {v: k for k, v in TRADUCCIONES_NACIONALIDADES.items()}
+            nacionalidades_seleccionadas = [inverso_nacionalidades.get(nac, nac) for nac in nacionalidades_seleccionadas_es]
         
         # Filtro de edad
         edad_min = st.slider("Edad mínima:", 16, 45, 18)
@@ -1044,11 +1117,7 @@ with tab1:
             "orden_descendente": orden_desc
         }
         
-        # 🔍 FILTRO DE NOMBRE
-        if nombre_buscar and nombre_buscar.strip():
-            params["nombre"] = nombre_buscar.strip()
-        
-        # ⚽ FILTRO DE AÑO
+        # ⚽ FILTRO DE AÑO (NUEVO)
         if año_filtro != "Todos":
             params["año_datos"] = año_filtro
         
@@ -1106,7 +1175,7 @@ with tab1:
             # Convertir a DataFrame para mejor visualización
             df_resultados = pd.DataFrame(jugadores)
             
-            # Seleccionar columnas relevantes (SIN estado_valoracion para mejor velocidad)
+            # Seleccionar columnas relevantes
             columnas_mostrar = [
                 "nombre_corto", "edad", "nacionalidad", "club", "liga",
                 "posiciones_jugador", "valoracion_global", "potencial",
@@ -1225,71 +1294,6 @@ with tab1:
                     display: inline-block;
                 }
                 
-                /* 💎 NUEVOS ESTILOS PARA ESTADO VALORACIÓN - RESPONSIVE */
-                .estado-infravalorado {
-                    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-                    color: white;
-                    padding: 4px 8px;
-                    border-radius: 15px;
-                    font-weight: 600;
-                    display: inline-block;
-                    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.4);
-                    font-size: clamp(9px, 0.85vw, 12px);
-                    white-space: nowrap;
-                    max-width: 100%;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    text-align: center;
-                }
-                
-                .estado-sobrevalorado {
-                    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-                    color: white;
-                    padding: 4px 8px;
-                    border-radius: 15px;
-                    font-weight: 600;
-                    display: inline-block;
-                    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.4);
-                    font-size: clamp(9px, 0.85vw, 12px);
-                    white-space: nowrap;
-                    max-width: 100%;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    text-align: center;
-                }
-                
-                .estado-justo {
-                    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-                    color: white;
-                    padding: 4px 8px;
-                    border-radius: 15px;
-                    font-weight: 600;
-                    display: inline-block;
-                    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.4);
-                    font-size: clamp(9px, 0.85vw, 12px);
-                    white-space: nowrap;
-                    max-width: 100%;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    text-align: center;
-                }
-                
-                .estado-sin-datos {
-                    background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
-                    color: white;
-                    padding: 4px 8px;
-                    border-radius: 15px;
-                    font-weight: 600;
-                    display: inline-block;
-                    box-shadow: 0 2px 4px rgba(107, 114, 128, 0.4);
-                    font-size: clamp(9px, 0.85vw, 12px);
-                    white-space: nowrap;
-                    max-width: 100%;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    text-align: center;
-                }
-                
                 /* Estilos para botones de paginación - Texto blanco */
                 button[kind="primary"], button[kind="secondary"] {
                     color: white !important;
@@ -1315,7 +1319,7 @@ with tab1:
             </style>
             """, unsafe_allow_html=True)
             
-            # Mostrar encabezados (con columna Año FIFA)
+            # Mostrar encabezados (con nueva columna Año FIFA)
             col_headers = st.columns([0.5, 0.8, 2, 0.7, 0.7, 1.5, 1.5, 1.5, 1, 1, 1.2])
             headers = ["#", "Foto", "Nombre", "Edad", "Año FIFA", "Nacionalidad", "Club", "Liga", "Posición", "Overall", "Potencial"]
             
@@ -1333,7 +1337,7 @@ with tab1:
                 st.markdown("<div class='fila-jugador'>", unsafe_allow_html=True)
                 
                 with st.container():
-                    col_vals = st.columns([0.5, 1.2, 2.5, 0.7, 0.7, 1.5, 1.5, 1.5, 1, 1, 1.2])
+                    col_vals = st.columns([0.5, 1.2, 2.5, 0.7, 0.7, 1.5, 1.5, 1.5, 1, 1, 1])
                     
                     with col_vals[0]:
                         st.markdown(f"<div style='text-align: center; font-size: 1.2em; color: #f0a818; font-weight: bold;'>{idx_global + 1}</div>", unsafe_allow_html=True)
@@ -1933,7 +1937,8 @@ with tab3:
                 potencial = st.slider("Potencial:", 40, 95, 80)
             
             with col_f2:
-                pie_preferido = st.selectbox("Pie Preferido:", ["Right", "Left"])
+                pie_preferido_es = st.selectbox("Pie Preferido:", ["Derecho", "Izquierdo"])
+                pie_preferido = "Right" if pie_preferido_es == "Derecho" else "Left"
                 pie_debil = st.slider("Pie Débil (1-5):", 1, 5, 3)
                 habilidades_regate = st.slider("Habilidades Regate (1-5):", 1, 5, 3)
             

@@ -16,9 +16,32 @@ import pandas as pd
 import numpy as np
 import os
 import joblib
+import unicodedata
 from fastapi import FastAPI, Query, HTTPException
 from pydantic import BaseModel, Field
 from typing import Optional, List
+
+
+# ============================================================================
+# FUNCIONES AUXILIARES
+# ============================================================================
+
+def normalizar_texto(texto):
+    """
+    Normaliza texto para búsqueda flexible:
+    - Convierte a minúsculas
+    - Elimina tildes y acentos
+    - Útil para búsqueda insensible a mayúsculas y acentos
+    """
+    if pd.isna(texto) or texto is None:
+        return ""
+    texto = str(texto).lower()
+    # Eliminar tildes usando unicodedata
+    texto = ''.join(
+        c for c in unicodedata.normalize('NFD', texto)
+        if unicodedata.category(c) != 'Mn'
+    )
+    return texto
 
 
 # ============================================================================
@@ -184,10 +207,10 @@ def obtener_opciones_filtros():
 @app.get(
     "/jugadores/buscar",
     summary="Buscar jugadores con filtros",
-    description="Busca jugadores aplicando múltiples filtros personalizables"
+    description="Busca jugadores aplicando múltiples filtros personalizables con búsqueda flexible por nombre"
 )
 def buscar_jugadores(
-    nombre: Optional[str] = Query(None, description="Buscar por nombre (completo o parcial)"),
+    nombre: Optional[str] = Query(None, description="Buscar por nombre (parcial, sin tildes, case-insensitive)"),
     posicion: Optional[List[str]] = Query(None, description="Filtrar por posiciones (ej: ST, CM)"),
     nacionalidad: Optional[List[str]] = Query(None, description="Filtrar por nacionalidades"),
     club: Optional[List[str]] = Query(None, description="Filtrar por clubes"),
@@ -209,20 +232,28 @@ def buscar_jugadores(
 ):
     """
     Busca jugadores aplicando filtros combinados.
+    Búsqueda flexible por nombre: parcial, sin tildes, mayúsculas/minúsculas.
     Retorna lista de jugadores con información resumida.
     """
     try:
         df_filtrado = df_jugadores.copy()
         
-        # 🔍 FILTRO DE BÚSQUEDA POR NOMBRE (NUEVO)
-        if nombre and nombre.strip():
-            # Búsqueda case-insensitive en nombre_corto y nombre_largo
-            nombre_lower = nombre.strip().lower()
-            mask_nombre = (
-                df_filtrado["nombre_corto"].str.lower().str.contains(nombre_lower, na=False, regex=False) |
-                df_filtrado["nombre_largo"].str.lower().str.contains(nombre_lower, na=False, regex=False)
+        # ⚽ FILTRO POR NOMBRE (BÚSQUEDA FLEXIBLE)
+        if nombre:
+            nombre_normalizado = normalizar_texto(nombre)
+            # Crear columnas temporales normalizadas para búsqueda eficiente
+            df_filtrado['nombre_completo_normalizado'] = df_filtrado['nombre_completo'].apply(normalizar_texto)
+            df_filtrado['nombre_corto_normalizado'] = df_filtrado['nombre_corto'].apply(normalizar_texto)
+            
+            # Buscar en nombre completo O nombre corto (búsqueda parcial)
+            mascara_nombre = (
+                df_filtrado['nombre_completo_normalizado'].str.contains(nombre_normalizado, na=False) |
+                df_filtrado['nombre_corto_normalizado'].str.contains(nombre_normalizado, na=False)
             )
-            df_filtrado = df_filtrado[mask_nombre]
+            df_filtrado = df_filtrado[mascara_nombre]
+            
+            # Eliminar columnas temporales
+            df_filtrado = df_filtrado.drop(['nombre_completo_normalizado', 'nombre_corto_normalizado'], axis=1)
         
         # Aplicar filtros
         if posicion:
@@ -279,7 +310,7 @@ def buscar_jugadores(
         # Limitar resultados
         df_filtrado = df_filtrado.head(limite)
         
-        # Seleccionar columnas para respuesta (SIN predicciones ML para velocidad)
+        # Seleccionar columnas para respuesta
         columnas_respuesta = [
             "id_sofifa", "nombre_corto", "edad", "nacionalidad", "club", "liga",
             "posiciones_jugador", "valoracion_global", "potencial", "valor_mercado_eur",

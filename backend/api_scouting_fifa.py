@@ -187,6 +187,8 @@ def obtener_opciones_filtros():
     description="Busca jugadores aplicando múltiples filtros personalizables"
 )
 def buscar_jugadores(
+    nombre: Optional[str] = Query(None, description="Buscar por nombre (completo o parcial)"),
+    estados_valoracion: Optional[List[str]] = Query(None, description="Filtrar por estado de valoración (Infravalorado/Sobrevalorado/Justo)"),
     posicion: Optional[List[str]] = Query(None, description="Filtrar por posiciones (ej: ST, CM)"),
     nacionalidad: Optional[List[str]] = Query(None, description="Filtrar por nacionalidades"),
     club: Optional[List[str]] = Query(None, description="Filtrar por clubes"),
@@ -212,6 +214,16 @@ def buscar_jugadores(
     """
     try:
         df_filtrado = df_jugadores.copy()
+        
+        # 🔍 FILTRO DE BÚSQUEDA POR NOMBRE (NUEVO)
+        if nombre and nombre.strip():
+            # Búsqueda case-insensitive en nombre_corto y nombre_largo
+            nombre_lower = nombre.strip().lower()
+            mask_nombre = (
+                df_filtrado["nombre_corto"].str.lower().str.contains(nombre_lower, na=False, regex=False) |
+                df_filtrado["nombre_largo"].str.lower().str.contains(nombre_lower, na=False, regex=False)
+            )
+            df_filtrado = df_filtrado[mask_nombre]
         
         # Aplicar filtros
         if posicion:
@@ -268,11 +280,51 @@ def buscar_jugadores(
         # Limitar resultados
         df_filtrado = df_filtrado.head(limite)
         
+        # 🤖 AGREGAR PREDICCIONES ML A CADA JUGADOR (NUEVO)
+        valores_predichos = []
+        for idx, jugador in df_filtrado.iterrows():
+            try:
+                datos_pred = preparar_datos_para_prediccion(jugador)
+                valor_log = modelo.predict(datos_pred)[0]
+                valor_eur = np.expm1(valor_log)  # Revertir log1p
+                valores_predichos.append(float(valor_eur))
+            except Exception as e:
+                # Si falla la predicción, usar None
+                valores_predichos.append(None)
+        
+        df_filtrado["valor_predicho_eur"] = valores_predichos
+        
+        # 💎 FILTRO POR ESTADO DE VALORACIÓN (NUEVO)
+        # Se aplica DESPUÉS de calcular predicciones ML
+        if estados_valoracion and len(estados_valoracion) > 0:
+            # Calcular estado de valoración para cada jugador
+            def calcular_estado(row):
+                valor_mercado = row["valor_mercado_eur"]
+                valor_predicho = row["valor_predicho_eur"]
+                
+                if valor_predicho is None or valor_predicho == 0 or valor_mercado == 0:
+                    return "Sin datos"
+                
+                diferencia = (valor_predicho - valor_mercado) / valor_mercado * 100
+                
+                if diferencia > 15:
+                    return "Infravalorado"
+                elif diferencia < -15:
+                    return "Sobrevalorado"
+                else:
+                    return "Justo"
+            
+            df_filtrado["estado_valoracion_temp"] = df_filtrado.apply(calcular_estado, axis=1)
+            
+            # Filtrar por estados seleccionados
+            df_filtrado = df_filtrado[df_filtrado["estado_valoracion_temp"].isin(estados_valoracion)]
+            df_filtrado = df_filtrado.drop(columns=["estado_valoracion_temp"])
+        
         # Seleccionar columnas para respuesta
         columnas_respuesta = [
             "id_sofifa", "nombre_corto", "edad", "nacionalidad", "club", "liga",
             "posiciones_jugador", "valoracion_global", "potencial", "valor_mercado_eur",
-            "salario_eur", "pie_preferido", "altura_cm", "peso_kg", "url_jugador"
+            "valor_predicho_eur", "salario_eur", "pie_preferido", "altura_cm", "peso_kg", "url_jugador"
         ]
         
         # Agregar año_datos si existe en el DataFrame

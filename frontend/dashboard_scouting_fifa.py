@@ -1445,115 +1445,221 @@ with tab2:
         
         st.markdown("<br>", unsafe_allow_html=True)
         
-        # JUGADOR MÁS VALIOSO - TODO DENTRO DEL RECUADRO AMARILLO
-        # Inicio del contenedor amarillo
-        with st.container():
-            st.markdown(f"""
-            <div style='background: linear-gradient(135deg, {COLOR_DESTACADO} 0%, {COLOR_ADVERTENCIA} 100%); 
-                 padding: 25px; border-radius: 20px; box-shadow: 0 8px 32px rgba(255,167,38,0.4);
-                 margin: 20px 0;'>
-                <h3 style='color: {COLOR_PRIMARIO}; margin: 0 0 15px 0; text-align: center;'>⭐ JUGADOR MÁS VALIOSO</h3>
-            """, unsafe_allow_html=True)
+        # JUGADOR MÁS VALIOSO - FICHA DESTACADA TIPO TARJETA
+        st.markdown("---")
+        st.markdown(f"""
+        <div style='text-align: center; margin: 30px 0 20px 0;'>
+            <h2 style='color: {COLOR_DESTACADO}; font-size: 36px; font-weight: 800; text-transform: uppercase; 
+                 letter-spacing: 2px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);'>
+                ⭐ JUGADOR MÁS VALIOSO DEL DATASET
+            </h2>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Selector de año más visible
+        col_left_space, col_selector_center, col_right_space = st.columns([1, 2, 1])
+        with col_selector_center:
+            años_disponibles = list(range(2021, 2014, -1))
+            año_seleccionado_top = st.selectbox(
+                "🎯 Selecciona el año FIFA para ver al jugador más valioso",
+                options=["🌍 Todos los años"] + [f"📅 {año}" for año in años_disponibles],
+                key="año_jugador_top",
+                help="Elige un año específico o todos los años del dataset"
+            )
             
-            # Selector de año dentro del recuadro
-            col_selector, col_space = st.columns([1, 3])
-            with col_selector:
-                # Años disponibles (2015-2021 según el dataset)
-                años_disponibles = list(range(2021, 2014, -1))
-                
-                año_seleccionado_top = st.selectbox(
-                    "📅 Filtrar por año FIFA",
-                    options=["Todos los años"] + años_disponibles,
-                    key="año_jugador_top",
-                    help="Selecciona un año específico o 'Todos los años' para ver el jugador más valioso general"
-                )
+            # Extraer el año numérico
+            if año_seleccionado_top == "🌍 Todos los años":
+                año_filtro = None
+            else:
+                año_filtro = int(año_seleccionado_top.split()[-1])
+        
+        # Obtener jugador más valioso según filtro
+        try:
+            if año_filtro is None:
+                url_top = f"{API_BASE_URL}/eda/jugador_mas_valioso"
+            else:
+                url_top = f"{API_BASE_URL}/eda/jugador_mas_valioso?año={año_filtro}"
             
-            st.markdown("<br>", unsafe_allow_html=True)
-            
-            # Obtener jugador más valioso según filtro
-            try:
-                if año_seleccionado_top == "Todos los años":
-                    url_top = f"{API_BASE_URL}/eda/jugador_mas_valioso"
-                else:
-                    url_top = f"{API_BASE_URL}/eda/jugador_mas_valioso?año={año_seleccionado_top}"
-                
-                response_top = sesion_http.get(url_top, timeout=5)
-                if response_top.status_code == 200:
-                    jugador_top = response_top.json()
-                else:
-                    jugador_top = stats.get("jugador_mas_valioso", {})
-            except:
+            response_top = sesion_http.get(url_top, timeout=5)
+            if response_top.status_code == 200:
+                jugador_top = response_top.json()
+            else:
                 jugador_top = stats.get("jugador_mas_valioso", {})
+        except:
+            jugador_top = stats.get("jugador_mas_valioso", {})
+        
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        if jugador_top:
+            # Preparar datos
+            id_sofifa = jugador_top.get("id_sofifa")
+            año_datos = jugador_top.get("año_datos", 2021)
+            nacionalidad = jugador_top.get("nacionalidad", "Unknown")
+            pais_iso = obtener_codigo_iso_pais(nacionalidad)
+            bandera_url = f"https://flagcdn.com/48x36/{pais_iso}.png"
+            valor_millones = jugador_top.get('valor_eur', 0) / 1_000_000
             
-            if jugador_top:
-                # Layout: foto a la izquierda, info a la derecha
-                col_foto, col_info = st.columns([1, 3])
-                
-                with col_foto:
-                    # Obtener foto del jugador
-                    id_sofifa = jugador_top.get("id_sofifa")
-                    año_datos = jugador_top.get("año_datos", 2021)
-                    
-                    if id_sofifa:
-                        img_jugador = obtener_foto_jugador(id_sofifa, año_datos)
-                        if img_jugador:
-                            st.image(img_jugador, width=180)
-                        else:
-                            st.info("📷 Sin foto")
-                    
-                    # Año del jugador debajo de la foto
-                    st.markdown(f"""
-                    <div style='text-align: center; margin-top: 10px;'>
-                        <p style='color: {COLOR_PRIMARIO}; font-size: 16px; font-weight: 600; margin: 0;'>
-                            📅 FIFA {año_datos}
-                        </p>
-                    </div>
-                    """, unsafe_allow_html=True)
-                
-                with col_info:
-                    # Bandera del país usando API de banderas
-                    nacionalidad = jugador_top.get("nacionalidad", "Unknown")
-                    # Mapeo de nombres de países a códigos ISO (algunos casos especiales)
-                    pais_iso = {
-                        "England": "gb-eng", "Spain": "es", "Brazil": "br", "Argentina": "ar",
-                        "France": "fr", "Germany": "de", "Portugal": "pt", "Netherlands": "nl",
-                        "Belgium": "be", "Italy": "it", "Croatia": "hr", "Uruguay": "uy",
-                        "Colombia": "co", "Poland": "pl", "Egypt": "eg", "Senegal": "sn",
-                        "Korea Republic": "kr", "Japan": "jp", "Mexico": "mx", "Chile": "cl",
-                        "Ecuador": "ec", "Peru": "pe", "United States": "us", "Canada": "ca"
-                    }.get(nacionalidad, nacionalidad.lower()[:2])
-                    
-                    bandera_url = f"https://flagcdn.com/48x36/{pais_iso}.png"
-                    
-                    # Información del jugador
-                    st.markdown(f"""
-                    <div style='background: rgba(255,255,255,0.1); padding: 20px; border-radius: 15px;'>
-                        <h2 style='color: white; font-size: 32px; margin: 0 0 10px 0;'>
-                            {jugador_top.get('nombre', 'N/A')}
-                        </h2>
-                        <p style='color: {COLOR_PRIMARIO}; font-size: 18px; font-weight: 600; margin: 5px 0;'>
-                            <img src="{bandera_url}" style="width: 32px; height: 24px; vertical-align: middle; margin-right: 8px;" 
-                                 onerror="this.style.display='none'">
-                            {nacionalidad}
-                        </p>
-                        <p style='color: {COLOR_PRIMARIO}; font-size: 18px; font-weight: 600; margin: 5px 0;'>
-                            🏆 {jugador_top.get('club', 'N/A')}
-                        </p>
-                        <p style='color: {COLOR_PRIMARIO}; font-size: 16px; margin: 5px 0;'>
-                            📍 {jugador_top.get('posicion', 'N/A')} • {jugador_top.get('edad', 'N/A')} años
-                        </p>
-                        <p style='color: {COLOR_PRIMARIO}; font-size: 16px; margin: 5px 0;'>
-                            ⚽ Overall: {jugador_top.get('valoracion', 'N/A')} • Potencial: {jugador_top.get('potencial', 'N/A')}
-                        </p>
-                        <hr style='border: 1px solid {COLOR_PRIMARIO}; margin: 15px 0;'>
-                        <p style='color: white; font-size: 28px; font-weight: bold; margin: 10px 0 0 0;'>
-                            💰 €{jugador_top.get('valor_eur', 0)/1_000_000:.1f} Millones
-                        </p>
-                    </div>
-                    """, unsafe_allow_html=True)
+            # Obtener foto del jugador
+            img_jugador = None
+            if id_sofifa:
+                img_jugador = obtener_foto_jugador(id_sofifa, año_datos)
             
-            # Cierre del contenedor amarillo
-            st.markdown("</div>", unsafe_allow_html=True)
+            # Convertir imagen a base64 para incrustar en HTML
+            img_base64 = ""
+            if img_jugador:
+                buffered = BytesIO()
+                img_jugador.save(buffered, format="PNG")
+                img_base64 = base64.b64encode(buffered.getvalue()).decode()
+            
+            # TARJETA GRANDE TIPO FICHA PROFESIONAL
+            # Usar format() en lugar de f-strings para evitar problemas con comillas
+            if img_base64:
+                html_foto = '<img src="data:image/png;base64,{}" style="width: 220px; height: 220px; border-radius: 20px; border: 5px solid white; box-shadow: 0 10px 30px rgba(0,0,0,0.4); object-fit: cover;">'.format(img_base64)
+            else:
+                html_foto = '<div style="width: 220px; height: 220px; background: linear-gradient(135deg, {} 0%, {} 100%); border-radius: 20px; border: 5px solid white; display: flex; align-items: center; justify-content: center; font-size: 80px; box-shadow: 0 10px 30px rgba(0,0,0,0.4);">⚽</div>'.format(COLOR_PRIMARIO, COLOR_ACENTO_2)
+            
+            html_tarjeta = """
+            <style>
+                .player-card-container {{
+                    background: linear-gradient(135deg, {0} 0%, {1} 50%, {0} 100%);
+                    border-radius: 25px;
+                    padding: 30px;
+                    box-shadow: 0 20px 60px rgba(255, 167, 38, 0.6);
+                    position: relative;
+                    overflow: hidden;
+                    border: 3px solid {2};
+                    margin: 20px 0;
+                    min-height: 450px;
+                }}
+                .player-card-grid {{
+                    display: flex;
+                    flex-direction: row;
+                    gap: 30px;
+                    align-items: flex-start;
+                    position: relative;
+                    z-index: 1;
+                }}
+                .player-photo-section {{
+                    flex: 0 0 auto;
+                    text-align: center;
+                    min-width: 200px;
+                }}
+                .player-info-section {{
+                    flex: 1 1 auto;
+                    min-width: 0;
+                }}
+                .player-name {{
+                    color: white;
+                    font-size: clamp(28px, 5vw, 48px);
+                    font-weight: 900;
+                    margin: 0 0 15px 0;
+                    text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+                    line-height: 1.2;
+                    word-wrap: break-word;
+                }}
+                .stats-container {{
+                    display: flex;
+                    gap: 10px;
+                    margin-bottom: 15px;
+                    flex-wrap: wrap;
+                }}
+                .stat-badge {{
+                    padding: 10px 20px;
+                    border-radius: 12px;
+                    font-weight: 700;
+                    font-size: clamp(14px, 2vw, 18px);
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                    white-space: nowrap;
+                }}
+                @media (max-width: 768px) {{
+                    .player-card-grid {{
+                        flex-direction: column;
+                        align-items: center;
+                    }}
+                    .player-photo-section {{
+                        margin-bottom: 20px;
+                    }}
+                    .player-card-container {{
+                        padding: 20px;
+                        min-height: auto;
+                    }}
+                }}
+            </style>
+            <div class="player-card-container">
+                <div style="position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: rgba(255,255,255,0.1); border-radius: 50%; z-index: 0;"></div>
+                <div style="position: absolute; bottom: -30px; left: -30px; width: 150px; height: 150px; background: rgba(255,255,255,0.1); border-radius: 50%; z-index: 0;"></div>
+                
+                <div class="player-card-grid">
+                    <div class="player-photo-section">
+                        {3}
+                        <div style="margin-top: 15px; background: white; padding: 10px 20px; border-radius: 15px; display: inline-block; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
+                            <p style="color: {2}; font-size: 16px; font-weight: 700; margin: 0;">
+                                📅 FIFA {4}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="player-info-section">
+                        <h1 class="player-name">{5}</h1>
+                        
+                        <div style="display: flex; align-items: center; margin-bottom: 15px; flex-wrap: wrap;">
+                            <img src="{6}" style="width: 40px; height: 30px; border-radius: 5px; margin-right: 12px; box-shadow: 0 3px 8px rgba(0,0,0,0.3);" onerror="this.style.display='none'">
+                            <span style="color: white; font-size: clamp(18px, 3vw, 24px); font-weight: 700; text-shadow: 2px 2px 4px rgba(0,0,0,0.4);">
+                                {7}
+                            </span>
+                        </div>
+                        
+                        <div style="background: rgba(255,255,255,0.95); padding: 15px 20px; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
+                            <p style="color: {2}; font-size: clamp(16px, 2.5vw, 20px); font-weight: 700; margin: 0 0 8px 0;">
+                                🏆 {8}
+                            </p>
+                            <p style="color: {9}; font-size: clamp(14px, 2vw, 16px); font-weight: 600; margin: 0;">
+                                📍 {10} • {11} años
+                            </p>
+                        </div>
+                        
+                        <div class="stats-container">
+                            <div class="stat-badge" style="background: {2}; color: white;">
+                                ⚽ Overall: {12}
+                            </div>
+                            <div class="stat-badge" style="background: {13}; color: white;">
+                                🚀 Potencial: {14}
+                            </div>
+                        </div>
+                        
+                        <div style="background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); padding: 15px 25px; border-radius: 20px; text-align: center; box-shadow: 0 10px 30px rgba(255, 215, 0, 0.5); border: 3px solid white;">
+                            <p style="color: {2}; font-size: clamp(12px, 2vw, 16px); font-weight: 600; margin: 0 0 8px 0; text-transform: uppercase; letter-spacing: 1px;">
+                                💰 Valor de Mercado
+                            </p>
+                            <p style="color: {2}; font-size: clamp(28px, 5vw, 42px); font-weight: 900; margin: 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.2);">
+                                €{15:.1f}M
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            """.format(
+                COLOR_DESTACADO,  # 0
+                COLOR_ADVERTENCIA,  # 1
+                COLOR_PRIMARIO,  # 2
+                html_foto,  # 3
+                año_datos,  # 4
+                jugador_top.get('nombre', 'N/A'),  # 5
+                bandera_url,  # 6
+                nacionalidad,  # 7
+                jugador_top.get('club', 'N/A'),  # 8
+                COLOR_ACENTO_2,  # 9
+                jugador_top.get('posicion', 'N/A'),  # 10
+                jugador_top.get('edad', 'N/A'),  # 11
+                jugador_top.get('valoracion', 'N/A'),  # 12
+                COLOR_ACENTO_1,  # 13
+                jugador_top.get('potencial', 'N/A'),  # 14
+                valor_millones  # 15
+            )
+            
+            # Usar st.components.v1.html para renderizar HTML complejo responsive
+            # Altura adaptable: más alta en escritorio, más compacta en móvil
+            components.html(html_tarjeta, height=600, scrolling=True)
     
     st.markdown("---")
     
@@ -1633,17 +1739,40 @@ with tab2:
     if datos_posiciones and "datos" in datos_posiciones:
         df_posiciones = pd.DataFrame(datos_posiciones["datos"])
         
+        # Colores más vibrantes y contrastantes para el gráfico de pastel
+        colores_pastel = ['#1E88E5', '#FFA726', '#66BB6A', '#AB47BC', '#FF5252', '#29B6F6', '#FFCA28', '#26A69A']
+        
         fig_posiciones = px.pie(
             df_posiciones,
             values="cantidad",
             names="categoria",
-            title="Distribución de Jugadores por Posición",
-            color_discrete_sequence=[COLOR_ACENTO_1, COLOR_ACENTO_2, COLOR_SECUNDARIO, COLOR_DESTACADO]
+            title="⚽ Distribución de Jugadores por Posición",
+            color_discrete_sequence=colores_pastel,
+            hole=0.4  # Crear un gráfico tipo donut para mejor visualización
+        )
+        
+        fig_posiciones.update_traces(
+            textposition='inside',
+            textinfo='percent+label',
+            marker=dict(line=dict(color='#FFFFFF', width=3))  # Borde blanco en cada sector
         )
         
         fig_posiciones.update_layout(
-            paper_bgcolor=COLOR_ACENTO_2,
-            font=dict(color=COLOR_SECUNDARIO)
+            paper_bgcolor=COLOR_PRIMARIO,
+            plot_bgcolor=COLOR_PRIMARIO,
+            font=dict(color="white", size=14, family="Arial"),
+            title_font=dict(size=18, color=COLOR_DESTACADO, family="Arial Black"),
+            showlegend=True,
+            legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=-0.2,
+                xanchor="center",
+                x=0.5,
+                bgcolor="rgba(255,255,255,0.1)",
+                font=dict(color="white")
+            ),
+            margin=dict(l=10, r=10, t=50, b=80)
         )
         
         st.plotly_chart(fig_posiciones, use_container_width=True)

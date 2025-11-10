@@ -10,4 +10,4 @@ gatherUsageStats = false
 # Configuración crítica para cargar contenido externo (HTTPS) en HTTP local
 [client]
 showErrorDetails = true
-toolbarMode = "minimal"
+toolbarMode = "viewer"

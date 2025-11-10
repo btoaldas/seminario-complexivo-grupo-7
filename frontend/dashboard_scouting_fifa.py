@@ -1282,111 +1282,70 @@ else:
 def mostrar_presentacion_completa():
     """Modal de presentación a pantalla completa sin márgenes ni transparencias"""
     
-    # CSS DEFINITIVO: Sin desplazamiento lateral, centrado perfecto
+    # CSS SIMPLE Y DIRECTO: Iframe 100% sin complicaciones
     st.markdown("""
     <style>
-        /* Ocultar sidebar cuando modal está abierto */
-        [data-testid="stDialog"] ~ [data-testid="stSidebar"] {
-            display: none !important;
-        }
-        
-        /* MODAL: Ocupar toda la ventana real del navegador */
+        /* MODAL 100% viewport */
         [data-testid="stDialog"] {
-            padding: 0 !important;
-            margin: 0 !important;
-            max-width: 100vw !important;
-            width: 100vw !important;
-            max-height: 100vh !important;
-            height: 100vh !important;
-            border: none !important;
-            box-shadow: none !important;
-            background: #000 !important;
-            overflow: hidden !important;
             position: fixed !important;
             top: 0 !important;
             left: 0 !important;
-            right: 0 !important;
-            bottom: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            border: none !important;
+            background: transparent !important;
             z-index: 9998 !important;
         }
         
-        /* Contenedor interno sin desplazamientos */
-        [data-testid="stDialog"] > div {
-            padding: 0 !important;
-            margin: 0 auto !important;
-            border: none !important;
-            background: #000 !important;
-            width: 100% !important;
-            max-width: 100% !important;
-            height: 100% !important;
-            overflow: hidden !important;
-        }
-        
-        /* TODOS los divs centrados sin márgenes */
-        [data-testid="stDialog"] div {
+        /* Todos los contenedores internos CERO padding/margin */
+        [data-testid="stDialog"] > div,
+        [data-testid="stDialog"] [data-testid="stVerticalBlock"],
+        [data-testid="stDialog"] [data-testid="stVerticalBlock"] > div {
             padding: 0 !important;
             margin: 0 !important;
-            background: transparent !important;
-            box-sizing: border-box !important;
+            width: 100% !important;
+            height: 100% !important;
+            border: none !important;
         }
         
-        /* Eliminar headers */
+        /* Ocultar títulos */
         [data-testid="stDialog"] h1,
         [data-testid="stDialog"] h2,
-        [data-testid="stDialog"] h3,
-        [data-testid="stDialog"] header {
+        [data-testid="stDialog"] h3 {
             display: none !important;
         }
         
-        /* Block principal centrado */
-        [data-testid="stDialog"] [data-testid="stVerticalBlock"] {
-            padding: 0 !important;
-            margin: 0 auto !important;
-            gap: 0 !important;
-            width: 100% !important;
-            max-width: 100% !important;
-            height: 100% !important;
-            display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
-        }
-        
-        /* Contenedor del componente HTML centrado */
-        [data-testid="stDialog"] [data-testid="stVerticalBlock"] > div {
-            padding: 0 !important;
-            margin: 0 auto !important;
-            width: 100% !important;
-            height: 100% !important;
-            max-width: 100vw !important;
-        }
-        
-        /* IFRAME CENTRADO sin scroll horizontal */
+        /* IFRAME sin márgenes ni bordes */
         [data-testid="stDialog"] iframe {
-            border: none !important;
-            margin: 0 auto !important;
-            padding: 0 !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
             width: 100% !important;
-            max-width: 100vw !important;
-            height: 100vh !important;
-            display: block !important;
-            position: relative !important;
-            left: 50% !important;
-            transform: translateX(-50%) !important;
+            height: 100% !important;
+            border: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
         }
         
-        /* Botón X flotante */
+        /* Botón X */
         [data-testid="stDialog"] button[aria-label="Close"] {
             position: fixed !important;
-            top: 10px !important;
-            right: 10px !important;
+            top: 15px !important;
+            right: 15px !important;
             z-index: 9999 !important;
-            opacity: 0.5 !important;
-            background: rgba(0,0,0,0.7) !important;
-            border: 1px solid rgba(255,255,255,0.3) !important;
+            opacity: 0.6 !important;
+            background: rgba(0,0,0,0.8) !important;
+            color: white !important;
+            border: 1px solid rgba(255,255,255,0.4) !important;
+            border-radius: 5px !important;
+            padding: 8px !important;
         }
         
         [data-testid="stDialog"] button[aria-label="Close"]:hover {
             opacity: 1 !important;
+            background: rgba(255,255,255,0.2) !important;
         }
     </style>
     """, unsafe_allow_html=True)

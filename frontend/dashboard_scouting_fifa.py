@@ -1239,6 +1239,47 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
+# BOTÓN FLOTANTE DE PRESENTACIÓN (ESQUINA SUPERIOR DERECHA)
+st.markdown("""
+<style>
+    /* Contenedor del botón flotante */
+    .presentacion-btn-container {
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        z-index: 999;
+    }
+    
+    /* Estilos del botón de Streamlit cuando está en esta posición */
+    div[data-testid="column"] > div > div > button[kind="primary"] {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        color: white !important;
+        font-weight: 600 !important;
+        font-size: 16px !important;
+        padding: 12px 24px !important;
+        border-radius: 30px !important;
+        border: 2px solid rgba(255,255,255,0.3) !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
+        transition: all 0.3s ease !important;
+    }
+    
+    div[data-testid="column"] > div > div > button[kind="primary"]:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.4) !important;
+        border-color: rgba(255,255,255,0.5) !important;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# Crear columnas para posicionar el botón a la derecha
+col_space, col_btn = st.columns([6, 1])
+with col_btn:
+    if st.button("🎓 PRESENTACIÓN", type="primary", key="btn_presentacion_header", use_container_width=True):
+        st.session_state.mostrar_presentacion = True
+        st.rerun()
+
+st.markdown("<br>", unsafe_allow_html=True)
+
 # RESETEAR MODAL AL INICIO (se activará solo con clic explícito en "Ficha")
 # Si no hay flag de "acabo de hacer clic", cerrar modal
 if 'modal_clic_reciente' not in st.session_state:
@@ -1438,14 +1479,6 @@ with tab1:
             <h2 style='color: white !important; margin: 0;'>🎯 Filtros Avanzados</h2>
         </div>
         """, unsafe_allow_html=True)
-        
-        # BOTÓN DE PRESENTACIÓN DE DEFENSA
-        st.markdown("---")
-        if st.button("🎓 📊 PRESENTACIÓN DE DEFENSA", use_container_width=True, type="primary", key="btn_presentacion"):
-            st.session_state.mostrar_presentacion = True
-            st.rerun()  # Forzar recarga inmediata
-        
-        st.markdown("---")
         
         # ⚽ FILTRO DE AÑO FIFA (NUEVO)
         st.markdown("### 📅 Año FIFA")

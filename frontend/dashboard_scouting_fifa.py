@@ -106,6 +106,24 @@ TRADUCCIONES_NACIONALIDADES = {
     "South Africa": "Sudáfrica"
 }
 
+# FUNCIÓN AUXILIAR PARA TRADUCIR POSICIONES
+def traducir_posicion(posicion_siglas):
+    """
+    Traduce las siglas de posición a texto descriptivo en español.
+    Maneja también posiciones múltiples separadas por comas.
+    """
+    if not posicion_siglas or posicion_siglas == 'N/A':
+        return 'N/A'
+    
+    # Si hay múltiples posiciones separadas por coma
+    if ',' in str(posicion_siglas):
+        posiciones = [p.strip() for p in str(posicion_siglas).split(',')]
+        traducidas = [TRADUCCIONES_POSICIONES.get(p, p) for p in posiciones]
+        return ', '.join(traducidas)
+    
+    # Posición única
+    return TRADUCCIONES_POSICIONES.get(str(posicion_siglas).strip(), posicion_siglas)
+
 # CONFIGURACIÓN DE LA PÁGINA
 st.set_page_config(
     page_title="⚽ FIFA Scouting Pro | Dashboard ML",
@@ -650,7 +668,7 @@ def mostrar_ficha_jugador(jugador_id, jugador_nombre):
             
             # Información básica
             st.markdown("##### Información")
-            st.write(f"**Posición:** {jugador.get('posiciones_jugador', 'N/A')}")
+            st.write(f"**Posición:** {traducir_posicion(jugador.get('posiciones_jugador', 'N/A'))}")
             st.write(f"**Valoración:** {jugador.get('valoracion_global', 'N/A')}")
             st.write(f"**Potencial:** {jugador.get('potencial', 'N/A')}")
             st.write(f"**Pie:** {jugador.get('pie_preferido', 'N/A')}")
@@ -833,7 +851,7 @@ def mostrar_modal_jugador(jugador_id, jugador_nombre, año_fifa):
                 st.metric("🦵 Pie", jugador.get('pie_preferido', 'N/A'))
             with col_m2:
                 st.metric("🚀 Potencial", jugador.get('potencial', 'N/A'))
-                st.metric("📍 Posición", jugador.get('posiciones_jugador', 'N/A'))
+                st.metric("📍 Posición", traducir_posicion(jugador.get('posiciones_jugador', 'N/A')))
         
         with col2:
             # Tabs para organizar información
@@ -1231,6 +1249,9 @@ with tab1:
             
             df_mostrar = df_resultados[columnas_mostrar].copy()
             
+            # Traducir posiciones en el DataFrame
+            df_mostrar['posiciones_jugador'] = df_mostrar['posiciones_jugador'].apply(traducir_posicion)
+            
             # Renombrar columnas
             columnas_renombradas = [
                 "Nombre", "Edad", "Año FIFA", "Nacionalidad", "Club", "Liga",
@@ -1468,7 +1489,7 @@ with tab1:
                         st.markdown(f"<div style='color: #7890a8; font-size: 0.9em;'>{liga}</div>", unsafe_allow_html=True)
                     
                     with col_vals[8]:
-                        posicion = jugador.get('posiciones_jugador', 'N/A')
+                        posicion = traducir_posicion(jugador.get('posiciones_jugador', 'N/A'))
                         st.markdown(f"<div style='text-align: center; background-color: rgba(120, 144, 168, 0.2); padding: 4px; border-radius: 5px;'>{posicion}</div>", unsafe_allow_html=True)
                     
                     with col_vals[9]:
@@ -1624,6 +1645,8 @@ with tab2:
             pais_iso = obtener_codigo_iso_pais(nacionalidad)
             bandera_url = f"https://flagcdn.com/48x36/{pais_iso}.png"
             valor_millones = jugador_top.get('valor_eur', 0) / 1_000_000
+            # Traducir posición
+            posicion_traducida = traducir_posicion(jugador_top.get('posicion', 'N/A'))
             
             # Obtener foto del jugador
             img_jugador = None
@@ -1775,7 +1798,7 @@ with tab2:
                 nacionalidad,  # 7
                 jugador_top.get('club', 'N/A'),  # 8
                 COLOR_ACENTO_2,  # 9
-                jugador_top.get('posicion', 'N/A'),  # 10
+                posicion_traducida,  # 10
                 jugador_top.get('edad', 'N/A'),  # 11
                 jugador_top.get('valoracion', 'N/A'),  # 12
                 COLOR_ACENTO_1,  # 13

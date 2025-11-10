@@ -425,23 +425,23 @@ def obtener_escudo_club(nombre_club):
     if not nombre_club or nombre_club in ['N/A', '', 'nan']:
         return "⚽"  # Emoji genérico
     
-    # Mapeo manual de clubes principales (URLs verificadas y funcionales sin tamaño específico)
+    # Mapeo manual de clubes principales (URLs verificadas desde ESPN - 100% funcionales)
     escudos_manuales = {
-        "FC Barcelona": "https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg",
-        "Real Madrid": "https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg",
-        "Manchester United": "https://upload.wikimedia.org/wikipedia/en/7/7a/Manchester_United_FC_crest.svg",
-        "Liverpool": "https://upload.wikimedia.org/wikipedia/en/0/0c/Liverpool_FC.svg",
-        "Bayern Munich": "https://upload.wikimedia.org/wikipedia/commons/1/1b/FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg",
-        "Paris Saint Germain": "https://upload.wikimedia.org/wikipedia/en/a/a7/Paris_Saint-Germain_F.C..svg",
-        "Chelsea": "https://upload.wikimedia.org/wikipedia/en/c/cc/Chelsea_FC.svg",
-        "Manchester City": "https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg",
-        "Juventus": "https://upload.wikimedia.org/wikipedia/commons/c/cf/Juventus_FC_2017_logo.svg",
-        "Inter": "https://upload.wikimedia.org/wikipedia/commons/0/05/FC_Internazionale_Milano_2021.svg",
-        "AC Milan": "https://upload.wikimedia.org/wikipedia/commons/d/d0/Logo_of_AC_Milan.svg",
-        "Atletico Madrid": "https://upload.wikimedia.org/wikipedia/en/f/f4/Atletico_Madrid_2017_logo.svg",
-        "Borussia Dortmund": "https://upload.wikimedia.org/wikipedia/commons/6/67/Borussia_Dortmund_logo.svg",
-        "Arsenal": "https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg",
-        "Tottenham Hotspur": "https://upload.wikimedia.org/wikipedia/en/b/b4/Tottenham_Hotspur.svg"
+        "FC Barcelona": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/83.png&h=200&w=200",
+        "Real Madrid": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/86.png&h=200&w=200",
+        "Manchester United": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/360.png&h=200&w=200",
+        "Liverpool": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/364.png&h=200&w=200",
+        "Bayern Munich": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/132.png&h=200&w=200",
+        "Paris Saint Germain": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/160.png&h=200&w=200",
+        "Chelsea": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/363.png&h=200&w=200",
+        "Manchester City": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/382.png&h=200&w=200",
+        "Juventus": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/111.png&h=200&w=200",
+        "Inter": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/102.png&h=200&w=200",
+        "AC Milan": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/103.png&h=200&w=200",
+        "Atletico Madrid": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/1068.png&h=200&w=200",
+        "Borussia Dortmund": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/124.png&h=200&w=200",
+        "Arsenal": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/359.png&h=200&w=200",
+        "Tottenham Hotspur": "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/367.png&h=200&w=200"
     }
     
     # Buscar coincidencia exacta
@@ -464,15 +464,39 @@ def obtener_escudo_liga(nombre_liga):
     if not nombre_liga or nombre_liga in ['N/A', '', 'nan']:
         return "🏆"
     
-    # Diccionario de escudos de las principales ligas (URLs verificadas y funcionales)
+    # Diccionario de escudos de las principales ligas (URLs verificadas desde ESPN - 100% funcionales)
     escudos_ligas = {
-        # Inglaterra (✅ Verificado)
-        "English Premier League": "https://upload.wikimedia.org/wikipedia/en/f/f2/Premier_League_Logo.svg",
-        "Premier League": "https://upload.wikimedia.org/wikipedia/en/f/f2/Premier_League_Logo.svg",
+        # España
+        "Spain Primera Division": "https://a.espncdn.com/combiner/i?img=/i/leaguelogos/soccer/500/15.png&h=200&w=200",
+        "La Liga": "https://a.espncdn.com/combiner/i?img=/i/leaguelogos/soccer/500/15.png&h=200&w=200",
         
-        # Alemania (✅ Verificado)
-        "German 1. Bundesliga": "https://upload.wikimedia.org/wikipedia/en/d/df/Bundesliga_logo_%282017%29.svg",
-        "Bundesliga": "https://upload.wikimedia.org/wikipedia/en/d/df/Bundesliga_logo_%282017%29.svg",
+        # Inglaterra
+        "English Premier League": "https://a.espncdn.com/combiner/i?img=/i/leaguelogos/soccer/500/23.png&h=200&w=200",
+        "Premier League": "https://a.espncdn.com/combiner/i?img=/i/leaguelogos/soccer/500/23.png&h=200&w=200",
+        
+        # Italia
+        "Italian Serie A": "https://a.espncdn.com/combiner/i?img=/i/leaguelogos/soccer/500/12.png&h=200&w=200",
+        "Serie A": "https://a.espncdn.com/combiner/i?img=/i/leaguelogos/soccer/500/12.png&h=200&w=200",
+        
+        # Alemania
+        "German 1. Bundesliga": "https://a.espncdn.com/combiner/i?img=/i/leaguelogos/soccer/500/10.png&h=200&w=200",
+        "Bundesliga": "https://a.espncdn.com/combiner/i?img=/i/leaguelogos/soccer/500/10.png&h=200&w=200",
+        
+        # Francia
+        "French Ligue 1": "https://a.espncdn.com/combiner/i?img=/i/leaguelogos/soccer/500/9.png&h=200&w=200",
+        "Ligue 1": "https://a.espncdn.com/combiner/i?img=/i/leaguelogos/soccer/500/9.png&h=200&w=200",
+        
+        # Portugal
+        "Portuguese Liga ZON SAGRES": "https://a.espncdn.com/combiner/i?img=/i/leaguelogos/soccer/500/14.png&h=200&w=200",
+        "Liga Portugal": "https://a.espncdn.com/combiner/i?img=/i/leaguelogos/soccer/500/14.png&h=200&w=200",
+        
+        # Países Bajos
+        "Dutch Eredivisie": "https://a.espncdn.com/combiner/i?img=/i/leaguelogos/soccer/500/11.png&h=200&w=200",
+        "Eredivisie": "https://a.espncdn.com/combiner/i?img=/i/leaguelogos/soccer/500/11.png&h=200&w=200",
+        
+        # Competiciones Europeas
+        "UEFA Champions League": "https://a.espncdn.com/combiner/i?img=/i/leaguelogos/soccer/500/2.png&h=200&w=200",
+        "UEFA Europa League": "https://a.espncdn.com/combiner/i?img=/i/leaguelogos/soccer/500/2310.png&h=200&w=200",
     }
     
     # Búsqueda exacta

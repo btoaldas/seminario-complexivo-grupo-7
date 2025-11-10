@@ -412,51 +412,37 @@ st.markdown(f"""
         border-left: 5px solid {COLOR_DESTACADO};
     }}
 </style>
+""", unsafe_allow_html=True)
 
+# INYECTAR BOTÓN EN HEADER CON JAVASCRIPT (usando components.html para ejecutar JS)
+components.html("""
 <script>
-    // Inyectar botón de presentación en el header de Streamlit
-    function inyectarBotonPresentacion() {{
-        // Verificar si ya existe
-        if (document.getElementById('btn-presentacion-header')) {{
+    // Inyectar botón de presentación en el header de Streamlit (iframe padre)
+    (function() {
+        // Acceder al documento padre desde el iframe
+        const parentDoc = window.parent.document;
+        
+        // Verificar si ya existe el botón
+        if (parentDoc.getElementById('btn-presentacion-header')) {
             return;
-        }}
+        }
         
         // Crear el botón
-        const btn = document.createElement('button');
+        const btn = parentDoc.createElement('button');
         btn.id = 'btn-presentacion-header';
         btn.innerHTML = '🎓 PRESENTACIÓN';
-        btn.onclick = function() {{
+        btn.onclick = function() {
             // Redirigir con query parameter para abrir modal
-            const url = new URL(window.location.href);
+            const url = new URL(window.parent.location.href);
             url.searchParams.set('presentacion', 'true');
-            window.location.href = url.toString();
-        }};
+            window.parent.location.href = url.toString();
+        };
         
-        // Agregar al body (se posiciona con CSS fixed)
-        document.body.appendChild(btn);
-    }}
-    
-    // Ejecutar cuando el DOM esté listo
-    if (document.readyState === 'loading') {{
-        document.addEventListener('DOMContentLoaded', inyectarBotonPresentacion);
-    }} else {{
-        inyectarBotonPresentacion();
-    }}
-    
-    // Re-inyectar después de cada re-render de Streamlit
-    window.addEventListener('load', function() {{
-        // Observar cambios en el DOM
-        const observer = new MutationObserver(function() {{
-            inyectarBotonPresentacion();
-        }});
-        
-        observer.observe(document.body, {{
-            childList: true,
-            subtree: true
-        }});
-    }});
+        // Agregar al body del padre (se posiciona con CSS fixed)
+        parentDoc.body.appendChild(btn);
+    })();
 </script>
-""", unsafe_allow_html=True)
+""", height=0)
 
 # ============================================================================
 # SISTEMA DE CACHÉ DE IMÁGENES DE JUGADORES

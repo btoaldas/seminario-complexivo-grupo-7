@@ -1250,12 +1250,11 @@ else:
     # Resetear el flag para la próxima ejecución
     st.session_state.modal_clic_reciente = False
 
-# CREAR PESTAÑAS CON DISEÑO MEJORADO (INCLUYENDO PRESENTACIÓN)
-tab1, tab2, tab3, tab4 = st.tabs([
-    "�  Búsqueda Inteligente",
-    "�  Análisis de Mercado",
-    "🤖  Predicción ML",
-    "🎓  Presentación del Proyecto"
+# CREAR PESTAÑAS CON DISEÑO MEJORADO
+tab1, tab2, tab3 = st.tabs([
+    "🔍  Búsqueda Inteligente",
+    "📊  Análisis de Mercado",
+    "🤖  Predicción ML"
 ])
 
 # Cargar opciones de filtros
@@ -1274,158 +1273,6 @@ else:
     clubes_lista = []
     ligas_lista = []
     categorias_edad = []
-
-# ============================================================================
-# FUNCIÓN MODAL DE PRESENTACIÓN DEL PROYECTO
-# ============================================================================
-@st.dialog(" ", width="large")
-def mostrar_presentacion_completa():
-    """Modal de presentación a pantalla completa sin márgenes ni transparencias"""
-    
-    # CSS MÁXIMO: CERO márgenes negros, iframe a pantalla completa absoluta
-    st.markdown("""
-    <style>
-        /* FORZAR HTML/BODY a 100% sin márgenes cuando modal activo */
-        html, body {
-            margin: 0 !important;
-            padding: 0 !important;
-            width: 100vw !important;
-            max-width: 100vw !important;
-            overflow-x: hidden !important;
-        }
-        
-        /* Ocultar sidebar y main content de Streamlit */
-        [data-testid="stSidebar"] {
-            display: none !important;
-        }
-        
-        section[data-testid="stAppViewContainer"] {
-            padding: 0 !important;
-            margin: 0 !important;
-        }
-        
-        /* MODAL: Position fixed que ignore TODO el layout */
-        [data-testid="stDialog"] {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            bottom: 0 !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            max-width: none !important;
-            min-width: 100vw !important;
-            width: 100vw !important;
-            max-height: 100vh !important;
-            height: 100vh !important;
-            border: none !important;
-            box-shadow: none !important;
-            background: transparent !important;
-            overflow: hidden !important;
-            z-index: 999999 !important;
-            transform: none !important;
-        }
-        
-        /* Contenedor interno - CERO padding */
-        [data-testid="stDialog"] > div {
-            padding: 0 !important;
-            margin: 0 !important;
-            border: none !important;
-            background: transparent !important;
-            width: 100vw !important;
-            min-width: 100vw !important;
-            max-width: none !important;
-            height: 100vh !important;
-            overflow: hidden !important;
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-        }
-        
-        /* TODOS los divs sin padding/margin y SIN max-width */
-        [data-testid="stDialog"] div {
-            padding: 0 !important;
-            margin: 0 !important;
-            background: transparent !important;
-            max-width: none !important;
-        }
-        
-        /* Eliminar headers */
-        [data-testid="stDialog"] h1,
-        [data-testid="stDialog"] h2,
-        [data-testid="stDialog"] h3,
-        [data-testid="stDialog"] header {
-            display: none !important;
-        }
-        
-        /* Block principal - CERO todo */
-        [data-testid="stDialog"] [data-testid="stVerticalBlock"] {
-            padding: 0 !important;
-            margin: 0 !important;
-            gap: 0 !important;
-            width: 100vw !important;
-            max-width: 100vw !important;
-            height: 100vh !important;
-        }
-        
-        /* Contenedor del componente HTML */
-        [data-testid="stDialog"] [data-testid="stVerticalBlock"] > div {
-            padding: 0 !important;
-            margin: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-        }
-        
-        /* IFRAME: Anclado esquina superior izquierda (0,0) */
-        [data-testid="stDialog"] iframe {
-            border: none !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            max-width: 100vw !important;
-            max-height: 100vh !important;
-            display: block !important;
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            right: auto !important;
-            bottom: auto !important;
-            transform: none !important;
-            margin-left: 0 !important;
-            margin-right: 0 !important;
-            margin-top: 0 !important;
-            margin-bottom: 0 !important;
-        }
-        
-        /* Botón X flotante */
-        [data-testid="stDialog"] button[aria-label="Close"] {
-            position: fixed !important;
-            top: 10px !important;
-            right: 10px !important;
-            z-index: 9999 !important;
-            opacity: 0.5 !important;
-            background: rgba(0,0,0,0.7) !important;
-            border: 1px solid rgba(255,255,255,0.3) !important;
-        }
-    </style>
-    """, unsafe_allow_html=True)
-    
-    try:
-        ruta_presentacion = os.path.join(os.path.dirname(__file__), 'presentacion_defensa.html')
-        
-        if os.path.exists(ruta_presentacion):
-            with open(ruta_presentacion, 'r', encoding='utf-8') as f:
-                html_content = f.read()
-            
-            # Renderizar SIN nada adicional - altura máxima
-            components.html(html_content, height=950, scrolling=True)
-            
-        else:
-            st.error("❌ Archivo no encontrado")
-            
-    except Exception as e:
-        st.error(f"Error: {str(e)}")
 
 # ============================================================================
 # TAB 1: BÚSQUEDA INTELIGENTE
@@ -2687,75 +2534,14 @@ with tab3:
                 st.error(f"Error de conexión con la API: {e}")
 
 # ============================================================================
-# TAB 4: PRESENTACIÓN DEL PROYECTO DE GRADUACIÓN
+# MODAL GLOBAL (funciona en cualquier tab)
 # ============================================================================
-with tab4:
-    # Abrir modal INSTANTÁNEAMENTE sin delays
-    if 'mostrar_presentacion' not in st.session_state:
-        st.session_state.mostrar_presentacion = True  # Activar desde el inicio
-        st.rerun()
-    
-    # Mensaje mínimo (solo se ve si cierran el modal)
-    st.markdown(f"""
-    <div style='text-align: center; padding: 40px; background: linear-gradient(135deg, {COLOR_SECUNDARIO} 0%, {COLOR_ACENTO_1} 100%); border-radius: 15px;'>
-        <h2 style='color: white; margin: 0 0 15px 0;'>🎓 Presentación del Proyecto</h2>
-        <p style='color: white; opacity: 0.9;'>Sistema de Scouting FIFA - Grupo 7</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown("<br>", unsafe_allow_html=True)
-    
-    # Botón centrado para reabrir
-    if st.button("🚀 Abrir Presentación", use_container_width=True, type="primary", key="btn_abrir_presentacion"):
-        st.session_state.mostrar_presentacion = True
-        st.rerun()
-    
-    st.markdown("<br><br>", unsafe_allow_html=True)
-    
-    # Instrucciones de navegación
-    col_info1, col_info2, col_info3 = st.columns(3)
-    
-    with col_info1:
-        st.info("""
-        ### 📌 Navegación
-        - **Scroll** o **flechas ↓↑**
-        - Cada sección = pantalla completa
-        - Menú superior para saltos rápidos
-        """)
-    
-    with col_info2:
-        st.success("""
-        ### ✨ Contenido
-        - 11 secciones completas
-        - Contexto académico
-        - Metodología (6 fases)
-        - Resultados y conclusiones
-        """)
-    
-    with col_info3:
-        st.warning("""
-        ### 💡 Tip Profesional
-        Para **defensa formal**, abre el archivo HTML en pantalla completa:
-        `presentacion_defensa.html`
-        """)
-    
-
-
-# ============================================================================
-# MODALES GLOBALES (funcionan en cualquier tab)
-# ============================================================================
-
-# Modal de ficha de jugador
 if st.session_state.get('mostrar_modal', False):
     mostrar_modal_jugador(
         st.session_state.get('modal_jugador_id'),
         st.session_state.get('modal_jugador_nombre', 'Jugador'),
         st.session_state.get('modal_jugador_año', 'N/A')
     )
-
-# Modal de presentación del proyecto
-if st.session_state.get('mostrar_presentacion', False):
-    mostrar_presentacion_completa()
 
 # FOOTER
 st.markdown("---")

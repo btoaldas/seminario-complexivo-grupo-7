@@ -1276,126 +1276,6 @@ else:
     categorias_edad = []
 
 # ============================================================================
-# FUNCIÓN MODAL DE PRESENTACIÓN DEL PROYECTO
-# ============================================================================
-@st.dialog(" ", width="large")
-def mostrar_presentacion_completa():
-    """Modal de presentación a pantalla completa sin márgenes ni transparencias"""
-    
-    # CSS MÁXIMO: CERO márgenes negros, iframe a pantalla completa absoluta
-    st.markdown("""
-    <style>
-        /* MODAL: CERO padding, CERO margin, 100% viewport */
-        [data-testid="stDialog"] {
-            padding: 0 !important;
-            margin: 0 !important;
-            max-width: 100vw !important;
-            width: 100vw !important;
-            max-height: 100vh !important;
-            height: 100vh !important;
-            border: none !important;
-            box-shadow: none !important;
-            background: transparent !important;
-            overflow: hidden !important;
-        }
-        
-        /* Contenedor interno - CERO padding */
-        [data-testid="stDialog"] > div {
-            padding: 0 !important;
-            margin: 0 !important;
-            border: none !important;
-            background: transparent !important;
-            width: 100vw !important;
-            max-width: 100vw !important;
-            height: 100vh !important;
-            overflow: hidden !important;
-        }
-        
-        /* TODOS los divs sin padding/margin */
-        [data-testid="stDialog"] div {
-            padding: 0 !important;
-            margin: 0 !important;
-            background: transparent !important;
-        }
-        
-        /* Eliminar headers */
-        [data-testid="stDialog"] h1,
-        [data-testid="stDialog"] h2,
-        [data-testid="stDialog"] h3,
-        [data-testid="stDialog"] header {
-            display: none !important;
-        }
-        
-        /* Block principal - CERO todo */
-        [data-testid="stDialog"] [data-testid="stVerticalBlock"] {
-            padding: 0 !important;
-            margin: 0 !important;
-            gap: 0 !important;
-            width: 100vw !important;
-            max-width: 100vw !important;
-            height: 100vh !important;
-        }
-        
-        /* Contenedor del componente HTML */
-        [data-testid="stDialog"] [data-testid="stVerticalBlock"] > div {
-            padding: 0 !important;
-            margin: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-        }
-        
-        /* IFRAME: Anclado esquina superior izquierda (0,0) */
-        [data-testid="stDialog"] iframe {
-            border: none !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            max-width: 100vw !important;
-            max-height: 100vh !important;
-            display: block !important;
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            right: auto !important;
-            bottom: auto !important;
-            transform: none !important;
-            margin-left: 0 !important;
-            margin-right: 0 !important;
-            margin-top: 0 !important;
-            margin-bottom: 0 !important;
-        }
-        
-        /* Botón X flotante */
-        [data-testid="stDialog"] button[aria-label="Close"] {
-            position: fixed !important;
-            top: 10px !important;
-            right: 10px !important;
-            z-index: 9999 !important;
-            opacity: 0.5 !important;
-            background: rgba(0,0,0,0.7) !important;
-            border: 1px solid rgba(255,255,255,0.3) !important;
-        }
-    </style>
-    """, unsafe_allow_html=True)
-    
-    try:
-        ruta_presentacion = os.path.join(os.path.dirname(__file__), 'presentacion_defensa.html')
-        
-        if os.path.exists(ruta_presentacion):
-            with open(ruta_presentacion, 'r', encoding='utf-8') as f:
-                html_content = f.read()
-            
-            # Renderizar SIN nada adicional - altura máxima
-            components.html(html_content, height=950, scrolling=True)
-            
-        else:
-            st.error("❌ Archivo no encontrado")
-            
-    except Exception as e:
-        st.error(f"Error: {str(e)}")
-
-# ============================================================================
 # TAB 1: BÚSQUEDA INTELIGENTE
 # ============================================================================
 with tab1:
@@ -2658,12 +2538,7 @@ with tab3:
 # TAB 4: PRESENTACIÓN DEL PROYECTO DE GRADUACIÓN
 # ============================================================================
 with tab4:
-    # Abrir modal INSTANTÁNEAMENTE sin delays
-    if 'mostrar_presentacion' not in st.session_state:
-        st.session_state.mostrar_presentacion = True  # Activar desde el inicio
-        st.rerun()
-    
-    # Mensaje mínimo (solo se ve si cierran el modal)
+    # Abrir presentación en nueva ventana automáticamente con JavaScript
     st.markdown(f"""
     <div style='text-align: center; padding: 40px; background: linear-gradient(135deg, {COLOR_SECUNDARIO} 0%, {COLOR_ACENTO_1} 100%); border-radius: 15px;'>
         <h2 style='color: white; margin: 0 0 15px 0;'>🎓 Presentación del Proyecto</h2>
@@ -2673,10 +2548,40 @@ with tab4:
     
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # Botón centrado para reabrir
-    if st.button("🚀 Abrir Presentación", use_container_width=True, type="primary", key="btn_abrir_presentacion"):
-        st.session_state.mostrar_presentacion = True
-        st.rerun()
+    # Verificar si el archivo existe
+    ruta_presentacion = os.path.join(os.path.dirname(__file__), 'presentacion_defensa.html')
+    
+    if os.path.exists(ruta_presentacion):
+        # Botón HTML que abre en nueva ventana a pantalla completa
+        st.markdown(f"""
+        <div style='text-align: center; padding: 30px;'>
+            <a href="presentacion_defensa.html" target="_blank" 
+               onclick="window.open('presentacion_defensa.html', '_blank', 'fullscreen=yes,width=' + screen.width + ',height=' + screen.height); return false;"
+               style='
+                   display: inline-block;
+                   background: linear-gradient(135deg, {COLOR_DESTACADO} 0%, {COLOR_SECUNDARIO} 100%);
+                   color: white;
+                   padding: 20px 50px;
+                   border-radius: 50px;
+                   text-decoration: none;
+                   font-weight: bold;
+                   font-size: 1.5rem;
+                   box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+                   transition: transform 0.3s ease, box-shadow 0.3s ease;
+                   cursor: pointer;
+               '
+               onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 12px 30px rgba(0,0,0,0.5)';"
+               onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.4)';">
+                🚀 Abrir Presentación en Nueva Ventana
+            </a>
+            <p style='color: white; opacity: 0.8; margin-top: 20px; font-size: 1.1rem;'>
+                Se abrirá en una nueva pestaña a pantalla completa
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        st.error("❌ No se encontró el archivo de presentación")
+        st.info(f"Ruta esperada: `{ruta_presentacion}`")
     
     st.markdown("<br><br>", unsafe_allow_html=True)
     
@@ -2710,20 +2615,14 @@ with tab4:
 
 
 # ============================================================================
-# MODALES GLOBALES (funcionan en cualquier tab)
+# MODAL GLOBAL DE FICHA DE JUGADOR
 # ============================================================================
-
-# Modal de ficha de jugador
 if st.session_state.get('mostrar_modal', False):
     mostrar_modal_jugador(
         st.session_state.get('modal_jugador_id'),
         st.session_state.get('modal_jugador_nombre', 'Jugador'),
         st.session_state.get('modal_jugador_año', 'N/A')
     )
-
-# Modal de presentación del proyecto
-if st.session_state.get('mostrar_presentacion', False):
-    mostrar_presentacion_completa()
 
 # FOOTER
 st.markdown("---")

@@ -1282,25 +1282,25 @@ else:
 def mostrar_presentacion_completa():
     """Modal de presentación a pantalla completa sin márgenes ni transparencias"""
     
-    # CSS ULTRA AGRESIVO para eliminar el espacio transparente lateral
+    # CSS EXTREMO: Margen negro ultra delgado, iframe expandido al máximo
     st.markdown("""
     <style>
-        /* MODAL: Ocupar 100% sin márgenes */
+        /* MODAL: 100% sin márgenes, fondo negro minimalista */
         [data-testid="stDialog"] {
-            padding: 0 !important;
+            padding: 2px !important;
             margin: 0 !important;
             max-width: 100vw !important;
             width: 100vw !important;
             max-height: 100vh !important;
             height: 100vh !important;
-            border: none !important;
+            border: 1px solid #111 !important;
             box-shadow: none !important;
             background: #000 !important;
         }
         
-        /* Contenedor interno del modal - ELIMINAR PADDING LATERAL */
+        /* Contenedor interno - padding mínimo de 2px */
         [data-testid="stDialog"] > div {
-            padding: 0 !important;
+            padding: 2px !important;
             margin: 0 !important;
             border: none !important;
             background: #000 !important;
@@ -1308,13 +1308,13 @@ def mostrar_presentacion_completa():
             max-width: 100% !important;
         }
         
-        /* Todos los divs internos sin padding */
+        /* Todos los divs internos - padding ultrafino */
         [data-testid="stDialog"] div {
-            padding: 0 !important;
+            padding: 1px !important;
             margin: 0 !important;
         }
         
-        /* Eliminar TODOS los elementos del header */
+        /* Eliminar headers */
         [data-testid="stDialog"] h1,
         [data-testid="stDialog"] h2,
         [data-testid="stDialog"] h3,
@@ -1322,36 +1322,36 @@ def mostrar_presentacion_completa():
             display: none !important;
         }
         
-        /* Block principal del modal - SIN PADDING NI GAP */
+        /* Block principal - padding 1px */
         [data-testid="stDialog"] [data-testid="stVerticalBlock"] {
-            padding: 0 !important;
+            padding: 1px !important;
             margin: 0 !important;
             gap: 0 !important;
-            width: 100% !important;
-            max-width: 100% !important;
+            width: calc(100% - 2px) !important;
+            max-width: calc(100% - 2px) !important;
         }
         
-        /* Contenedor del componente HTML */
+        /* Contenedor del componente HTML - sin padding */
         [data-testid="stDialog"] [data-testid="stVerticalBlock"] > div {
             padding: 0 !important;
             margin: 0 !important;
             width: 100% !important;
         }
         
-        /* IFRAME: Ocupar TODO el espacio disponible */
+        /* IFRAME EXPANDIDO: Aprovecha el espacio del margen adelgazado */
         [data-testid="stDialog"] iframe {
-            border: none !important;
+            border: 1px solid #222 !important;
             margin: 0 !important;
             padding: 0 !important;
-            width: 100% !important;
-            height: 96vh !important;
+            width: calc(100% + 4px) !important;
+            height: calc(96vh + 4px) !important;
             display: block !important;
             position: relative !important;
-            left: 0 !important;
-            right: 0 !important;
+            left: -2px !important;
+            top: -2px !important;
         }
         
-        /* Botón X de cierre semi-transparente */
+        /* Botón X semi-transparente */
         [data-testid="stDialog"] button[aria-label="Close"] {
             opacity: 0.3 !important;
             border: 1px solid rgba(255,255,255,0.2) !important;

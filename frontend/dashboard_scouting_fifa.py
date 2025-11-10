@@ -1280,59 +1280,76 @@ else:
 # ============================================================================
 @st.dialog(" ", width="large")
 def mostrar_presentacion_completa():
-    """Muestra la presentación del proyecto en un modal de pantalla completa sin márgenes"""
+    """Modal de presentación a pantalla completa sin márgenes"""
     
-    # CSS para eliminar TODOS los márgenes y padding del modal
+    # CSS AGRESIVO para eliminar ABSOLUTAMENTE TODO margen/padding/borde
     st.markdown("""
     <style>
-        /* Eliminar padding del dialog */
+        /* MODAL: Ocupar 100% sin márgenes */
         [data-testid="stDialog"] {
             padding: 0 !important;
             margin: 0 !important;
+            max-width: 100vw !important;
+            width: 100vw !important;
+            max-height: 100vh !important;
+            height: 100vh !important;
+            border: none !important;
+            box-shadow: none !important;
         }
         
-        /* Eliminar márgenes del contenedor principal del modal */
+        /* Contenedor interno del modal */
         [data-testid="stDialog"] > div {
             padding: 0 !important;
             margin: 0 !important;
+            border: none !important;
+            background: transparent !important;
         }
         
-        /* Ajustar el modal al máximo ancho */
-        [data-testid="stDialog"] {
-            max-width: 98vw !important;
-            width: 98vw !important;
-        }
-        
-        /* Eliminar header del modal si existe */
+        /* Eliminar TODOS los elementos del header */
         [data-testid="stDialog"] h1,
         [data-testid="stDialog"] h2,
-        [data-testid="stDialog"] h3 {
+        [data-testid="stDialog"] h3,
+        [data-testid="stDialog"] header {
             display: none !important;
         }
         
-        /* Maximizar el iframe */
+        /* Block principal del modal */
+        [data-testid="stDialog"] [data-testid="stVerticalBlock"] {
+            padding: 0 !important;
+            margin: 0 !important;
+            gap: 0 !important;
+        }
+        
+        /* IFRAME: Sin bordes, 100% ancho y alto */
         [data-testid="stDialog"] iframe {
             border: none !important;
             margin: 0 !important;
             padding: 0 !important;
             width: 100% !important;
+            height: 95vh !important;
+            display: block !important;
+        }
+        
+        /* Eliminar botón X de cierre (queda ESC) */
+        [data-testid="stDialog"] button[aria-label="Close"] {
+            opacity: 0.3 !important;
+            border: 1px solid rgba(255,255,255,0.3) !important;
         }
     </style>
     """, unsafe_allow_html=True)
     
     try:
-        # Cargar el HTML de la presentación
         ruta_presentacion = os.path.join(os.path.dirname(__file__), 'presentacion_defensa.html')
         
         if os.path.exists(ruta_presentacion):
             with open(ruta_presentacion, 'r', encoding='utf-8') as f:
                 html_content = f.read()
             
-            # Mostrar el HTML sin ningún elemento adicional, altura casi pantalla completa
-            components.html(html_content, height=850, scrolling=True)
+            # Renderizar SIN nada adicional - altura máxima
+            components.html(html_content, height=950, scrolling=True)
             
         else:
-            st.error(f"❌ No se encontró el archivo de presentación")
+            st.error("❌ Archivo no encontrado")
             
     except Exception as e:
         st.error(f"Error: {str(e)}")
@@ -2600,39 +2617,25 @@ with tab3:
 # TAB 4: PRESENTACIÓN DEL PROYECTO DE GRADUACIÓN
 # ============================================================================
 with tab4:
-    # Inicializar y activar el modal automáticamente al entrar al tab
+    # Abrir modal INSTANTÁNEAMENTE sin delays
     if 'mostrar_presentacion' not in st.session_state:
-        st.session_state.mostrar_presentacion = False
-    
-    # Detectar si es la primera vez que se entra al tab4
-    if 'tab4_visitado' not in st.session_state:
-        st.session_state.tab4_visitado = False
-    
-    # Si no se ha visitado antes, activar el modal automáticamente
-    if not st.session_state.tab4_visitado:
-        st.session_state.tab4_visitado = True
-        st.session_state.mostrar_presentacion = True
+        st.session_state.mostrar_presentacion = True  # Activar desde el inicio
         st.rerun()
     
-    # Mensaje simple mientras el modal no está abierto
+    # Mensaje mínimo (solo se ve si cierran el modal)
     st.markdown(f"""
-    <div style='text-align: center; padding: 60px 20px; background: linear-gradient(135deg, {COLOR_SECUNDARIO} 0%, {COLOR_ACENTO_1} 100%); border-radius: 20px;'>
-        <h1 style='color: white !important; margin: 0 0 20px 0; font-size: 3rem;'>🎓 Presentación del Proyecto</h1>
-        <p style='color: white; opacity: 0.95; font-size: 1.3rem; margin-bottom: 30px;'>
-            Sistema de Scouting y Valoración de Jugadores FIFA
-        </p>
+    <div style='text-align: center; padding: 40px; background: linear-gradient(135deg, {COLOR_SECUNDARIO} 0%, {COLOR_ACENTO_1} 100%); border-radius: 15px;'>
+        <h2 style='color: white; margin: 0 0 15px 0;'>🎓 Presentación del Proyecto</h2>
+        <p style='color: white; opacity: 0.9;'>Sistema de Scouting FIFA - Grupo 7</p>
     </div>
     """, unsafe_allow_html=True)
     
-    st.markdown("<br><br>", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
     
-    # Botón para volver a abrir el modal si se cerró
-    col_centro1, col_boton_modal, col_centro2 = st.columns([1, 2, 1])
-    
-    with col_boton_modal:
-        if st.button("🚀 Abrir Presentación Completa", use_container_width=True, type="primary", key="btn_abrir_presentacion"):
-            st.session_state.mostrar_presentacion = True
-            st.rerun()
+    # Botón centrado para reabrir
+    if st.button("🚀 Abrir Presentación", use_container_width=True, type="primary", key="btn_abrir_presentacion"):
+        st.session_state.mostrar_presentacion = True
+        st.rerun()
     
     st.markdown("<br><br>", unsafe_allow_html=True)
     

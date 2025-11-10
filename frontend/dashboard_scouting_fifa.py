@@ -168,11 +168,12 @@ st.set_page_config(
 # VERIFICAR SI SE DEBE ABRIR MODAL (desde query params o botón header)
 query_params = st.query_params
 if "presentacion" in query_params:
-    if 'mostrar_presentacion' not in st.session_state:
-        st.session_state.mostrar_presentacion = False
-    st.session_state.mostrar_presentacion = True
-    # Limpiar query param después de leer
+    # Limpiar query param primero
     st.query_params.clear()
+    # Establecer flag para mostrar presentación
+    st.session_state.mostrar_presentacion = True
+    # Forzar recarga inmediata
+    st.rerun()
 
 # PALETA DE COLORES MODERNA
 COLOR_PRIMARIO = "#0A1929"  # Azul oscuro elegante
@@ -201,7 +202,7 @@ st.markdown(f"""
     /* Estilos para el botón inyectado con JavaScript */
     #btn-presentacion-header {{
         position: fixed;
-        right: 20px;
+        right: 165px;  /* 35px más a la izquierda para no tapar menú hamburguesa */
         top: 12px;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
@@ -422,24 +423,36 @@ components.html("""
         // Acceder al documento padre desde el iframe
         const parentDoc = window.parent.document;
         
-        // Verificar si ya existe el botón
-        if (parentDoc.getElementById('btn-presentacion-header')) {
-            return;
+        // Eliminar botón existente si existe (para recrear con evento actualizado)
+        const existingBtn = parentDoc.getElementById('btn-presentacion-header');
+        if (existingBtn) {
+            existingBtn.remove();
         }
         
         // Crear el botón
         const btn = parentDoc.createElement('button');
         btn.id = 'btn-presentacion-header';
         btn.innerHTML = '🎓 PRESENTACIÓN';
-        btn.onclick = function() {
+        
+        // Usar addEventListener en lugar de onclick para mejor compatibilidad
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            console.log('🎓 Botón clickeado - abriendo presentación');
+            
             // Redirigir con query parameter para abrir modal
             const url = new URL(window.parent.location.href);
             url.searchParams.set('presentacion', 'true');
+            
+            console.log('📍 Nueva URL:', url.toString());
+            
             window.parent.location.href = url.toString();
-        };
+        });
         
         // Agregar al body del padre (se posiciona con CSS fixed)
         parentDoc.body.appendChild(btn);
+        console.log('✅ Botón de presentación inyectado en header');
     })();
 </script>
 """, height=0)

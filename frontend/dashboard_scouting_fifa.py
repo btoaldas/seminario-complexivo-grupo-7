@@ -1378,12 +1378,21 @@ if st.session_state.mostrar_presentacion:
             st.session_state.mostrar_presentacion = False
             st.rerun()
 
-# CREAR PESTAÑAS CON DISEÑO MEJORADO
-tab1, tab2, tab3 = st.tabs([
-    "🔍  Búsqueda Inteligente",
-    "📊  Análisis de Mercado",
-    "🤖  Predicción ML"
-])
+# CREAR PESTAÑAS CON DISEÑO MEJORADO + BOTÓN ONE PAGE
+col_tabs, col_boton = st.columns([6, 1])
+
+with col_boton:
+    st.markdown("<div style='margin-top: 8px;'></div>", unsafe_allow_html=True)
+    if st.button("🎓 ONE PAGE", use_container_width=True, type="primary", key="btn_presentacion"):
+        st.session_state.mostrar_presentacion = True
+        st.rerun()
+
+with col_tabs:
+    tab1, tab2, tab3 = st.tabs([
+        "🔍  Búsqueda Inteligente",
+        "📊  Análisis de Mercado",
+        "🤖  Predicción ML"
+    ])
 
 # Cargar opciones de filtros
 data_filtros = cargar_opciones_filtros()
@@ -1438,14 +1447,6 @@ with tab1:
             <h2 style='color: white !important; margin: 0;'>🎯 Filtros Avanzados</h2>
         </div>
         """, unsafe_allow_html=True)
-        
-        # BOTÓN DE PRESENTACIÓN DE DEFENSA
-        st.markdown("---")
-        if st.button("🎓 PRESENTACIÓN", use_container_width=True, type="primary", key="btn_presentacion"):
-            st.session_state.mostrar_presentacion = True
-            st.rerun()  # Forzar recarga inmediata
-        
-        st.markdown("---")
         
         # ⚽ FILTRO DE AÑO FIFA (NUEVO)
         st.markdown("### 📅 Año FIFA")

@@ -1378,51 +1378,39 @@ if st.session_state.mostrar_presentacion:
             st.session_state.mostrar_presentacion = False
             st.rerun()
 
-# CREAR PESTAÑAS + BOTÓN ONE PAGE CON ESTILO DE TAB
-# CSS para crear botón que parezca tab
+# CREAR PESTAÑAS + BOTÓN ONE PAGE CON POSICIONAMIENTO ABSOLUTO
+# CSS para posicionar botón sin afectar layout del contenido
 st.markdown("""
 <style>
-    /* Contenedor flex para tabs + botón */
-    .tabs-container {
-        display: flex;
-        align-items: center;
-        gap: 0px;
-        margin-bottom: 1rem;
+    /* Contenedor relativo para posicionamiento */
+    .tabs-wrapper {
+        position: relative;
+        margin-bottom: 0;
     }
     
-    /* Ajustar ancho de tabs */
-    .stTabs {
-        flex: 1;
+    /* Botón ONE PAGE posicionado absolutamente */
+    div[data-testid="column"]:has(button[key="btn_onepage_tab"]) {
+        position: absolute !important;
+        top: 0 !important;
+        right: 0 !important;
+        width: 150px !important;
+        z-index: 100 !important;
     }
     
-    /* Botón ONE PAGE simulando tab */
-    .btn-tab-onepage {
-        padding: 0.5rem 1rem;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border: none;
-        border-radius: 0.5rem 0.5rem 0 0;
-        font-weight: 600;
-        cursor: pointer;
-        font-size: 1rem;
-        margin-left: 0.5rem;
-        transition: all 0.3s ease;
-        border-bottom: 2px solid transparent;
-    }
-    
-    .btn-tab-onepage:hover {
-        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-        transform: translateY(-2px);
-        border-bottom: 2px solid #667eea;
+    /* El contenido de los tabs ocupa todo el ancho */
+    .stTabs [data-baseweb="tab-panel"] {
+        width: 100% !important;
     }
 </style>
+
+<div class="tabs-wrapper">
 """, unsafe_allow_html=True)
 
-# Crear contenedor con tabs + botón
-col_tabs, col_btn = st.columns([6, 1])
+# Crear columnas: tabs ocupan espacio completo, botón está absolutamente posicionado
+col_tabs, col_btn = st.columns([10, 1])
 
 with col_btn:
-    if st.button("🎓 ONE PAGE", key="btn_onepage_tab", use_container_width=True):
+    if st.button("🎓 ONE PAGE", key="btn_onepage_tab", type="primary"):
         st.session_state.mostrar_presentacion = True
         st.rerun()
 
@@ -1433,6 +1421,8 @@ with col_tabs:
         "📊  Análisis de Mercado",
         "🤖  Predicción ML"
     ])
+
+st.markdown("</div>", unsafe_allow_html=True)
 
 # Cargar opciones de filtros
 data_filtros = cargar_opciones_filtros()

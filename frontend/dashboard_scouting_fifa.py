@@ -1378,42 +1378,61 @@ if st.session_state.mostrar_presentacion:
             st.session_state.mostrar_presentacion = False
             st.rerun()
 
-# CREAR PESTAÑAS CON 4TO TAB "ONE PAGE" QUE ABRE MODAL
-# CSS para estilizar el tab ONE PAGE
+# CREAR PESTAÑAS + BOTÓN ONE PAGE CON ESTILO DE TAB
+# CSS para crear botón que parezca tab
 st.markdown("""
 <style>
-    /* Estilo especial para el cuarto tab (ONE PAGE) */
-    .stTabs [data-baseweb="tab-list"] button:nth-child(4) {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-        color: white !important;
-        font-weight: bold !important;
+    /* Contenedor flex para tabs + botón */
+    .tabs-container {
+        display: flex;
+        align-items: center;
+        gap: 0px;
+        margin-bottom: 1rem;
     }
     
-    .stTabs [data-baseweb="tab-list"] button:nth-child(4):hover {
-        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%) !important;
-        transform: scale(1.02);
+    /* Ajustar ancho de tabs */
+    .stTabs {
+        flex: 1;
+    }
+    
+    /* Botón ONE PAGE simulando tab */
+    .btn-tab-onepage {
+        padding: 0.5rem 1rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 0.5rem 0.5rem 0 0;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 1rem;
+        margin-left: 0.5rem;
+        transition: all 0.3s ease;
+        border-bottom: 2px solid transparent;
+    }
+    
+    .btn-tab-onepage:hover {
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        transform: translateY(-2px);
+        border-bottom: 2px solid #667eea;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# Crear 4 tabs (el cuarto es ONE PAGE)
-tab1, tab2, tab3, tab4 = st.tabs([
-    "🔍  Búsqueda Inteligente",
-    "📊  Análisis de Mercado",
-    "🤖  Predicción ML",
-    "🎓  ONE PAGE"
-])
+# Crear contenedor con tabs + botón
+col_tabs, col_btn = st.columns([6, 1])
 
-# Lógica para el tab4: detectar si se hizo clic y abrir modal
-with tab4:
-    # Mostrar un mensaje temporal antes de abrir el modal
-    st.info("🎓 Abriendo presentación de defensa...")
-    # Pequeño placeholder para que el tab tenga contenido visible
-    st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
-    # Activar el modal en el próximo ciclo
-    if not st.session_state.mostrar_presentacion:
+with col_btn:
+    if st.button("🎓 ONE PAGE", key="btn_onepage_tab", use_container_width=True):
         st.session_state.mostrar_presentacion = True
         st.rerun()
+
+with col_tabs:
+    # Crear solo 3 tabs (sin el cuarto)
+    tab1, tab2, tab3 = st.tabs([
+        "🔍  Búsqueda Inteligente",
+        "📊  Análisis de Mercado",
+        "🤖  Predicción ML"
+    ])
 
 # Cargar opciones de filtros
 data_filtros = cargar_opciones_filtros()

@@ -1239,33 +1239,6 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# BOTÓN ONE PAGE COMO BADGE CLICKEABLE (usando columnas para alineación)
-col1, col2, col3, col4, col5 = st.columns([1, 1, 1, 1, 1])
-with col5:
-    st.markdown("""
-    <style>
-        div[data-testid="column"]:nth-child(5) button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-            color: white !important;
-            border: none !important;
-            padding: 10px 20px !important;
-            border-radius: 25px !important;
-            font-weight: 600 !important;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
-            transition: all 0.3s !important;
-            width: 100% !important;
-        }
-        div[data-testid="column"]:nth-child(5) button:hover {
-            transform: scale(1.05) !important;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3) !important;
-        }
-    </style>
-    """, unsafe_allow_html=True)
-    
-    if st.button("📄 ONE PAGE", key="btn_onepage_header"):
-        st.session_state.mostrar_presentacion = True
-        st.rerun()
-
 # RESETEAR MODAL AL INICIO (se activará solo con clic explícito en "Ficha")
 # Si no hay flag de "acabo de hacer clic", cerrar modal
 if 'modal_clic_reciente' not in st.session_state:
@@ -1405,6 +1378,59 @@ if st.session_state.mostrar_presentacion:
             st.session_state.mostrar_presentacion = False
             st.rerun()
 
+# BOTÓN "ONE PAGE" INYECTADO EN HEADER DE STREAMLIT (superior derecho)
+st.markdown("""
+<style>
+    /* Botón ONE PAGE en header nativo de Streamlit */
+    #btn-one-page-header {
+        position: fixed;
+        top: 10px;
+        right: 73px; /* 3px más a la izquierda del margen para no solapar menú hamburguesa */
+        z-index: 999999;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        transition: all 0.3s;
+        font-family: 'Source Sans Pro', sans-serif;
+    }
+    
+    #btn-one-page-header:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    }
+</style>
+
+<button id="btn-one-page-header" onclick="document.getElementById('hidden-one-page-btn').click()">
+    🎓 ONE PAGE
+</button>
+""", unsafe_allow_html=True)
+
+# Botón invisible de Streamlit para manejar el estado (oculto con CSS)
+st.markdown("""
+<style>
+    /* Ocultar el botón de Streamlit que controla el estado */
+    button[kind="secondary"][data-testid="baseButton-secondary"][aria-label="Botón oculto controlado por el HTML"] {
+        display: none !important;
+        visibility: hidden !important;
+        height: 0 !important;
+        width: 0 !important;
+        opacity: 0 !important;
+        position: absolute !important;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+if st.button("", key="hidden-one-page-btn", help="Botón oculto controlado por el HTML"):
+    st.session_state.mostrar_presentacion = True
+    st.rerun()
+
 # CREAR PESTAÑAS CON DISEÑO MEJORADO
 tab1, tab2, tab3 = st.tabs([
     "🔍  Búsqueda Inteligente",
@@ -1465,6 +1491,8 @@ with tab1:
             <h2 style='color: white !important; margin: 0;'>🎯 Filtros Avanzados</h2>
         </div>
         """, unsafe_allow_html=True)
+        
+        # BOTÓN ONE PAGE MOVIDO AL HEADER (ver código después del sidebar)
         
         # ⚽ FILTRO DE AÑO FIFA (NUEVO)
         st.markdown("### 📅 Año FIFA")

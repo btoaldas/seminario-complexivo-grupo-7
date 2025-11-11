@@ -1233,9 +1233,27 @@ st.markdown(f"""
             <span style='color: white; font-weight: 600;'>🎯 Random Forest</span>
         </div>
     </div>
-    <p style='color: rgba(255,255,255,0.7); font-size: 14px; margin-top: 20px; font-style: italic;'>
-        Universidad Regional Autónoma de los Andes (UniAndes) | Seminario Complexivo | Prof. Juan Felipe Nájera
-    </p>
+    <div style='margin-top: 25px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.2);'>
+        <p style='color: rgba(255,255,255,0.85); font-size: 15px; margin: 8px 0; font-weight: 600;'>
+            Universidad Regional Autónoma de los Andes (UniAndes)
+        </p>
+        <p style='color: rgba(255,255,255,0.75); font-size: 13px; margin: 5px 0;'>
+            Ingeniería de Software | Analítica con Python | Proyecto Final de Graduación
+        </p>
+        <p style='color: rgba(255,255,255,0.7); font-size: 13px; margin: 5px 0;'>
+            Prof. Juan Felipe Nájera | Noviembre 2025
+        </p>
+    </div>
+    <div style='margin-top: 15px; padding: 15px; background: rgba(0,0,0,0.2); border-radius: 15px; backdrop-filter: blur(5px);'>
+        <p style='color: rgba(255,255,255,0.8); font-size: 13px; margin: 5px 0; font-weight: 500;'>
+            👥 Grupo 7
+        </p>
+        <div style='display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 10px;'>
+            <span style='color: rgba(255,255,255,0.75); font-size: 12px;'>Alberto Alexander Aldás Villacrés</span>
+            <span style='color: rgba(255,255,255,0.75); font-size: 12px;'>Cristian Joel Riofrío Medina</span>
+            <span style='color: rgba(255,255,255,0.75); font-size: 12px;'>Wilson Fernando Saavedra Álvarez</span>
+        </div>
+    </div>
 </div>
 """, unsafe_allow_html=True)
 

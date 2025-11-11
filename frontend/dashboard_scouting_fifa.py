@@ -372,6 +372,93 @@ st.markdown(f"""
         border-radius: 12px;
         border-left: 5px solid {COLOR_DESTACADO};
     }}
+    
+    /* ========================================
+       FIX LIGHT MODE - VISIBILIDAD DE TEXTOS
+       ======================================== */
+    
+    /* Headers de tablas */
+    thead th {{
+        color: #ffffff !important;
+        background-color: {COLOR_PRIMARIO} !important;
+        font-weight: 600 !important;
+    }}
+    
+    /* Celdas de tablas */
+    tbody td {{
+        color: #1f1f1f !important;
+        font-weight: 500 !important;
+    }}
+    
+    /* Textos de paginación */
+    .stDataFrame div[data-testid="stText"],
+    .stDataFrame p,
+    .stDataFrame span {{
+        color: #1f1f1f !important;
+        font-weight: 500 !important;
+    }}
+    
+    /* Números de página */
+    .stDataFrame button {{
+        color: #1f1f1f !important;
+    }}
+    
+    /* Labels en cards y contenedores */
+    .element-container label,
+    .stMarkdown label {{
+        color: #1f1f1f !important;
+        font-weight: 500 !important;
+    }}
+    
+    /* Textos en expanders */
+    .streamlit-expanderHeader {{
+        color: #1f1f1f !important;
+        font-weight: 600 !important;
+    }}
+    
+    .streamlit-expanderContent p,
+    .streamlit-expanderContent span,
+    .streamlit-expanderContent div {{
+        color: #1f1f1f !important;
+    }}
+    
+    /* Textos en métricas */
+    [data-testid="stMetricLabel"],
+    [data-testid="stMetricValue"],
+    [data-testid="stMetricDelta"] {{
+        color: #1f1f1f !important;
+    }}
+    
+    /* Títulos h3, h4, h5 en contenido principal */
+    .main h3,
+    .main h4,
+    .main h5 {{
+        color: #1f1f1f !important;
+        font-weight: 600 !important;
+    }}
+    
+    /* Párrafos y spans en main */
+    .main p,
+    .main span:not(.stMarkdown span) {{
+        color: #1f1f1f !important;
+    }}
+    
+    /* Textos en botones secundarios */
+    button[kind="secondary"] {{
+        color: #1f1f1f !important;
+    }}
+    
+    /* Información de clubes y ligas */
+    .stMarkdown strong,
+    .stMarkdown b {{
+        color: #000000 !important;
+        font-weight: 700 !important;
+    }}
+    
+    /* Emojis y símbolos - mantener visible */
+    .stMarkdown [role="img"] {{
+        filter: none !important;
+    }}
 </style>
 """, unsafe_allow_html=True)
 

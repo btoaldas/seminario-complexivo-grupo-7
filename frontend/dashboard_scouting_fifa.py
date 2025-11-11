@@ -1132,7 +1132,14 @@ def mostrar_modal_jugador(jugador_id, jugador_nombre, año_fifa):
                 valor_real = jugador.get("valor_mercado_eur", 0)
                 valor_predicho = prediccion.get("valor_predicho_eur", 0)
                 diferencia = prediccion.get("diferencia_porcentual", 0)
-                clasificacion = prediccion.get("clasificacion", "N/A")
+                
+                # RECALCULAR clasificación dinámicamente basada en tolerancia del slider
+                if diferencia > tolerancia_porcentaje:
+                    clasificacion = "INFRAVALORADO"
+                elif diferencia < -tolerancia_porcentaje:
+                    clasificacion = "SOBREVALORADO"
+                else:
+                    clasificacion = "JUSTO"
                 
                 # Métricas lado a lado
                 col_v1, col_v2, col_v3 = st.columns(3)
@@ -1168,7 +1175,7 @@ def mostrar_modal_jugador(jugador_id, jugador_nombre, año_fifa):
                 
                 st.plotly_chart(fig_comp, use_container_width=True)
                 
-                # Clasificación con badge (usando tolerancia variable)
+                # Clasificación con badge (usando tolerancia variable del slider)
                 if diferencia > tolerancia_porcentaje:
                     st.success(f"✅ **{clasificacion}** (+{diferencia:.1f}%)")
                     st.info("🔍 **Oportunidad:** Jugador potencialmente INFRAVALORADO")

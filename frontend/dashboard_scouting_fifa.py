@@ -1232,45 +1232,39 @@ st.markdown(f"""
         <div style='background: rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 25px; backdrop-filter: blur(10px);'>
             <span style='color: white; font-weight: 600;'>🎯 Random Forest</span>
         </div>
-        <div id='btn-one-page' style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 10px 20px; border-radius: 25px; backdrop-filter: blur(10px); cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.2);' 
-             onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 6px 20px rgba(0,0,0,0.3)';"
-             onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(0,0,0,0.2)';">
-            <span style='color: white; font-weight: 600;'>📄 ONE PAGE</span>
-        </div>
     </div>
     <p style='color: rgba(255,255,255,0.7); font-size: 14px; margin-top: 20px; font-style: italic;'>
         Universidad Regional Autónoma de los Andes (UniAndes) | Seminario Complexivo | Prof. Juan Felipe Nájera
     </p>
 </div>
-
-<script>
-    // Detectar clic en botón ONE PAGE del header
-    document.addEventListener('DOMContentLoaded', function() {{
-        const btnOnePage = document.getElementById('btn-one-page');
-        if (btnOnePage) {{
-            btnOnePage.addEventListener('click', function() {{
-                // Enviar mensaje a Streamlit para activar modal
-                window.parent.postMessage({{
-                    type: 'streamlit:setComponentValue',
-                    key: 'abrir_one_page',
-                    value: true
-                }}, '*');
-                
-                // Recargar para activar modal
-                window.location.href = window.location.href.split('?')[0] + '?open_onepage=1';
-            }});
-        }}
-    }});
-</script>
 """, unsafe_allow_html=True)
 
-# Detectar si debe abrir ONE PAGE desde query params
-query_params = st.query_params
-if query_params.get("open_onepage") == "1":
-    st.session_state.mostrar_presentacion = True
-    # Limpiar query param
-    st.query_params.clear()
-    st.rerun()
+# BOTÓN ONE PAGE COMO BADGE CLICKEABLE (usando columnas para alineación)
+col1, col2, col3, col4, col5 = st.columns([1, 1, 1, 1, 1])
+with col5:
+    st.markdown("""
+    <style>
+        div[data-testid="column"]:nth-child(5) button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            color: white !important;
+            border: none !important;
+            padding: 10px 20px !important;
+            border-radius: 25px !important;
+            font-weight: 600 !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+            transition: all 0.3s !important;
+            width: 100% !important;
+        }
+        div[data-testid="column"]:nth-child(5) button:hover {
+            transform: scale(1.05) !important;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3) !important;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    if st.button("📄 ONE PAGE", key="btn_onepage_header"):
+        st.session_state.mostrar_presentacion = True
+        st.rerun()
 
 # RESETEAR MODAL AL INICIO (se activará solo con clic explícito en "Ficha")
 # Si no hay flag de "acabo de hacer clic", cerrar modal

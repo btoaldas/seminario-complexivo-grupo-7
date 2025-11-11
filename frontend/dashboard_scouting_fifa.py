@@ -1379,10 +1379,6 @@ if st.session_state.mostrar_presentacion:
             st.rerun()
 
 # CREAR PESTAÑAS CON 4TO TAB "ONE PAGE" QUE ABRE MODAL
-# Detectar si se hizo clic en el tab "ONE PAGE"
-if 'tab_seleccionado' not in st.session_state:
-    st.session_state.tab_seleccionado = 0
-
 # CSS para estilizar el tab ONE PAGE
 st.markdown("""
 <style>
@@ -1410,9 +1406,14 @@ tab1, tab2, tab3, tab4 = st.tabs([
 
 # Lógica para el tab4: detectar si se hizo clic y abrir modal
 with tab4:
-    # Este contenido solo se ejecuta si se hace clic en el tab ONE PAGE
-    st.session_state.mostrar_presentacion = True
-    st.rerun()
+    # Mostrar un mensaje temporal antes de abrir el modal
+    st.info("🎓 Abriendo presentación de defensa...")
+    # Pequeño placeholder para que el tab tenga contenido visible
+    st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
+    # Activar el modal en el próximo ciclo
+    if not st.session_state.mostrar_presentacion:
+        st.session_state.mostrar_presentacion = True
+        st.rerun()
 
 # Cargar opciones de filtros
 data_filtros = cargar_opciones_filtros()

@@ -221,6 +221,7 @@ def buscar_jugadores(
     valoracion_max: Optional[int] = Query(None, ge=40, le=100, description="Valoración global máxima"),
     potencial_min: Optional[int] = Query(None, ge=40, le=100, description="Potencial mínimo"),
     potencial_max: Optional[int] = Query(None, ge=40, le=100, description="Potencial máximo"),
+    valor_min_eur: Optional[float] = Query(None, description="Valor mínimo de mercado en EUR"),
     valor_max_eur: Optional[float] = Query(None, description="Valor máximo de mercado en EUR"),
     año_datos: Optional[int] = Query(None, ge=2015, le=2021, description="Año FIFA (2015-2021)"),
     categoria_edad: Optional[List[str]] = Query(None, description="Categoría de edad (Joven/Prime/Veterano)"),
@@ -285,6 +286,9 @@ def buscar_jugadores(
         
         if potencial_max is not None:
             df_filtrado = df_filtrado[df_filtrado["potencial"] <= potencial_max]
+        
+        if valor_min_eur is not None:
+            df_filtrado = df_filtrado[df_filtrado["valor_mercado_eur"] >= valor_min_eur]
         
         if valor_max_eur is not None:
             df_filtrado = df_filtrado[df_filtrado["valor_mercado_eur"] <= valor_max_eur]

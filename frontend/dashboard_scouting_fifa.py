@@ -2055,26 +2055,45 @@ with tab1:
         )
         st.caption(f"Mínimo: {potencial_rango[0]}  —  Máximo: {potencial_rango[1]}")
         
-        # Filtro de valor de mercado (dos sliders separados)
-        st.markdown("**💰 Valor de Mercado:**")
+        # Filtro de valor de mercado (slider + inputs manuales)
+        st.markdown("**💰 Valor de Mercado (millones €):**")
         
-        valor_min_millones = st.slider(
-            "Valor mínimo (0 - 10 millones €):",
+        # Slider de rango con escala adaptativa
+        valor_rango = st.slider(
+            "Rango visual:",
             min_value=0.0,
-            max_value=10.0,
-            value=0.0,
-            step=0.1
-        )
-        
-        valor_max_millones = st.slider(
-            "Valor máximo (10 - 200 millones €):",
-            min_value=10.0,
             max_value=200.0,
-            value=50.0,
-            step=1.0
+            value=(0.0, 50.0),
+            step=0.1,
+            label_visibility="collapsed"
         )
         
-        st.caption(f"Rango seleccionado: €{valor_min_millones:.1f}M - €{valor_max_millones:.0f}M")
+        # Inputs numéricos para valores exactos
+        col_v1, col_v2 = st.columns(2)
+        with col_v1:
+            valor_min_manual = st.number_input(
+                "💵 Mínimo (millones €):",
+                min_value=0.0,
+                max_value=200.0,
+                value=float(valor_rango[0]),
+                step=0.1,
+                format="%.1f"
+            )
+        with col_v2:
+            valor_max_manual = st.number_input(
+                "💰 Máximo (millones €):",
+                min_value=0.0,
+                max_value=200.0,
+                value=float(valor_rango[1]),
+                step=0.1,
+                format="%.1f"
+            )
+        
+        # Usar el valor manual si difiere del slider
+        valor_min_final = valor_min_manual
+        valor_max_final = valor_max_manual
+        
+        st.caption(f"📊 Rango seleccionado: €{valor_min_final:.1f}M - €{valor_max_final:.1f}M")
         
         # Ordenamiento
         ordenar_por = st.selectbox(
@@ -2135,11 +2154,11 @@ with tab1:
         params["potencial_min"] = potencial_rango[0]
         params["potencial_max"] = potencial_rango[1]
         
-        # Filtro de valor de mercado (dos sliders separados)
-        if valor_min_millones > 0:
-            params["valor_min_eur"] = valor_min_millones * 1_000_000
-        if valor_max_millones < 200.0:
-            params["valor_max_eur"] = valor_max_millones * 1_000_000
+        # Filtro de valor de mercado (slider + manual)
+        if valor_min_final > 0:
+            params["valor_min_eur"] = valor_min_final * 1_000_000
+        if valor_max_final < 200.0:
+            params["valor_max_eur"] = valor_max_final * 1_000_000
         
         # Buscar jugadores
         resultados = buscar_jugadores(params)

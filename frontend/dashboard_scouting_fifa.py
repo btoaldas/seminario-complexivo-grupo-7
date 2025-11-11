@@ -1235,7 +1235,7 @@ st.markdown(f"""
     </div>
     <div style='margin-top: 25px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.2);'>
         <p style='color: rgba(255,255,255,0.85); font-size: 15px; margin: 8px 0; font-weight: 600;'>
-            Universidad Regional Autónoma de los Andes (UniAndes)
+            Universidad Regional Autónoma de los Andes (UNIANDES)
         </p>
         <p style='color: rgba(255,255,255,0.75); font-size: 13px; margin: 5px 0;'>
             Ingeniería de Software | Analítica con Python | Proyecto Final de Graduación

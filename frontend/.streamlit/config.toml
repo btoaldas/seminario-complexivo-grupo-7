@@ -11,11 +11,3 @@ gatherUsageStats = false
 [client]
 showErrorDetails = true
 toolbarMode = "viewer"
-
-# FORZAR TEMA OSCURO COMO PREDETERMINADO
-[theme]
-base = "dark"
-primaryColor = "#667eea"
-backgroundColor = "#0e1117"
-secondaryBackgroundColor = "#262730"
-textColor = "#fafafa"

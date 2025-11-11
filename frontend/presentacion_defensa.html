@@ -659,7 +659,7 @@
             
             <div class="problem-box">
                 <h3>⚠️ Problemática Principal</h3>
-                <p>Los clubes de fútbol y agencias de scouting necesitan identificar <strong>talento potencialmente infravalorado</strong> en un mercado saturado con más de <strong>122,000 jugadores profesionales</strong>. El proceso manual de evaluación es costoso, lento y subjetivo.</p>
+                <p>Los clubes de fútbol y agencias de scouting necesitan identificar <strong>talento potencialmente infravalorado</strong> en un mercado saturado de <strong> jugadores profesionales</strong>. El proceso manual de evaluación es costoso, lento y subjetivo.</p>
             </div>
 
             <div class="problem-box">
@@ -741,7 +741,7 @@
                 <div class="model-card">
                     <h3>📊 Regresión Lineal</h3>
                     <p style="font-size: 1.1rem; opacity: 0.9;">Modelo Baseline</p>
-                    <div class="accuracy" style="color: #fbbf24;">35-45%</div>
+                    <div class="accuracy" style="color: #fbbf24;">80-90%</div>
                     <div class="model-details">
                         <p><strong>Configuración:</strong></p>
                         <ul style="list-style: none; padding: 0;">
@@ -749,15 +749,15 @@
                             <li>✓ n_jobs=-1 (paralelización)</li>
                             <li>✓ Entrenamiento rápido (&lt;1 min)</li>
                         </ul>
-                        <p style="margin-top: 20px;"><strong>Resultado:</strong> R² = 0.35-0.45</p>
-                        <p style="margin-top: 10px; opacity: 0.8;">❌ Insuficiente para relaciones no lineales</p>
+                        <p style="margin-top: 20px;"><strong>Resultado:</strong> R² = 0.80-0.90</p>
+                        <p style="margin-top: 10px; opacity: 0.8;">❌ Insuficiente en comparativa</p>
                     </div>
                 </div>
 
                 <div class="model-card winner">
                     <h3>🌲 Random Forest Regressor</h3>
                     <p style="font-size: 1.1rem; opacity: 0.9;">⭐ Modelo Ganador</p>
-                    <div class="accuracy">65-98%</div>
+                    <div class="accuracy">89-98%</div>
                     <div class="model-details">
                         <p><strong>Configuración:</strong></p>
                         <ul style="list-style: none; padding: 0;">
@@ -767,7 +767,7 @@
                             <li>✓ Validación OOB activa</li>
                             <li>✓ 84 features totales</li>
                         </ul>
-                        <p style="margin-top: 20px;"><strong>Resultado:</strong> R² = 0.65-0.98</p>
+                        <p style="margin-top: 20px;"><strong>Resultado:</strong> R² = 0.85-0.98</p>
                         <p style="margin-top: 10px; color: #4ade80;">✅ Modelo seleccionado para producción</p>
                     </div>
                 </div>
@@ -798,7 +798,7 @@
                     <h3>Pipeline de Limpieza de Datos</h3>
                     <p class="phase-tech">🛠️ Tecnologías: Python, Pandas, NumPy, OpenPyXL</p>
                     <p class="phase-description">
-                        <strong>Proceso:</strong> Carga de 7 hojas Excel (FIFA 15-21), unificación en un DataFrame único, renombrado de 106→73 columnas al español, eliminación de duplicados y columnas con &gt;70% nulos, normalización monetaria (M, K → EUR), normalización temporal (ISO 8601), imputación inteligente por posición, creación de 7 nuevas features.
+                        <strong>Proceso:</strong> Carga de 7 hojas Excel (FIFA 15-21), unificación en un DataFrame único, renombrado de 106→73 columnas al español, eliminación de duplicados y columnas con &gt;70% nulos, normalización monetaria (M, K → EUR), normalización temporal, imputación inteligente por posición, creación de 7 nuevas features.
                     </p>
                     <p class="phase-description" style="margin-top: 10px;">
                         <strong>Salida:</strong> <code>datos/procesados/fifa_limpio.csv</code> (122,501 jugadores procesados)
@@ -825,10 +825,10 @@
                         <strong>Preprocesamiento:</strong> Selección de 14 features base (11 numéricas + 3 categóricas), aplicación de OneHotEncoding (resultando en 84 features totales), división train/test 75/25, encoding especial para 954 clubes únicos.
                     </p>
                     <p class="phase-description" style="margin-top: 10px;">
-                        <strong>Modelos:</strong> Entrenamiento de Regresión Lineal (baseline) y Random Forest (4000 árboles, max_depth=30). Evaluación con R², MAE, RMSE. Selección del mejor modelo (Random Forest con R²=0.65-0.98).
+                        <strong>Modelos:</strong> Entrenamiento de Regresión Lineal (baseline) y Random Forest (4000 árboles, max_depth=30). Evaluación con R², MAE, RMSE. Selección del mejor modelo (Random Forest con R²=0.85-0.98).
                     </p>
                     <p class="phase-description" style="margin-top: 10px;">
-                        <strong>Salida:</strong> 3 archivos Joblib (modelo.joblib, encoder.joblib, club_encoding.joblib) - Total: ~1GB
+                        <strong>Salida:</strong> 3 archivos Joblib (modelo.joblib, encoder.joblib, club_encoding.joblib) - Total: ~5GB
                     </p>
                 </div>
 
@@ -837,16 +837,17 @@
                     <h3>Desarrollo de API REST</h3>
                     <p class="phase-tech">🌐 Tecnologías: FastAPI, Uvicorn, Pydantic</p>
                     <p class="phase-description">
-                        <strong>Arquitectura:</strong> API asíncrona con 8 endpoints, validación de datos con Pydantic, carga de modelos ML en memoria al iniciar, respuestas en formato JSON, documentación automática con Swagger/OpenAPI.
+                        <strong>Arquitectura:</strong> API asíncrona con 8 endpoints, validación de datos con Pydantic, carga de modelos ML en memoria al iniciar.
                     </p>
                     <p class="phase-description" style="margin-top: 10px;">
                         <strong>Endpoints principales:</strong><br>
                         • GET <code>/jugadores/buscar</code> - Búsqueda con filtros avanzados<br>
                         • POST <code>/ml/predecir</code> - Predicción de valor de mercado<br>
-                        • GET <code>/jugadores/infravalorados</code> - Top oportunidades del mercado
+                        • GET <code>/jugadores/infravalorados</code> - Top oportunidades del mercado<br>
+                        • GET <code>/jugadores/{player_id}/perfil</code> - Perfil detallado del jugador
                     </p>
                     <p class="phase-description" style="margin-top: 10px;">
-                        <strong>Performance:</strong> Respuestas en &lt;1 segundo, preparado para producción.
+                        <strong>Performance:</strong> Respuestas preparadas para producción.
                     </p>
                 </div>
 
@@ -855,10 +856,10 @@
                     <h3>Dashboard Interactivo</h3>
                     <p class="phase-tech">📊 Tecnologías: Streamlit, Plotly, Requests</p>
                     <p class="phase-description">
-                        <strong>Funcionalidades:</strong> 3 pestañas interactivas (Búsqueda y Análisis, Predicción ML, Oportunidades de Mercado), filtros dinámicos por posición/liga/club/edad, tabla de resultados con escudos de clubes y ligas (62 clubes, 19 ligas desde ESPN CDN), tarjeta especial de jugador con foto y gráfico radar de 6 atributos, formulario de predicción ML con validación en tiempo real, visualizaciones interactivas con Plotly (distribuciones, comparaciones, tendencias).
+                        <strong>Funcionalidades:</strong> 3 pestañas interactivas (Búsqueda y Análisis, Predicción ML, Oportunidades de Mercado), filtros dinámicos por posición/liga/club/edad, tabla de resultados con escudos de clubes y ligas, tarjeta especial de jugador con foto y gráfico radar de 6 atributos, formulario de predicción ML con validación en tiempo real, visualizaciones interactivas con Plotly (distribuciones, comparaciones, tendencias).
                     </p>
                     <p class="phase-description" style="margin-top: 10px;">
-                        <strong>Integración:</strong> Conectado a API REST para todas las consultas y predicciones.
+                        <strong>Integración:</strong> Conectado a API REST (FastAPI)para todas las consultas y predicciones.
                     </p>
                 </div>
 
@@ -874,6 +875,12 @@
                     </p>
                     <p class="phase-description" style="margin-top: 10px;">
                         <strong>Comandos:</strong> <code>docker-compose up --build</code> para levantar todo el sistema.
+                    </p>
+                    <p class="phase-description" style="margin-top: 10px;">
+                        <strong>VPS:</strong> <code>Contabo</code> Servidor en la nube alojado con ip publica y Rocky Linux, con proxy pass Nginx y Docker.
+                    </p>
+                      <p class="phase-description" style="margin-top: 10px;">
+                        <strong>Url:</strong> <code>https://grupo7fifa.uniandes.site/</code> para acceder al frontend en entorno de producción con ssl verificado.
                     </p>
                 </div>
             </div>
@@ -945,6 +952,11 @@
                         <li>Docker</li>
                         <li>Docker Compose</li>
                         <li>Git / GitHub</li>
+                        <li>Contabo VPS</li>
+                        <li>Nginx</li>
+                        <li>Rocky Linux</li>
+                        <li>SSL Let's Encrypt</li>
+                        <li>Dominio Propio DNS</li>
                     </ul>
                 </div>
 
@@ -954,6 +966,8 @@
                         <li>PowerShell</li>
                         <li>VS Code</li>
                         <li>Kaggle API</li>
+                        <li>GitHub Copilot</li>
+                        <li>Claude Sonnet 4.5</li>
                     </ul>
                 </div>
             </div>
@@ -970,22 +984,22 @@
                     <div class="feature-card">
                         <div class="feature-icon">🎯</div>
                         <h3>Precisión del Modelo</h3>
-                        <p><strong style="font-size: 2rem; color: #4ade80;">65-98%</strong></p>
-                        <p style="margin-top: 15px;">R² Score entre 0.65 y 0.98 dependiendo del rango de precios. El modelo explica hasta el 98% de la variabilidad en valores de jugadores elite.</p>
+                        <p><strong style="font-size: 2rem; color: #4ade80;">85-98%</strong></p>
+                        <p style="margin-top: 15px;">R² Score entre 0.85 y 0.98 dependiendo del rango de precios. El modelo explica hasta el 98% de la variabilidad en valores de jugadores elite.</p>
                     </div>
 
                     <div class="feature-card">
                         <div class="feature-icon">⚡</div>
                         <h3>Performance API</h3>
-                        <p><strong style="font-size: 2rem; color: #4ade80;">&lt;1 seg</strong></p>
-                        <p style="margin-top: 15px;">Respuestas instantáneas en todos los endpoints. Predicciones ML en menos de 1 segundo. Sistema optimizado para producción.</p>
+                        <p><strong style="font-size: 2rem; color: #4ade80;">&lt;2 seg</strong></p>
+                        <p style="margin-top: 15px;">Respuestas instantáneas en todos los endpoints. Predicciones ML en menos de 2 segundos. Sistema optimizado para producción.</p>
                     </div>
 
                     <div class="feature-card">
                         <div class="feature-icon">📊</div>
                         <h3>Cobertura de Datos</h3>
                         <p><strong style="font-size: 2rem; color: #f5576c;">122,501</strong></p>
-                        <p style="margin-top: 15px;">Jugadores profesionales analizados desde FIFA 15 hasta FIFA 21. Base de datos completa y actualizada.</p>
+                        <p style="margin-top: 15px;">Jugadores profesionales analizados desde FIFA 15 hasta FIFA 21. Base de datos amplia.</p>
                     </div>
 
                     <div class="feature-card">
@@ -997,13 +1011,13 @@
                     <div class="feature-card">
                         <div class="feature-icon">🎨</div>
                         <h3>Interfaz Interactiva</h3>
-                        <p style="margin-top: 15px;">Dashboard con 3 pestañas, filtros dinámicos, escudos de 62 clubes y 19 ligas, tarjetas de jugador con gráficos radar, visualizaciones con Plotly.</p>
+                        <p style="margin-top: 15px;">Dashboard con 3 pestañas, filtros dinámicos,  clubes y  ligas, tarjetas de jugador con gráficos radar, visualizaciones con Plotly.</p>
                     </div>
 
                     <div class="feature-card">
                         <div class="feature-icon">🐳</div>
                         <h3>Despliegue Profesional</h3>
-                        <p style="margin-top: 15px;">Sistema completamente dockerizado, listo para producción, escalable horizontalmente, portable a cualquier servidor. Documentación completa con Swagger.</p>
+                        <p style="margin-top: 15px;">Sistema completamente dockerizado, listo para producción, escalable horizontalmente, portable a cualquier servidor.</p>
                     </div>
                 </div>
             </div>
@@ -1012,7 +1026,7 @@
                 <div class="info-card" style="background: white; color: #333;">
                     <h3 style="color: #667eea;">📈 Métricas del Modelo</h3>
                     <ul style="text-align: left;">
-                        <li><strong>R² Score:</strong> 0.65 - 0.98 (65%-98%)</li>
+                        <li><strong>R² Score:</strong> 0.85 - 0.98 (85%-98%)</li>
                         <li><strong>MAE:</strong> Error medio absoluto minimizado</li>
                         <li><strong>RMSE:</strong> Raíz del error cuadrático medio bajo</li>
                         <li><strong>Validación OOB:</strong> Score interno confirmado</li>
@@ -1023,7 +1037,7 @@
                     <h3 style="color: #667eea;">✅ Criterios Cumplidos</h3>
                     <ul style="text-align: left;">
                         <li>Pipeline procesa 122,501 jugadores ✓</li>
-                        <li>Modelo alcanza R² &gt; 0.65 ✓</li>
+                        <li>Modelo alcanza R² &gt; 0.85 ✓</li>
                         <li>API responde en &lt;1 segundo ✓</li>
                         <li>Sistema completamente dockerizado ✓</li>
                         <li>Identifica jugadores infravalorados ✓</li>
@@ -1081,7 +1095,7 @@
                     <div class="arch-components">
                         <div class="component">Dashboard Web<br>(Navegador)</div>
                         <div class="component">API REST<br>(HTTP Requests)</div>
-                        <div class="component">Swagger Docs<br>(/docs)</div>
+                        <div class="component">API REST Docs<br>(/docs)</div>
                     </div>
                 </div>
             </div>
@@ -1106,11 +1120,11 @@
             <h2>🎓 Conclusiones y Logros</h2>
             
             <div class="conclusion-item">
-                Se desarrolló exitosamente un <strong>sistema completo end-to-end</strong> de Machine Learning aplicado a analítica deportiva, cumpliendo con todos los requisitos académicos del Seminario Complexivo.
+                Se desarrolló exitosamente un <strong>sistema completo</strong> de Machine Learning aplicado a analítica deportiva, cumpliendo con todos los requisitos académicos del Seminario Complexivo.
             </div>
 
             <div class="conclusion-item">
-                El modelo <strong>Random Forest con 4000 árboles</strong> demostró ser superior a la regresión lineal baseline, alcanzando una precisión de <strong>65-98% (R²=0.65-0.98)</strong> en la predicción del valor de mercado de jugadores.
+                El modelo <strong>Random Forest con 4000 árboles</strong> demostró ser superior a la regresión lineal baseline, alcanzando una precisión de <strong>85-98% (R²=0.85-0.98)</strong> en la predicción del valor de mercado de jugadores.
             </div>
 
             <div class="conclusion-item">

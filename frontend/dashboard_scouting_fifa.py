@@ -1254,6 +1254,20 @@ st.markdown(f"""
             <span style='color: rgba(255,255,255,0.75); font-size: 12px;'>Wilson Fernando Saavedra Álvarez</span>
         </div>
     </div>
+    <div style='margin-top: 20px; padding: 15px; background: rgba(74, 222, 128, 0.15); border-radius: 15px; border: 2px solid rgba(74, 222, 128, 0.3);'>
+        <p style='color: rgba(255,255,255,0.9); font-size: 13px; margin: 5px 0; font-weight: 600;'>
+            🌐 Enlaces del Proyecto
+        </p>
+        <div style='display: flex; justify-content: center; gap: 25px; flex-wrap: wrap; margin-top: 12px;'>
+            <a href='https://grupo7fifa.uniandes.site/' target='_blank' style='color: #4ade80; font-size: 12px; text-decoration: none; font-weight: 600; transition: opacity 0.3s;' onmouseover='this.style.opacity="0.7"' onmouseout='this.style.opacity="1"'>
+                🚀 Sistema en Producción
+            </a>
+            <span style='color: rgba(255,255,255,0.5);'>|</span>
+            <a href='https://github.com/btoaldas/seminario-complexivo-grupo-7' target='_blank' style='color: #4ade80; font-size: 12px; text-decoration: none; font-weight: 600; transition: opacity 0.3s;' onmouseover='this.style.opacity="0.7"' onmouseout='this.style.opacity="1"'>
+                📁 Repositorio GitHub
+            </a>
+        </div>
+    </div>
 </div>
 """, unsafe_allow_html=True)
 

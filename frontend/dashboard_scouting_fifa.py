@@ -1378,42 +1378,41 @@ if st.session_state.mostrar_presentacion:
             st.session_state.mostrar_presentacion = False
             st.rerun()
 
-# CREAR PESTAÑAS CON DISEÑO MEJORADO + BOTÓN ONE PAGE INTEGRADO A LA DERECHA
+# CREAR PESTAÑAS CON 4TO TAB "ONE PAGE" QUE ABRE MODAL
+# Detectar si se hizo clic en el tab "ONE PAGE"
+if 'tab_seleccionado' not in st.session_state:
+    st.session_state.tab_seleccionado = 0
+
+# CSS para estilizar el tab ONE PAGE
 st.markdown("""
 <style>
-    /* Ajustar contenedor de tabs para que tenga espacio a la derecha */
-    .stTabs [data-baseweb="tab-list"] {
-        width: calc(100% - 150px) !important;
-        display: inline-block !important;
+    /* Estilo especial para el cuarto tab (ONE PAGE) */
+    .stTabs [data-baseweb="tab-list"] button:nth-child(4) {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        color: white !important;
+        font-weight: bold !important;
     }
     
-    /* Posicionar botón ONE PAGE a la derecha de los tabs */
-    .btn-onepage-container {
-        position: absolute;
-        right: 0;
-        top: 0;
-        width: 140px;
-        z-index: 10;
+    .stTabs [data-baseweb="tab-list"] button:nth-child(4):hover {
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%) !important;
+        transform: scale(1.02);
     }
 </style>
-
-<div style="position: relative; margin-bottom: 10px;">
-    <div class="btn-onepage-container">
 """, unsafe_allow_html=True)
 
-# Botón ONE PAGE
-if st.button("🎓 ONE PAGE", type="primary", key="btn_presentacion", use_container_width=True):
-    st.session_state.mostrar_presentacion = True
-    st.rerun()
-
-st.markdown("</div></div>", unsafe_allow_html=True)
-
-# Tabs principales
-tab1, tab2, tab3 = st.tabs([
+# Crear 4 tabs (el cuarto es ONE PAGE)
+tab1, tab2, tab3, tab4 = st.tabs([
     "🔍  Búsqueda Inteligente",
     "📊  Análisis de Mercado",
-    "🤖  Predicción ML"
+    "🤖  Predicción ML",
+    "🎓  ONE PAGE"
 ])
+
+# Lógica para el tab4: detectar si se hizo clic y abrir modal
+with tab4:
+    # Este contenido solo se ejecuta si se hace clic en el tab ONE PAGE
+    st.session_state.mostrar_presentacion = True
+    st.rerun()
 
 # Cargar opciones de filtros
 data_filtros = cargar_opciones_filtros()

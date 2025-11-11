@@ -372,87 +372,7 @@ st.markdown(f"""
         border-radius: 12px;
         border-left: 5px solid {COLOR_DESTACADO};
     }}
-    
-    /* FORZAR TEMA OSCURO - Sobrescribir variables de Streamlit */
-    :root {{
-        --background-color: #0e1117 !important;
-        --secondary-background-color: #262730 !important;
-        --text-color: #fafafa !important;
-        --primary-color: #667eea !important;
-    }}
-    
-    /* Forzar fondo oscuro en todos los elementos */
-    body, .main, .block-container, section {{
-        background-color: #0e1117 !important;
-        color: #fafafa !important;
-    }}
-    
-    /* Forzar sidebar oscuro */
-    [data-testid="stSidebar"] > div:first-child {{
-        background-color: #262730 !important;
-    }}
-    
-    /* Forzar inputs oscuros */
-    input, textarea, select, .stTextInput > div > div > input {{
-        background-color: #262730 !important;
-        color: #fafafa !important;
-        border-color: #404040 !important;
-    }}
-    
-    /* Forzar selectbox oscuro */
-    .stSelectbox > div > div {{
-        background-color: #262730 !important;
-        color: #fafafa !important;
-    }}
- 
 </style>
-
-<script>
-    // FORZAR TEMA OSCURO CON JAVASCRIPT
-    (function() {{
-        // Esperar a que el DOM cargue
-        const forceTheme = () => {{
-            // Buscar el botón de configuración y ocultarlo
-            const settingsButtons = document.querySelectorAll('button[kind="header"]');
-            settingsButtons.forEach(btn => btn.style.display = 'none');
-            
-            // Forzar atributos de tema oscuro en el documento
-            document.documentElement.setAttribute('data-theme', 'dark');
-            document.body.setAttribute('data-theme', 'dark');
-            
-            // Forzar variables CSS de Streamlit
-            document.documentElement.style.setProperty('--background-color', '#0e1117');
-            document.documentElement.style.setProperty('--secondary-background-color', '#262730');
-            document.documentElement.style.setProperty('--text-color', '#fafafa');
-            document.documentElement.style.setProperty('--primary-color', '#667eea');
-            
-            // Intentar acceder al localStorage y forzar tema
-            try {{
-                localStorage.setItem('theme', 'dark');
-                localStorage.setItem('prefers-color-scheme', 'dark');
-            }} catch(e) {{}}
-        }};
-        
-        // Ejecutar inmediatamente
-        forceTheme();
-        
-        // Ejecutar cuando el DOM esté listo
-        if (document.readyState === 'loading') {{
-            document.addEventListener('DOMContentLoaded', forceTheme);
-        }}
-        
-        // Ejecutar continuamente para evitar cambios
-        setInterval(forceTheme, 500);
-        
-        // Observar cambios en el DOM
-        const observer = new MutationObserver(forceTheme);
-        observer.observe(document.body, {{
-            attributes: true,
-            childList: true,
-            subtree: true
-        }});
-    }})();
-</script>
 """, unsafe_allow_html=True)
 
 # ============================================================================
@@ -1496,17 +1416,55 @@ with tab1:
     </div>
     """, unsafe_allow_html=True)
     
-    # CSS GLOBAL PARA FORZAR COLORES EN SIDEBAR
+    # CSS GLOBAL PARA FORZAR COLORES EN SIDEBAR (LIGHT MODE COMPATIBLE)
     st.markdown("""
     <style>
-        /* Forzar color blanco en título de filtros */
+        /* Títulos principales en sidebar */
         [data-testid="stSidebar"] h2 {
             color: white !important;
         }
         
-        /* Asegurar que el div contenedor no interfiera */
         [data-testid="stSidebar"] div h2 {
             color: white !important;
+        }
+        
+        /* Títulos h3 en sidebar */
+        [data-testid="stSidebar"] h3 {
+            color: #fafafa !important;
+            font-weight: 600 !important;
+        }
+        
+        /* LABELS DE INPUTS EN SIDEBAR - LIGHT MODE FIX */
+        [data-testid="stSidebar"] label {
+            color: #ffffff !important;
+            font-weight: 500 !important;
+            font-size: 0.95rem !important;
+        }
+        
+        /* Labels específicos de selectbox, multiselect, text_input */
+        [data-testid="stSidebar"] [data-testid="stSelectbox"] label,
+        [data-testid="stSidebar"] [data-testid="stMultiSelect"] label,
+        [data-testid="stSidebar"] [data-testid="stTextInput"] label {
+            color: #ffffff !important;
+            font-weight: 500 !important;
+        }
+        
+        /* Placeholder text más visible */
+        [data-testid="stSidebar"] input::placeholder,
+        [data-testid="stSidebar"] textarea::placeholder {
+            color: #b0b0b0 !important;
+            opacity: 0.8 !important;
+        }
+        
+        /* Markdown text en sidebar */
+        [data-testid="stSidebar"] p,
+        [data-testid="stSidebar"] span {
+            color: #f0f0f0 !important;
+        }
+        
+        /* Help text más visible */
+        [data-testid="stSidebar"] .stHelp {
+            color: #d0d0d0 !important;
         }
     </style>
     """, unsafe_allow_html=True)

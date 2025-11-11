@@ -372,93 +372,6 @@ st.markdown(f"""
         border-radius: 12px;
         border-left: 5px solid {COLOR_DESTACADO};
     }}
-    
-    /* ========================================
-       FIX LIGHT MODE - VISIBILIDAD DE TEXTOS
-       ======================================== */
-    
-    /* Headers de tablas */
-    thead th {{
-        color: #ffffff !important;
-        background-color: {COLOR_PRIMARIO} !important;
-        font-weight: 600 !important;
-    }}
-    
-    /* Celdas de tablas */
-    tbody td {{
-        color: #1f1f1f !important;
-        font-weight: 500 !important;
-    }}
-    
-    /* Textos de paginación */
-    .stDataFrame div[data-testid="stText"],
-    .stDataFrame p,
-    .stDataFrame span {{
-        color: #1f1f1f !important;
-        font-weight: 500 !important;
-    }}
-    
-    /* Números de página */
-    .stDataFrame button {{
-        color: #1f1f1f !important;
-    }}
-    
-    /* Labels en cards y contenedores */
-    .element-container label,
-    .stMarkdown label {{
-        color: #1f1f1f !important;
-        font-weight: 500 !important;
-    }}
-    
-    /* Textos en expanders */
-    .streamlit-expanderHeader {{
-        color: #1f1f1f !important;
-        font-weight: 600 !important;
-    }}
-    
-    .streamlit-expanderContent p,
-    .streamlit-expanderContent span,
-    .streamlit-expanderContent div {{
-        color: #1f1f1f !important;
-    }}
-    
-    /* Textos en métricas */
-    [data-testid="stMetricLabel"],
-    [data-testid="stMetricValue"],
-    [data-testid="stMetricDelta"] {{
-        color: #1f1f1f !important;
-    }}
-    
-    /* Títulos h3, h4, h5 en contenido principal */
-    .main h3,
-    .main h4,
-    .main h5 {{
-        color: #1f1f1f !important;
-        font-weight: 600 !important;
-    }}
-    
-    /* Párrafos y spans en main */
-    .main p,
-    .main span:not(.stMarkdown span) {{
-        color: #1f1f1f !important;
-    }}
-    
-    /* Textos en botones secundarios */
-    button[kind="secondary"] {{
-        color: #1f1f1f !important;
-    }}
-    
-    /* Información de clubes y ligas */
-    .stMarkdown strong,
-    .stMarkdown b {{
-        color: #000000 !important;
-        font-weight: 700 !important;
-    }}
-    
-    /* Emojis y símbolos - mantener visible */
-    .stMarkdown [role="img"] {{
-        filter: none !important;
-    }}
 </style>
 """, unsafe_allow_html=True)
 
@@ -1503,32 +1416,31 @@ with tab1:
     </div>
     """, unsafe_allow_html=True)
     
-    # CSS GLOBAL PARA FORZAR COLORES EN SIDEBAR (LIGHT MODE COMPATIBLE)
+    # CSS GLOBAL: LIGHT MODE = DARK MODE (COLORES IDÉNTICOS)
     st.markdown("""
     <style>
-        /* Títulos principales en sidebar */
+        /* ============================================ */
+        /* SIDEBAR - Colores para light y dark mode   */
+        /* ============================================ */
         [data-testid="stSidebar"] h2 {
-            color: white !important;
+            color: #ffffff !important;
         }
         
         [data-testid="stSidebar"] div h2 {
-            color: white !important;
+            color: #ffffff !important;
         }
         
-        /* Títulos h3 en sidebar */
         [data-testid="stSidebar"] h3 {
             color: #fafafa !important;
             font-weight: 600 !important;
         }
         
-        /* LABELS DE INPUTS EN SIDEBAR - LIGHT MODE FIX */
         [data-testid="stSidebar"] label {
             color: #ffffff !important;
             font-weight: 500 !important;
             font-size: 0.95rem !important;
         }
         
-        /* Labels específicos de selectbox, multiselect, text_input */
         [data-testid="stSidebar"] [data-testid="stSelectbox"] label,
         [data-testid="stSidebar"] [data-testid="stMultiSelect"] label,
         [data-testid="stSidebar"] [data-testid="stTextInput"] label {
@@ -1536,22 +1448,141 @@ with tab1:
             font-weight: 500 !important;
         }
         
-        /* Placeholder text más visible */
         [data-testid="stSidebar"] input::placeholder,
         [data-testid="stSidebar"] textarea::placeholder {
             color: #b0b0b0 !important;
             opacity: 0.8 !important;
         }
         
-        /* Markdown text en sidebar */
         [data-testid="stSidebar"] p,
         [data-testid="stSidebar"] span {
             color: #f0f0f0 !important;
         }
         
-        /* Help text más visible */
         [data-testid="stSidebar"] .stHelp {
             color: #d0d0d0 !important;
+        }
+        
+        /* ============================================ */
+        /* CONTENIDO PRINCIPAL - TODO IGUAL QUE DARK   */
+        /* ============================================ */
+        
+        /* Headers de tablas (th) */
+        .main table thead th {
+            color: #ffffff !important;
+            background-color: #667eea !important;
+            font-weight: 600 !important;
+        }
+        
+        /* Celdas de tablas (td) */
+        .main table tbody td {
+            color: #fafafa !important;
+            font-weight: 500 !important;
+        }
+        
+        /* Números en celdas (año FIFA, edad, etc) */
+        .main table tbody td strong,
+        .main table tbody td b {
+            color: #ffffff !important;
+            font-weight: 600 !important;
+        }
+        
+        /* Texto de paginación (Página 1 de X) */
+        .main p {
+            color: #fafafa !important;
+        }
+        
+        /* Títulos H3, H4, H5 en contenido principal */
+        .main h3,
+        .main h4,
+        .main h5 {
+            color: #ffffff !important;
+            font-weight: 600 !important;
+        }
+        
+        /* Spans y divs con texto */
+        .main span,
+        .main div {
+            color: #fafafa !important;
+        }
+        
+        /* Labels en contenido principal */
+        .main label {
+            color: #fafafa !important;
+            font-weight: 500 !important;
+        }
+        
+        /* Texto en expanders */
+        .main [data-testid="stExpander"] {
+            color: #fafafa !important;
+        }
+        
+        .main [data-testid="stExpander"] p,
+        .main [data-testid="stExpander"] span,
+        .main [data-testid="stExpander"] div {
+            color: #fafafa !important;
+        }
+        
+        /* Nombres de clubes y ligas */
+        .main strong,
+        .main b {
+            color: #ffffff !important;
+            font-weight: 700 !important;
+        }
+        
+        /* Métricas (números grandes) */
+        .main [data-testid="stMetric"] {
+            color: #ffffff !important;
+        }
+        
+        .main [data-testid="stMetricValue"] {
+            color: #ffffff !important;
+            font-weight: 700 !important;
+        }
+        
+        .main [data-testid="stMetricLabel"] {
+            color: #fafafa !important;
+        }
+        
+        /* Cards y contenedores */
+        .main [data-testid="stVerticalBlock"] p,
+        .main [data-testid="stVerticalBlock"] span {
+            color: #fafafa !important;
+        }
+        
+        /* Markdown renderizado */
+        .main .stMarkdown {
+            color: #fafafa !important;
+        }
+        
+        .main .stMarkdown p,
+        .main .stMarkdown span,
+        .main .stMarkdown div {
+            color: #fafafa !important;
+        }
+        
+        /* Listas (Jugadores Infravalorados/Sobrevalorados) */
+        .main ul li,
+        .main ol li {
+            color: #fafafa !important;
+        }
+        
+        /* Encabezados en listas */
+        .main ul li strong,
+        .main ol li strong {
+            color: #ffffff !important;
+        }
+        
+        /* Texto de información básica (Edad:, Valoración Global:) */
+        .main div[data-testid="column"] p,
+        .main div[data-testid="column"] span {
+            color: #fafafa !important;
+        }
+        
+        /* Números de atributos (Ritmo: 100, Tiro: 100) */
+        .main div[data-testid="column"] strong {
+            color: #ffffff !important;
+            font-weight: 700 !important;
         }
     </style>
     """, unsafe_allow_html=True)

@@ -1378,21 +1378,42 @@ if st.session_state.mostrar_presentacion:
             st.session_state.mostrar_presentacion = False
             st.rerun()
 
-# CREAR PESTAÑAS CON DISEÑO MEJORADO + BOTÓN ONE PAGE
-col_tabs, col_boton = st.columns([6, 1])
+# CREAR PESTAÑAS CON DISEÑO MEJORADO + BOTÓN ONE PAGE INTEGRADO A LA DERECHA
+st.markdown("""
+<style>
+    /* Ajustar contenedor de tabs para que tenga espacio a la derecha */
+    .stTabs [data-baseweb="tab-list"] {
+        width: calc(100% - 150px) !important;
+        display: inline-block !important;
+    }
+    
+    /* Posicionar botón ONE PAGE a la derecha de los tabs */
+    .btn-onepage-container {
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 140px;
+        z-index: 10;
+    }
+</style>
 
-with col_boton:
-    st.markdown("<div style='margin-top: 8px;'></div>", unsafe_allow_html=True)
-    if st.button("🎓 ONE PAGE", use_container_width=True, type="primary", key="btn_presentacion"):
-        st.session_state.mostrar_presentacion = True
-        st.rerun()
+<div style="position: relative; margin-bottom: 10px;">
+    <div class="btn-onepage-container">
+""", unsafe_allow_html=True)
 
-with col_tabs:
-    tab1, tab2, tab3 = st.tabs([
-        "🔍  Búsqueda Inteligente",
-        "📊  Análisis de Mercado",
-        "🤖  Predicción ML"
-    ])
+# Botón ONE PAGE
+if st.button("🎓 ONE PAGE", type="primary", key="btn_presentacion", use_container_width=True):
+    st.session_state.mostrar_presentacion = True
+    st.rerun()
+
+st.markdown("</div></div>", unsafe_allow_html=True)
+
+# Tabs principales
+tab1, tab2, tab3 = st.tabs([
+    "🔍  Búsqueda Inteligente",
+    "📊  Análisis de Mercado",
+    "🤖  Predicción ML"
+])
 
 # Cargar opciones de filtros
 data_filtros = cargar_opciones_filtros()

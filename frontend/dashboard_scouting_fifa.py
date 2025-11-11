@@ -1232,12 +1232,45 @@ st.markdown(f"""
         <div style='background: rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 25px; backdrop-filter: blur(10px);'>
             <span style='color: white; font-weight: 600;'>🎯 Random Forest</span>
         </div>
+        <div id='btn-one-page' style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 10px 20px; border-radius: 25px; backdrop-filter: blur(10px); cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.2);' 
+             onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 6px 20px rgba(0,0,0,0.3)';"
+             onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(0,0,0,0.2)';">
+            <span style='color: white; font-weight: 600;'>📄 ONE PAGE</span>
+        </div>
     </div>
     <p style='color: rgba(255,255,255,0.7); font-size: 14px; margin-top: 20px; font-style: italic;'>
         Universidad Regional Autónoma de los Andes (UniAndes) | Seminario Complexivo | Prof. Juan Felipe Nájera
     </p>
 </div>
+
+<script>
+    // Detectar clic en botón ONE PAGE del header
+    document.addEventListener('DOMContentLoaded', function() {{
+        const btnOnePage = document.getElementById('btn-one-page');
+        if (btnOnePage) {{
+            btnOnePage.addEventListener('click', function() {{
+                // Enviar mensaje a Streamlit para activar modal
+                window.parent.postMessage({{
+                    type: 'streamlit:setComponentValue',
+                    key: 'abrir_one_page',
+                    value: true
+                }}, '*');
+                
+                // Recargar para activar modal
+                window.location.href = window.location.href.split('?')[0] + '?open_onepage=1';
+            }});
+        }}
+    }});
+</script>
 """, unsafe_allow_html=True)
+
+# Detectar si debe abrir ONE PAGE desde query params
+query_params = st.query_params
+if query_params.get("open_onepage") == "1":
+    st.session_state.mostrar_presentacion = True
+    # Limpiar query param
+    st.query_params.clear()
+    st.rerun()
 
 # RESETEAR MODAL AL INICIO (se activará solo con clic explícito en "Ficha")
 # Si no hay flag de "acabo de hacer clic", cerrar modal
@@ -1378,51 +1411,12 @@ if st.session_state.mostrar_presentacion:
             st.session_state.mostrar_presentacion = False
             st.rerun()
 
-# CREAR PESTAÑAS + BOTÓN ONE PAGE CON POSICIONAMIENTO ABSOLUTO
-# CSS para posicionar botón sin afectar layout del contenido
-st.markdown("""
-<style>
-    /* Contenedor relativo para posicionamiento */
-    .tabs-wrapper {
-        position: relative;
-        margin-bottom: 0;
-    }
-    
-    /* Botón ONE PAGE posicionado absolutamente */
-    div[data-testid="column"]:has(button[key="btn_onepage_tab"]) {
-        position: absolute !important;
-        top: 0 !important;
-        right: 0 !important;
-        width: 150px !important;
-        z-index: 100 !important;
-    }
-    
-    /* El contenido de los tabs ocupa todo el ancho */
-    .stTabs [data-baseweb="tab-panel"] {
-        width: 100% !important;
-    }
-</style>
-
-<div class="tabs-wrapper">
-""", unsafe_allow_html=True)
-
-# Crear columnas: tabs ocupan espacio completo, botón está absolutamente posicionado
-col_tabs, col_btn = st.columns([10, 1])
-
-with col_btn:
-    if st.button("🎓 ONE PAGE", key="btn_onepage_tab", type="primary"):
-        st.session_state.mostrar_presentacion = True
-        st.rerun()
-
-with col_tabs:
-    # Crear solo 3 tabs (sin el cuarto)
-    tab1, tab2, tab3 = st.tabs([
-        "🔍  Búsqueda Inteligente",
-        "📊  Análisis de Mercado",
-        "🤖  Predicción ML"
-    ])
-
-st.markdown("</div>", unsafe_allow_html=True)
+# CREAR PESTAÑAS CON DISEÑO MEJORADO
+tab1, tab2, tab3 = st.tabs([
+    "🔍  Búsqueda Inteligente",
+    "📊  Análisis de Mercado",
+    "🤖  Predicción ML"
+])
 
 # Cargar opciones de filtros
 data_filtros = cargar_opciones_filtros()

@@ -73,6 +73,26 @@ print(f"  - Cargando dataset desde: {DATA_PATH}")
 df_jugadores = pd.read_csv(DATA_PATH, low_memory=False)
 print(f"  ✓ Dataset cargado: {len(df_jugadores):,} jugadores")
 
+# Cargar predicciones ML pre-calculadas (si existen)
+PREDICCIONES_PATH = os.path.join(BASE_DIR, "..", "datos", "procesados", "jugadores_predicciones_ml.csv")
+df_predicciones_ml = None
+
+if os.path.exists(PREDICCIONES_PATH):
+    print(f"  - Cargando predicciones ML desde: {PREDICCIONES_PATH}")
+    df_predicciones_ml = pd.read_csv(PREDICCIONES_PATH)
+    print(f"  ✓ Predicciones ML cargadas: {len(df_predicciones_ml):,} registros")
+    
+    # Hacer merge con dataset principal
+    df_jugadores = df_jugadores.merge(
+        df_predicciones_ml[['id_sofifa', 'año_datos', 'valor_predicho_eur', 'diferencia_porcentual', 'clasificacion_ml']],
+        on=['id_sofifa', 'año_datos'],
+        how='left'
+    )
+    print(f"  ✓ Predicciones ML integradas al dataset principal")
+else:
+    print(f"  ⚠️ No se encontró archivo de predicciones ML (opcional)")
+    print(f"     Ejecuta: python backend/scripts/generar_predicciones_ml.py")
+
 print("\n✓ TODOS LOS COMPONENTES CARGADOS EXITOSAMENTE")
 
 # Inicializar FastAPI
@@ -227,6 +247,7 @@ def buscar_jugadores(
     categoria_edad: Optional[List[str]] = Query(None, description="Categoría de edad (Joven/Prime/Veterano)"),
     categoria_posicion: Optional[List[str]] = Query(None, description="Categoría de posición"),
     pie_preferido: Optional[str] = Query(None, description="Pie preferido (Left/Right)"),
+    clasificacion_ml: Optional[str] = Query(None, description="Clasificación ML: I (Infravalorado), S (Sobrevalorado), J (Justo)"),
     limite: Optional[int] = Query(100, ge=1, le=1000, description="Límite de resultados"),
     ordenar_por: Optional[str] = Query("valor_mercado_eur", description="Campo para ordenar"),
     orden_descendente: Optional[bool] = Query(True, description="Orden descendente")
@@ -307,6 +328,10 @@ def buscar_jugadores(
         if pie_preferido:
             df_filtrado = df_filtrado[df_filtrado["pie_preferido"] == pie_preferido]
         
+        # 🤖 FILTRO DE CLASIFICACIÓN ML (NUEVO)
+        if clasificacion_ml and 'clasificacion_ml' in df_filtrado.columns:
+            df_filtrado = df_filtrado[df_filtrado["clasificacion_ml"] == clasificacion_ml.upper()]
+        
         # Ordenar resultados
         if ordenar_por in df_filtrado.columns:
             df_filtrado = df_filtrado.sort_values(by=ordenar_por, ascending=not orden_descendente)
@@ -324,6 +349,14 @@ def buscar_jugadores(
         # Agregar año_datos si existe en el DataFrame
         if "año_datos" in df_filtrado.columns:
             columnas_respuesta.append("año_datos")
+        
+        # Agregar columnas ML si existen en el DataFrame
+        if "clasificacion_ml" in df_filtrado.columns:
+            columnas_respuesta.append("clasificacion_ml")
+        if "valor_predicho_eur" in df_filtrado.columns:
+            columnas_respuesta.append("valor_predicho_eur")
+        if "diferencia_porcentual" in df_filtrado.columns:
+            columnas_respuesta.append("diferencia_porcentual")
         
         jugadores_encontrados = df_filtrado[columnas_respuesta].to_dict("records")
         
@@ -1038,14 +1071,117 @@ def raiz():
             "sobrevalorados": "/jugadores/sobrevalorados",
             "estadisticas": "/eda/estadisticas_generales",
             "graficos": "/eda/datos_graficos",
+            "ml_recalcular": "/ml/recalcular-predicciones",
+            "ml_estado": "/ml/estado-predicciones",
             "documentacion": "/docs"
         },
         "dataset": {
             "total_jugadores": len(df_jugadores),
             "total_clubes": df_jugadores["club"].nunique(),
-            "total_ligas": df_jugadores["liga"].nunique()
+            "total_ligas": df_jugadores["liga"].nunique(),
+            "predicciones_ml": {
+                "disponibles": df_predicciones_ml is not None,
+                "total_registros": len(df_predicciones_ml) if df_predicciones_ml is not None else 0
+            }
         }
     }
+
+
+# ============================================================================
+# ENDPOINTS DE MACHINE LEARNING - PRE-CÁLCULO
+# ============================================================================
+
+@app.post(
+    "/ml/recalcular-predicciones",
+    summary="Re-calcular predicciones ML",
+    description="Genera nuevo CSV con predicciones ML para todos los jugadores con tolerancia personalizada"
+)
+async def recalcular_predicciones_ml(tolerancia_porcentaje: float = 8.0):
+    """
+    Ejecuta script de generación de predicciones ML
+    Genera archivo: jugadores_predicciones_ml.csv
+    """
+    try:
+        import sys
+        sys.path.append(os.path.join(BASE_DIR, "scripts"))
+        
+        from generar_predicciones_ml import generar_predicciones_ml
+        
+        # Generar predicciones
+        df_resultado = generar_predicciones_ml(tolerancia_porcentaje)
+        
+        if df_resultado is None:
+            raise HTTPException(
+                status_code=500, 
+                detail="Error al generar predicciones. Verifica que exista el modelo ML entrenado."
+            )
+        
+        return {
+            "success": True,
+            "mensaje": "Predicciones ML generadas exitosamente",
+            "total_registros": len(df_resultado),
+            "total_infravalorados": int((df_resultado['clasificacion_ml']=='I').sum()),
+            "total_sobrevalorados": int((df_resultado['clasificacion_ml']=='S').sum()),
+            "total_justos": int((df_resultado['clasificacion_ml']=='J').sum()),
+            "tolerancia_usada": tolerancia_porcentaje,
+            "archivo_generado": "datos/procesados/jugadores_predicciones_ml.csv",
+            "nota": "Reinicia el backend para cargar las nuevas predicciones"
+        }
+    except ImportError as e:
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Error al importar script de generación: {str(e)}"
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Error al generar predicciones ML: {str(e)}"
+        )
+
+
+@app.get(
+    "/ml/estado-predicciones",
+    summary="Estado de predicciones ML",
+    description="Verifica si existe archivo de predicciones pre-calculadas y su estado"
+)
+async def estado_predicciones_ml():
+    """
+    Retorna información sobre el archivo de predicciones ML
+    """
+    try:
+        if os.path.exists(PREDICCIONES_PATH):
+            import os.path
+            from datetime import datetime
+            
+            # Información del archivo
+            stat_info = os.stat(PREDICCIONES_PATH)
+            fecha_modificacion = datetime.fromtimestamp(stat_info.st_mtime)
+            
+            # Leer metadata del CSV
+            df_temp = pd.read_csv(PREDICCIONES_PATH, nrows=1)
+            
+            tolerancia = df_temp['tolerancia_porcentaje'].iloc[0] if 'tolerancia_porcentaje' in df_temp.columns else 8.0
+            
+            return {
+                "archivo_existe": True,
+                "ruta": PREDICCIONES_PATH,
+                "total_registros": len(df_predicciones_ml) if df_predicciones_ml is not None else 0,
+                "tolerancia_actual": float(tolerancia),
+                "fecha_modificacion": fecha_modificacion.strftime('%Y-%m-%d %H:%M:%S'),
+                "tamaño_mb": round(stat_info.st_size / (1024*1024), 2),
+                "estado_carga": "Cargado en memoria" if df_predicciones_ml is not None else "No cargado (reinicia backend)"
+            }
+        else:
+            return {
+                "archivo_existe": False,
+                "mensaje": "No hay predicciones pre-calculadas",
+                "recomendacion": "Usa POST /ml/recalcular-predicciones para generarlas"
+            }
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Error al verificar estado de predicciones: {str(e)}"
+        )
 
 
 # ============================================================================

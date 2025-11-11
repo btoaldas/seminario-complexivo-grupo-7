@@ -933,11 +933,12 @@ def mostrar_ficha_jugador(jugador_id, jugador_nombre):
             
             st.plotly_chart(fig_comp, use_container_width=True)
             
-            # Clasificación
-            if diferencia > 15:
+            # Clasificación (con tolerancia por defecto de 8%)
+            tolerancia_default = 8
+            if diferencia > tolerancia_default:
                 st.success(f"✓ {clasificacion} (+{diferencia:.1f}%)")
                 st.info("Jugador potencialmente INFRAVALORADO")
-            elif diferencia < -15:
+            elif diferencia < -tolerancia_default:
                 st.warning(f"⚠ {clasificacion} ({diferencia:.1f}%)")
                 st.info("Jugador potencialmente SOBREVALORADO")
             else:
@@ -980,8 +981,8 @@ def mostrar_ficha_jugador(jugador_id, jugador_nombre):
 def mostrar_modal_jugador(jugador_id, jugador_nombre, año_fifa):
     """Muestra la ficha del jugador en un modal interactivo"""
     
-    # Header del modal con selector de año
-    col_header_1, col_header_2 = st.columns([3, 1])
+    # Header del modal con selector de año y tolerancia
+    col_header_1, col_header_2, col_header_3 = st.columns([2.5, 1, 1.5])
     
     with col_header_1:
         st.markdown(f"### {jugador_nombre}")
@@ -1014,6 +1015,18 @@ def mostrar_modal_jugador(jugador_id, jugador_nombre, año_fifa):
             st.session_state.mostrar_modal = True
             st.session_state.modal_clic_reciente = True
             st.rerun()
+    
+    with col_header_3:
+        # Slider de tolerancia para clasificación
+        tolerancia_porcentaje = st.slider(
+            "🎯 Tolerancia (%)",
+            min_value=1,
+            max_value=30,
+            value=8,
+            step=1,
+            key=f"tolerancia_{jugador_id}_{año_fifa}",
+            help="Porcentaje de diferencia para considerar infravalorado/sobrevalorado"
+        )
     
     st.markdown("---")
     
@@ -1155,11 +1168,11 @@ def mostrar_modal_jugador(jugador_id, jugador_nombre, año_fifa):
                 
                 st.plotly_chart(fig_comp, use_container_width=True)
                 
-                # Clasificación con badge
-                if diferencia > 15:
+                # Clasificación con badge (usando tolerancia variable)
+                if diferencia > tolerancia_porcentaje:
                     st.success(f"✅ **{clasificacion}** (+{diferencia:.1f}%)")
                     st.info("🔍 **Oportunidad:** Jugador potencialmente INFRAVALORADO")
-                elif diferencia < -15:
+                elif diferencia < -tolerancia_porcentaje:
                     st.warning(f"⚠️ **{clasificacion}** ({diferencia:.1f}%)")
                     st.info("💡 **Alerta:** Jugador potencialmente SOBREVALORADO")
                 else:

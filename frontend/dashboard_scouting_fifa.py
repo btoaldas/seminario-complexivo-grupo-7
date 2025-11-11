@@ -137,7 +137,6 @@ TRADUCCIONES_POSICIONES_SIMPLE = {
 }
 
 # FUNCIÓN AUXILIAR PARA TRADUCIR POSICIONES
-@st.cache_data(ttl=3600)  # Cache de 1 hora para traducción de posiciones
 def traducir_posicion(posicion_siglas):
     """
     Traduce las siglas de posición a texto descriptivo en español.
@@ -384,7 +383,6 @@ st.markdown(f"""
 IMAGENES_DIR = "/app/datos/imagenes"
 IMAGEN_GENERICA = "/app/datos/imagenes/jugador_generico.png"
 
-@st.cache_data(ttl=3600)  # Cache de 1 hora para códigos ISO de países
 def obtener_codigo_iso_pais(nacionalidad):
     """
     Obtiene el código ISO del país para la API de banderas
@@ -414,7 +412,6 @@ def obtener_codigo_iso_pais(nacionalidad):
     
     return pais_iso_map.get(nacionalidad, nacionalidad.lower()[:2] if nacionalidad else "xx")
 
-@st.cache_data(ttl=3600)  # Cache de 1 hora para escudos de clubes
 def obtener_escudo_club(nombre_club):
     """
     Obtiene la URL del escudo del club de fútbol
@@ -528,7 +525,6 @@ def obtener_escudo_club(nombre_club):
     # Si no se encuentra, devolver emoji
     return "⚽"
 
-@st.cache_data(ttl=3600)  # Cache de 1 hora para escudos de ligas
 def obtener_escudo_liga(nombre_liga):
     """
     Obtiene la URL del escudo de la liga de fútbol.
@@ -646,7 +642,7 @@ def generar_url_foto_sofifa(id_sofifa, año_fifa):
     except Exception as e:
         print(f"❌ Error generando URL foto - ID: {id_sofifa}, Año: {año_fifa}, Error: {e}")
         return None, None, None, None
-@st.cache_resource(ttl=3600)  # Cache de 1 hora para imágenes
+
 def obtener_foto_jugador(id_sofifa, año_fifa):
     """
     Obtiene la foto del jugador desde caché local o la descarga si no existe.
@@ -739,6 +735,7 @@ sesion_http = crear_sesion_http()
 
 # FUNCIONES DE CARGA DE DATOS
 @st.cache_data(ttl=300)
+@st.cache_data(ttl=1800)  # Cache de 30 minutos (los filtros no cambian frecuentemente)
 def cargar_opciones_filtros():
     """Carga las opciones de filtros desde la API"""
     try:
@@ -759,18 +756,6 @@ def buscar_jugadores(params):
     except requests.exceptions.RequestException as e:
         st.error(f"Error al buscar jugadores: {e}")
         return None
-
-@st.cache_data(ttl=3600)  # Cache de 1 hora para años disponibles
-def obtener_años_jugador(jugador_id):
-    """Obtiene los años disponibles para un jugador (con cache)"""
-    try:
-        url_años = f"{API_BASE_URL}/jugadores/{jugador_id}/años"
-        response = sesion_http.get(url_años, timeout=5)
-        if response.status_code == 200:
-            return response.json().get("años", [])
-        return []
-    except:
-        return []
 
 @st.cache_data(ttl=600)  # Cache de 10 minutos
 def obtener_perfil_jugador(jugador_id, año=None):
@@ -1005,42 +990,55 @@ def mostrar_modal_jugador(jugador_id, jugador_nombre, año_fifa):
         st.markdown(f"### {jugador_nombre}")
     
     with col_header_2:
-        # Cargar años disponibles con cache
-        años_disponibles = obtener_años_jugador(jugador_id)
+        # Mostrar solo el año actual (sin cargar años disponibles para optimizar velocidad)
+        st.markdown(f"**📅 Año FIFA:** {año_fifa}")
         
-        # Selector de año (directo, sin expander para mejor UX)
-        año_seleccionado = st.selectbox(
-            "📅 Año FIFA",
-            options=sorted(años_disponibles, reverse=True),
-            index=sorted(años_disponibles, reverse=True).index(año_fifa) if año_fifa in años_disponibles else 0,
-            key=f"selector_año_{jugador_id}",
-            help="Cambiar año actualiza la ficha automáticamente"
-        )
+        # Opcionalmente, mostrar un expander para cambiar año si es necesario
+        with st.expander("🔄 Cambiar año"):
+            # Solo cargar años disponibles cuando el usuario expande
+            try:
+                url_años = f"{API_BASE_URL}/jugadores/{jugador_id}/años"
+                response = sesion_http.get(url_años, timeout=5)
+                if response.status_code == 200:
+                    años_disponibles = response.json().get("años", [año_fifa])
+                else:
+                    años_disponibles = [año_fifa]
+            except:
+                años_disponibles = [año_fifa]
+            
+            año_seleccionado = st.selectbox(
+                "Selecciona año:",
+                options=sorted(años_disponibles, reverse=True),
+                index=sorted(años_disponibles, reverse=True).index(año_fifa) if año_fifa in años_disponibles else 0,
+                key=f"selector_año_{jugador_id}_{año_fifa}",
+                label_visibility="collapsed"
+            )
+            
+            if st.button("Aplicar", key=f"btn_aplicar_{jugador_id}_{año_fifa}"):
+                st.session_state.modal_jugador_id = jugador_id
+                st.session_state.modal_jugador_nombre = jugador_nombre
+                st.session_state.modal_jugador_año = año_seleccionado
+                st.session_state.mostrar_modal = True
+                st.session_state.modal_clic_reciente = True
+                st.rerun()
         
-        # Si cambió el año, actualizar session_state pero NO hacer rerun completo
-        if año_seleccionado != año_fifa:
-            año_fifa = año_seleccionado  # Usar el año seleccionado para esta sesión del modal
+        año_seleccionado = año_fifa  # Por defecto usar el año actual
     
     with col_header_3:
-        # Inicializar tolerancia en session_state si no existe (valor por defecto 8%)
-        if f"tolerancia_{jugador_id}" not in st.session_state:
-            st.session_state[f"tolerancia_{jugador_id}"] = 8
-        
-        # Slider de tolerancia para clasificación (usa session_state persistente)
+        # Slider de tolerancia para clasificación
         tolerancia_porcentaje = st.slider(
             "🎯 Tolerancia (%)",
             min_value=1,
             max_value=30,
-            value=st.session_state[f"tolerancia_{jugador_id}"],
+            value=8,
             step=1,
-            key=f"tolerancia_slider_{jugador_id}",
-            help="Porcentaje de diferencia para considerar infravalorado/sobrevalorado",
-            on_change=lambda: st.session_state.update({f"tolerancia_{jugador_id}": st.session_state[f"tolerancia_slider_{jugador_id}"]})
+            key=f"tolerancia_{jugador_id}_{año_fifa}",
+            help="Porcentaje de diferencia para considerar infravalorado/sobrevalorado"
         )
     
     st.markdown("---")
     
-    # Cargar perfil del jugador con el año seleccionado (CON CACHE)
+    # Cargar perfil del jugador con el año seleccionado
     perfil = obtener_perfil_jugador(jugador_id, año_fifa)
     
     if perfil and "jugador" in perfil:
@@ -1143,26 +1141,13 @@ def mostrar_modal_jugador(jugador_id, jugador_nombre, año_fifa):
                 valor_predicho = prediccion.get("valor_predicho_eur", 0)
                 diferencia = prediccion.get("diferencia_porcentual", 0)
                 
-                # Usar clasificación PRE-CALCULADA del backend (tolerancia 8% por defecto)
-                # Solo recalcular SI el usuario cambió la tolerancia del slider
-                clasificacion_backend = jugador.get("clasificacion_ml", None)
-                
-                if tolerancia_porcentaje == 8 and clasificacion_backend:
-                    # Usar clasificación pre-calculada del backend (rápido, sin recálculo)
-                    if clasificacion_backend == "I":
-                        clasificacion = "INFRAVALORADO"
-                    elif clasificacion_backend == "S":
-                        clasificacion = "SOBREVALORADO"
-                    else:
-                        clasificacion = "JUSTO"
+                # RECALCULAR clasificación dinámicamente basada en tolerancia del slider
+                if diferencia > tolerancia_porcentaje:
+                    clasificacion = "INFRAVALORADO"
+                elif diferencia < -tolerancia_porcentaje:
+                    clasificacion = "SOBREVALORADO"
                 else:
-                    # Usuario cambió tolerancia: recalcular dinámicamente
-                    if diferencia > tolerancia_porcentaje:
-                        clasificacion = "INFRAVALORADO"
-                    elif diferencia < -tolerancia_porcentaje:
-                        clasificacion = "SOBREVALORADO"
-                    else:
-                        clasificacion = "JUSTO"
+                    clasificacion = "JUSTO"
                 
                 # Métricas lado a lado
                 col_v1, col_v2, col_v3 = st.columns(3)
@@ -1460,27 +1445,26 @@ tab1, tab2, tab3 = st.tabs([
     "🤖  Predicción ML"
 ])
 
-# Cargar opciones de filtros
-data_filtros = cargar_opciones_filtros()
-
-if data_filtros and "error" not in data_filtros:
-    posiciones_lista = data_filtros.get("posiciones", [])
-    nacionalidades_lista = data_filtros.get("nacionalidades", [])
-    clubes_lista = data_filtros.get("clubes", [])
-    ligas_lista = data_filtros.get("ligas", [])
-    categorias_edad = data_filtros.get("categorias_edad", [])
-else:
-    st.error("No se pudieron cargar los filtros desde la API")
-    posiciones_lista = []
-    nacionalidades_lista = []
-    clubes_lista = []
-    ligas_lista = []
-    categorias_edad = []
-
 # ============================================================================
 # TAB 1: BÚSQUEDA INTELIGENTE
 # ============================================================================
 with tab1:
+    # Cargar opciones de filtros (solo cuando se accede a este tab)
+    data_filtros = cargar_opciones_filtros()
+
+    if data_filtros and "error" not in data_filtros:
+        posiciones_lista = data_filtros.get("posiciones", [])
+        nacionalidades_lista = data_filtros.get("nacionalidades", [])
+        clubes_lista = data_filtros.get("clubes", [])
+        ligas_lista = data_filtros.get("ligas", [])
+        categorias_edad = data_filtros.get("categorias_edad", [])
+    else:
+        st.error("No se pudieron cargar los filtros desde la API")
+        posiciones_lista = []
+        nacionalidades_lista = []
+        clubes_lista = []
+        ligas_lista = []
+        categorias_edad = []
     st.markdown(f"""
     <div style='background: linear-gradient(135deg, {COLOR_ACENTO_2} 0%, {COLOR_PRIMARIO} 100%); 
          padding: 20px; border-radius: 15px; border-left: 5px solid {COLOR_DESTACADO}; margin-bottom: 25px;'>

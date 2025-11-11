@@ -1420,6 +1420,235 @@ with tab1:
     st.markdown("""
     <style>
         /* ============================================ */
+        /* HEADER NATIVO DE STREAMLIT - INVERTIR      */
+        /* ============================================ */
+        [data-testid="stHeader"] {
+            background-color: #0e1117 !important;
+        }
+        
+        [data-testid="stHeader"] * {
+            color: #ffffff !important;
+        }
+        
+        [data-testid="stToolbar"] {
+            background-color: #0e1117 !important;
+        }
+        
+        [data-testid="stToolbar"] * {
+            color: #ffffff !important;
+        }
+        
+        /* ============================================ */
+        /* INPUTS - Fondo oscuro con texto blanco     */
+        /* ============================================ */
+        
+        /* Textbox / Input fields */
+        .main input[type="text"],
+        .main input[type="number"],
+        .main textarea,
+        [data-testid="stSidebar"] input[type="text"],
+        [data-testid="stSidebar"] input[type="number"],
+        [data-testid="stSidebar"] textarea {
+            background-color: #262730 !important;
+            color: #ffffff !important;
+            border: 1px solid #444654 !important;
+        }
+        
+        /* Number Input - Botones de incremento/decremento */
+        [data-testid="stNumberInput"] {
+            background-color: #262730 !important;
+        }
+        
+        [data-testid="stNumberInput"] input {
+            background-color: #262730 !important;
+            color: #ffffff !important;
+        }
+        
+        [data-testid="stNumberInput"] button {
+            background-color: #262730 !important;
+            color: #ffffff !important;
+            border-color: #444654 !important;
+        }
+        
+        [data-testid="stNumberInput"] button:hover {
+            background-color: #667eea !important;
+            color: #ffffff !important;
+        }
+        
+        [data-testid="stNumberInput"] div[data-baseweb="input"] {
+            background-color: #262730 !important;
+        }
+        
+        /* Botones de step (+ y -) */
+        [data-testid="stNumberInput"] [data-baseweb="button-group"] button {
+            background-color: #262730 !important;
+            color: #ffffff !important;
+        }
+        
+        /* Selectbox / Dropdown - TODOS */
+        .main [data-baseweb="select"] > div,
+        [data-testid="stSidebar"] [data-baseweb="select"] > div,
+        [data-baseweb="select"],
+        [data-baseweb="select"] > div,
+        div[data-baseweb="select"] {
+            background-color: #262730 !important;
+            color: #ffffff !important;
+            border: 1px solid #444654 !important;
+        }
+        
+        /* Input dentro del select */
+        [data-baseweb="select"] input {
+            background-color: #262730 !important;
+            color: #ffffff !important;
+        }
+        
+        /* Valor seleccionado */
+        [data-baseweb="select"] [role="button"] {
+            background-color: #262730 !important;
+            color: #ffffff !important;
+        }
+        
+        /* Texto del placeholder y valor */
+        [data-baseweb="select"] span,
+        [data-baseweb="select"] div {
+            color: #ffffff !important;
+        }
+        
+        /* Multiselect */
+        .main [data-baseweb="tag"],
+        [data-testid="stSidebar"] [data-baseweb="tag"] {
+            background-color: #667eea !important;
+            color: #ffffff !important;
+        }
+        
+        /* Dropdown options */
+        [data-baseweb="menu"],
+        [data-baseweb="popover"] {
+            background-color: #262730 !important;
+        }
+        
+        [data-baseweb="menu"] li,
+        [data-baseweb="menu"] div {
+            background-color: #262730 !important;
+            color: #ffffff !important;
+        }
+        
+        [data-baseweb="menu"] li:hover {
+            background-color: #667eea !important;
+        }
+        
+        /* Lista desplegable del selector */
+        [data-baseweb="popover"] [data-baseweb="menu"] {
+            background-color: #262730 !important;
+        }
+        
+        /* Opciones individuales en lista */
+        [data-baseweb="menu"] [role="option"] {
+            background-color: #262730 !important;
+            color: #ffffff !important;
+        }
+        
+        [data-baseweb="menu"] [role="option"]:hover {
+            background-color: #667eea !important;
+        }
+        
+        /* Contenedor de opciones */
+        [data-baseweb="menu"] ul {
+            background-color: #262730 !important;
+        }
+        
+        /* Panel de opciones (popover) */
+        [role="listbox"],
+        [role="listbox"] ul,
+        [role="listbox"] li {
+            background-color: #262730 !important;
+            color: #ffffff !important;
+        }
+        
+        /* Opciones en el listbox */
+        [role="option"] {
+            background-color: #262730 !important;
+            color: #ffffff !important;
+        }
+        
+        [role="option"]:hover,
+        [role="option"][aria-selected="true"] {
+            background-color: #667eea !important;
+            color: #ffffff !important;
+        }
+        
+        /* Overlay del popover */
+        [data-baseweb="popover"] {
+            background-color: transparent !important;
+        }
+        
+        [data-baseweb="popover"] > div {
+            background-color: #262730 !important;
+        }
+        
+        /* Slider */
+        .main [data-testid="stSlider"] div[role="slider"],
+        [data-testid="stSidebar"] [data-testid="stSlider"] div[role="slider"] {
+            background-color: #667eea !important;
+        }
+        
+        /* ============================================ */
+        /* MODALES/DIALOG - Fondo oscuro completo     */
+        /* ============================================ */
+        
+        /* Fondo del modal */
+        [data-testid="stDialog"],
+        [data-testid="stModal"] {
+            background-color: #0e1117 !important;
+        }
+        
+        /* Contenido del modal */
+        [data-testid="stDialog"] [data-testid="stVerticalBlock"],
+        [data-testid="stModal"] [data-testid="stVerticalBlock"] {
+            background-color: #0e1117 !important;
+        }
+        
+        /* Header del modal */
+        [data-testid="stDialog"] [data-testid="stMarkdown"],
+        [data-testid="stModal"] [data-testid="stMarkdown"] {
+            background-color: #0e1117 !important;
+        }
+        
+        /* Texto en modal */
+        [data-testid="stDialog"] *,
+        [data-testid="stModal"] * {
+            color: #ffffff !important;
+        }
+        
+        /* Selectores dentro del modal */
+        [data-testid="stDialog"] [data-baseweb="select"] > div,
+        [data-testid="stModal"] [data-baseweb="select"] > div {
+            background-color: #262730 !important;
+            color: #ffffff !important;
+        }
+        
+        /* Contenedor principal del modal */
+        [role="dialog"] {
+            background-color: #0e1117 !important;
+        }
+        
+        [role="dialog"] [data-testid="stVerticalBlock"] {
+            background-color: #0e1117 !important;
+        }
+        
+        /* Métricas en modal */
+        [data-testid="stDialog"] [data-testid="stMetric"],
+        [data-testid="stModal"] [data-testid="stMetric"] {
+            background-color: #262730 !important;
+        }
+        
+        /* Gráficos en modal */
+        [data-testid="stDialog"] [data-testid="stPlotlyChart"],
+        [data-testid="stModal"] [data-testid="stPlotlyChart"] {
+            background-color: #0e1117 !important;
+        }
+        
+        /* ============================================ */
         /* SIDEBAR - Colores para light y dark mode   */
         /* ============================================ */
         [data-testid="stSidebar"] h2 {
@@ -1467,29 +1696,99 @@ with tab1:
         /* CONTENIDO PRINCIPAL - TODO IGUAL QUE DARK   */
         /* ============================================ */
         
-        /* Headers de tablas (th) */
+        /* Headers de tablas (th) - FORZAR BLANCO */
         .main table thead th {
             color: #ffffff !important;
             background-color: #667eea !important;
             font-weight: 600 !important;
         }
         
-        /* Celdas de tablas (td) */
+        /* Celdas de tablas (td) - FORZAR BLANCO */
         .main table tbody td {
-            color: #fafafa !important;
+            color: #ffffff !important;
             font-weight: 500 !important;
         }
         
-        /* Números en celdas (año FIFA, edad, etc) */
+        /* Números en celdas (año FIFA, edad, etc) - FORZAR BLANCO */
         .main table tbody td strong,
         .main table tbody td b {
             color: #ffffff !important;
             font-weight: 600 !important;
         }
         
-        /* Texto de paginación (Página 1 de X) */
+        /* Headers de columnas personalizados (st.markdown con **) - FORZAR BLANCO */
+        .main [data-testid="column"] strong,
+        .main [data-testid="column"] b,
+        .main [data-testid="column"] em {
+            color: #ffffff !important;
+            font-weight: 700 !important;
+        }
+        
+        /* Contenido de columnas (valores de celdas) - FORZAR BLANCO */
+        .main [data-testid="column"] div,
+        .main [data-testid="column"] p,
+        .main [data-testid="column"] span {
+            color: #ffffff !important;
+        }
+        
+        /* Números y texto en divs dentro de columnas - FORZAR BLANCO */
+        .main [data-testid="column"] div[style*="text-align"] {
+            color: #ffffff !important;
+        }
+        
+        /* TODO EL TEXTO EN BLOQUES VERTICALES - FORZAR BLANCO */
+        .main [data-testid="stVerticalBlock"] *,
+        .main [data-testid="stVerticalBlock"] div,
+        .main [data-testid="stVerticalBlock"] p,
+        .main [data-testid="stVerticalBlock"] span,
+        .main [data-testid="stVerticalBlock"] strong,
+        .main [data-testid="stVerticalBlock"] b {
+            color: #ffffff !important;
+        }
+        
+        /* Texto de paginación (Página 1 de X) - FORZAR BLANCO */
         .main p {
-            color: #fafafa !important;
+            color: #ffffff !important;
+        }
+        
+        /* Headers de cualquier tipo - FORZAR BLANCO */
+        .main h1, .main h2, .main h3, .main h4, .main h5, .main h6 {
+            color: #ffffff !important;
+        }
+        
+        /* Todo texto en markdown - FORZAR BLANCO */
+        .main [data-testid="stMarkdown"] *,
+        .main [data-testid="stMarkdown"] p,
+        .main [data-testid="stMarkdown"] div,
+        .main [data-testid="stMarkdown"] span {
+            color: #ffffff !important;
+        }
+        
+        /* Bloques horizontales - FORZAR BLANCO */
+        .main [data-testid="stHorizontalBlock"] *,
+        .main [data-testid="stHorizontalBlock"] p,
+        .main [data-testid="stHorizontalBlock"] div {
+            color: #ffffff !important;
+        }
+        
+        /* REGLA GLOBAL: TODO EL TEXTO EN .main DEBE SER BLANCO */
+        .main * {
+            color: #ffffff !important;
+        }
+        
+        /* Forzar blanco en elementos específicos de Streamlit */
+        .element-container * {
+            color: #ffffff !important;
+        }
+        
+        .stMarkdown * {
+            color: #ffffff !important;
+        }
+        
+        /* Forzar headers de tabla custom */
+        .main .element-container strong,
+        .main .element-container b {
+            color: #ffffff !important;
         }
         
         /* Títulos H3, H4, H5 en contenido principal */
@@ -1498,6 +1797,14 @@ with tab1:
         .main h5 {
             color: #ffffff !important;
             font-weight: 600 !important;
+        }
+        
+        /* Forzar texto en containers de Streamlit */
+        div[data-testid="element-container"] *,
+        div[data-testid="element-container"] p,
+        div[data-testid="element-container"] span,
+        div[data-testid="element-container"] strong {
+            color: #ffffff !important;
         }
         
         /* Spans y divs con texto */
@@ -1587,21 +1894,25 @@ with tab1:
     </style>
     """, unsafe_allow_html=True)
     
+    
+        
+   
+    
     # FILTROS EN SIDEBAR MEJORADO
     with st.sidebar:
+        # BOTÓN DE PRESENTACIÓN DE DEFENSA
+        if st.button("📄 ONE PAGE", use_container_width=True, type="primary", key="btn_presentacion"):
+            st.session_state.mostrar_presentacion = True
+            st.rerun()  # Forzar recarga inmediata
+        
+        
         st.markdown(f"""
         <div style='text-align: center; padding: 20px; background: linear-gradient(135deg, {COLOR_SECUNDARIO} 0%, {COLOR_ACENTO_1} 100%); border-radius: 15px; margin-bottom: 20px;'>
             <h2 style='color: white !important; margin: 0;'>🎯 Filtros Avanzados</h2>
         </div>
         """, unsafe_allow_html=True)
         
-        # BOTÓN DE PRESENTACIÓN DE DEFENSA
-        st.markdown("---")
-        if st.button("📄 ONE PAGE", use_container_width=True, type="primary", key="btn_presentacion"):
-            st.session_state.mostrar_presentacion = True
-            st.rerun()  # Forzar recarga inmediata
         
-        st.markdown("---")
         
         # ⚽ FILTRO DE AÑO FIFA (NUEVO)
         st.markdown("### 📅 Año FIFA")
@@ -1843,6 +2154,25 @@ with tab1:
             # CSS mejorado para la tabla con diseño moderno y responsive
             st.markdown("""
             <style>
+                /* FORZAR BLANCO EN TODO - LIGHT MODE FIX */
+                .main * {
+                    color: #ffffff !important;
+                }
+                
+                .element-container * {
+                    color: #ffffff !important;
+                }
+                
+                [data-testid="stMarkdown"] * {
+                    color: #ffffff !important;
+                }
+                
+                /* Headers de columnas SIEMPRE blancos */
+                .main strong,
+                .main b {
+                    color: #ffffff !important;
+                }
+                
                 /* Estilos generales de la tabla */
                 .tabla-header {
                     background: linear-gradient(135deg, #304878 0%, #1a2844 100%);
@@ -1850,7 +2180,7 @@ with tab1:
                     border-radius: 10px;
                     margin-bottom: 15px;
                     font-weight: bold;
-                    color: #f0a818;
+                    color: #ffffff !important;
                     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
                     text-transform: uppercase;
                     letter-spacing: 1px;

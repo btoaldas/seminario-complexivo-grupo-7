@@ -373,21 +373,86 @@ st.markdown(f"""
         border-left: 5px solid {COLOR_DESTACADO};
     }}
     
-    /* OCULTAR SELECTOR DE TEMA (forzar dark mode siempre) */
-    button[kind="header"] {{
-        display: none !important;
+    /* FORZAR TEMA OSCURO - Sobrescribir variables de Streamlit */
+    :root {{
+        --background-color: #0e1117 !important;
+        --secondary-background-color: #262730 !important;
+        --text-color: #fafafa !important;
+        --primary-color: #667eea !important;
     }}
-    [data-testid="stDecoration"] {{
-        display: none !important;
+    
+    /* Forzar fondo oscuro en todos los elementos */
+    body, .main, .block-container, section {{
+        background-color: #0e1117 !important;
+        color: #fafafa !important;
     }}
-    /* Ocultar botón de configuración que permite cambiar tema */
-    button[title="Settings"] {{
-        display: none !important;
+    
+    /* Forzar sidebar oscuro */
+    [data-testid="stSidebar"] > div:first-child {{
+        background-color: #262730 !important;
     }}
-    [data-testid="stToolbar"] button {{
-        display: none !important;
+    
+    /* Forzar inputs oscuros */
+    input, textarea, select, .stTextInput > div > div > input {{
+        background-color: #262730 !important;
+        color: #fafafa !important;
+        border-color: #404040 !important;
     }}
+    
+    /* Forzar selectbox oscuro */
+    .stSelectbox > div > div {{
+        background-color: #262730 !important;
+        color: #fafafa !important;
+    }}
+ 
 </style>
+
+<script>
+    // FORZAR TEMA OSCURO CON JAVASCRIPT
+    (function() {{
+        // Esperar a que el DOM cargue
+        const forceTheme = () => {{
+            // Buscar el botón de configuración y ocultarlo
+            const settingsButtons = document.querySelectorAll('button[kind="header"]');
+            settingsButtons.forEach(btn => btn.style.display = 'none');
+            
+            // Forzar atributos de tema oscuro en el documento
+            document.documentElement.setAttribute('data-theme', 'dark');
+            document.body.setAttribute('data-theme', 'dark');
+            
+            // Forzar variables CSS de Streamlit
+            document.documentElement.style.setProperty('--background-color', '#0e1117');
+            document.documentElement.style.setProperty('--secondary-background-color', '#262730');
+            document.documentElement.style.setProperty('--text-color', '#fafafa');
+            document.documentElement.style.setProperty('--primary-color', '#667eea');
+            
+            // Intentar acceder al localStorage y forzar tema
+            try {{
+                localStorage.setItem('theme', 'dark');
+                localStorage.setItem('prefers-color-scheme', 'dark');
+            }} catch(e) {{}}
+        }};
+        
+        // Ejecutar inmediatamente
+        forceTheme();
+        
+        // Ejecutar cuando el DOM esté listo
+        if (document.readyState === 'loading') {{
+            document.addEventListener('DOMContentLoaded', forceTheme);
+        }}
+        
+        // Ejecutar continuamente para evitar cambios
+        setInterval(forceTheme, 500);
+        
+        // Observar cambios en el DOM
+        const observer = new MutationObserver(forceTheme);
+        observer.observe(document.body, {{
+            attributes: true,
+            childList: true,
+            subtree: true
+        }});
+    }})();
+</script>
 """, unsafe_allow_html=True)
 
 # ============================================================================

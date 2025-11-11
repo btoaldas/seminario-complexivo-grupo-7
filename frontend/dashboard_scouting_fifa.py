@@ -1378,59 +1378,6 @@ if st.session_state.mostrar_presentacion:
             st.session_state.mostrar_presentacion = False
             st.rerun()
 
-# BOTÓN "ONE PAGE" INYECTADO EN HEADER DE STREAMLIT (superior derecho)
-st.markdown("""
-<style>
-    /* Botón ONE PAGE en header nativo de Streamlit */
-    #btn-one-page-header {
-        position: fixed;
-        top: 10px;
-        right: 73px; /* 3px más a la izquierda del margen para no solapar menú hamburguesa */
-        z-index: 999999;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border: none;
-        padding: 8px 16px;
-        border-radius: 8px;
-        font-size: 14px;
-        font-weight: 600;
-        cursor: pointer;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-        transition: all 0.3s;
-        font-family: 'Source Sans Pro', sans-serif;
-    }
-    
-    #btn-one-page-header:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-    }
-</style>
-
-<button id="btn-one-page-header" onclick="document.getElementById('hidden-one-page-btn').click()">
-    🎓 ONE PAGE
-</button>
-""", unsafe_allow_html=True)
-
-# Botón invisible de Streamlit para manejar el estado (oculto con CSS)
-st.markdown("""
-<style>
-    /* Ocultar el botón de Streamlit que controla el estado */
-    button[kind="secondary"][data-testid="baseButton-secondary"][aria-label="Botón oculto controlado por el HTML"] {
-        display: none !important;
-        visibility: hidden !important;
-        height: 0 !important;
-        width: 0 !important;
-        opacity: 0 !important;
-        position: absolute !important;
-    }
-</style>
-""", unsafe_allow_html=True)
-
-if st.button("", key="hidden-one-page-btn", help="Botón oculto controlado por el HTML"):
-    st.session_state.mostrar_presentacion = True
-    st.rerun()
-
 # CREAR PESTAÑAS CON DISEÑO MEJORADO
 tab1, tab2, tab3 = st.tabs([
     "🔍  Búsqueda Inteligente",
@@ -1492,7 +1439,13 @@ with tab1:
         </div>
         """, unsafe_allow_html=True)
         
-        # BOTÓN ONE PAGE MOVIDO AL HEADER (ver código después del sidebar)
+        # BOTÓN DE PRESENTACIÓN DE DEFENSA
+        st.markdown("---")
+        if st.button("📄 ONE PAGE", use_container_width=True, type="primary", key="btn_presentacion"):
+            st.session_state.mostrar_presentacion = True
+            st.rerun()  # Forzar recarga inmediata
+        
+        st.markdown("---")
         
         # ⚽ FILTRO DE AÑO FIFA (NUEVO)
         st.markdown("### 📅 Año FIFA")

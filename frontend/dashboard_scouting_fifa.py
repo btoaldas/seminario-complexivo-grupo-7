@@ -372,6 +372,21 @@ st.markdown(f"""
         border-radius: 12px;
         border-left: 5px solid {COLOR_DESTACADO};
     }}
+    
+    /* OCULTAR SELECTOR DE TEMA (forzar dark mode siempre) */
+    button[kind="header"] {{
+        display: none !important;
+    }}
+    [data-testid="stDecoration"] {{
+        display: none !important;
+    }}
+    /* Ocultar botón de configuración que permite cambiar tema */
+    button[title="Settings"] {{
+        display: none !important;
+    }}
+    [data-testid="stToolbar"] button {{
+        display: none !important;
+    }}
 </style>
 """, unsafe_allow_html=True)
 

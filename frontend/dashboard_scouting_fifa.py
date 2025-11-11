@@ -2019,27 +2019,62 @@ with tab1:
             inverso_nacionalidades = {v: k for k, v in TRADUCCIONES_NACIONALIDADES.items()}
             nacionalidades_seleccionadas = [inverso_nacionalidades.get(nac, nac) for nac in nacionalidades_seleccionadas_es]
         
-        # Filtro de edad
-        edad_min = st.slider("Edad mínima:", 16, 45, 18)
-        edad_max = st.slider("Edad máxima:", 16, 45, 35)
-        
-        # Filtro de valoración
-        overall_min = st.slider("Valoración mínima:", 40, 95, 70)
-        
-        # Filtro de potencial
-        potencial_min = st.slider("Potencial mínimo:", 40, 95, 70)
-        
-        # Filtro de valor de mercado (rango min-max)
-        st.markdown("**💰 Valor de Mercado (millones €):**")
-        valor_rango_millones = st.slider(
-            "Rango de valor:",
-            min_value=0.0,
-            max_value=200.0,
-            value=(0.0, 50.0),
-            step=0.5,
+        # Filtro de edad (unificado min-max)
+        st.markdown("**🎂 Edad:**")
+        edad_rango = st.slider(
+            "Rango de edad:",
+            min_value=16,
+            max_value=45,
+            value=(18, 35),
+            step=1,
             label_visibility="collapsed"
         )
-        st.caption(f"Mínimo: €{valor_rango_millones[0]:.1f}M  —  Máximo: €{valor_rango_millones[1]:.1f}M")
+        st.caption(f"Mínimo: {edad_rango[0]} años  —  Máximo: {edad_rango[1]} años")
+        
+        # Filtro de valoración (unificado min-max)
+        st.markdown("**⚽ Valoración:**")
+        valoracion_rango = st.slider(
+            "Rango de valoración:",
+            min_value=40,
+            max_value=95,
+            value=(70, 95),
+            step=1,
+            label_visibility="collapsed"
+        )
+        st.caption(f"Mínimo: {valoracion_rango[0]}  —  Máximo: {valoracion_rango[1]}")
+        
+        # Filtro de potencial (unificado min-max)
+        st.markdown("**🌟 Potencial:**")
+        potencial_rango = st.slider(
+            "Rango de potencial:",
+            min_value=40,
+            max_value=95,
+            value=(70, 95),
+            step=1,
+            label_visibility="collapsed"
+        )
+        st.caption(f"Mínimo: {potencial_rango[0]}  —  Máximo: {potencial_rango[1]}")
+        
+        # Filtro de valor de mercado (dos sliders separados)
+        st.markdown("**💰 Valor de Mercado:**")
+        
+        valor_min_millones = st.slider(
+            "Valor mínimo (0 - 10 millones €):",
+            min_value=0.0,
+            max_value=10.0,
+            value=0.0,
+            step=0.1
+        )
+        
+        valor_max_millones = st.slider(
+            "Valor máximo (10 - 200 millones €):",
+            min_value=10.0,
+            max_value=200.0,
+            value=50.0,
+            step=1.0
+        )
+        
+        st.caption(f"Rango seleccionado: €{valor_min_millones:.1f}M - €{valor_max_millones:.0f}M")
         
         # Ordenamiento
         ordenar_por = st.selectbox(
@@ -2091,20 +2126,20 @@ with tab1:
             params["posiciones_jugador"] = posiciones_seleccionadas
         if nacionalidades_seleccionadas:
             params["nacionalidad"] = nacionalidades_seleccionadas
-        if edad_min:
-            params["edad_min"] = edad_min
-        if edad_max:
-            params["edad_max"] = edad_max
-        if overall_min:
-            params["valoracion_min"] = overall_min
-        if potencial_min:
-            params["potencial_min"] = potencial_min
         
-        # Filtro de valor de mercado con rango min-max (nombres corregidos)
-        if valor_rango_millones[0] > 0:
-            params["valor_min_eur"] = valor_rango_millones[0] * 1_000_000
-        if valor_rango_millones[1] < 200.0:
-            params["valor_max_eur"] = valor_rango_millones[1] * 1_000_000
+        # Filtros de rango (edad, valoración, potencial)
+        params["edad_min"] = edad_rango[0]
+        params["edad_max"] = edad_rango[1]
+        params["valoracion_min"] = valoracion_rango[0]
+        params["valoracion_max"] = valoracion_rango[1]
+        params["potencial_min"] = potencial_rango[0]
+        params["potencial_max"] = potencial_rango[1]
+        
+        # Filtro de valor de mercado (dos sliders separados)
+        if valor_min_millones > 0:
+            params["valor_min_eur"] = valor_min_millones * 1_000_000
+        if valor_max_millones < 200.0:
+            params["valor_max_eur"] = valor_max_millones * 1_000_000
         
         # Buscar jugadores
         resultados = buscar_jugadores(params)

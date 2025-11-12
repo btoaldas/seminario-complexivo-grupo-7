@@ -29,101 +29,67 @@ def generar_predicciones_ml(tolerancia_porcentaje=8.0):
     print("="*70)
     
     # Rutas
-    base_path = Path(__file__).parent.parent.parent.parent
+    base_path = Path(__file__).parent.parent.parent
     data_path = base_path / 'datos' / 'procesados'
-    models_path = base_path / 'datos' / 'modelos'
+    models_path = base_path / 'modelos'
     
     # 1. Cargar dataset limpio
     print("\n📂 Cargando dataset...")
     df_jugadores = pd.read_csv(data_path / 'fifa_limpio.csv')
     print(f"   ✅ Cargados {len(df_jugadores):,} registros")
     
-    # 2. Cargar modelo, encoder y club_encoding
-    print("\n🤖 Cargando modelo ML y transformadores...")
+    # 2. Cargar modelo y preprocesador
+    print("\n🤖 Cargando modelo ML...")
     try:
-        modelo = joblib.load(models_path / 'modelo_fifa.joblib')
-        encoder = joblib.load(models_path / 'encoder_fifa.joblib')
-        club_encoding = joblib.load(models_path / 'club_encoding_fifa.joblib')
-        print("   ✅ Modelo, encoder y club_encoding cargados")
+        modelo = joblib.load(models_path / 'mejor_modelo_rf.pkl')
+        preprocesador = joblib.load(models_path / 'preprocesador.pkl')
+        print("   ✅ Modelo y preprocesador cargados")
     except FileNotFoundError as e:
         print(f"   ❌ Error: No se encontraron archivos del modelo: {e}")
         print("   💡 Ejecuta primero el entrenamiento del modelo")
         return None
     
-    # 3. Configurar características (igual que en preprocesamiento_modelo.py)
-    col_categoricas = [
-        "categoria_posicion",
-        "categoria_edad",
-        "pie_preferido",
-        "categoria_reputacion",
-        "liga"
+    # 3. Características necesarias para predicción
+    caracteristicas = [
+        # Básicas
+        'edad', 'valoracion_global', 'potencial', 'altura_cm', 'peso_kg',
+        'reputacion_internacional', 'pie_debil', 'movimientos_habilidad',
+        
+        # Atributos principales
+        'ritmo', 'tiro', 'pase', 'regate', 'defensa', 'fisico',
+        
+        # Ataque
+        'ataque_cabezazo', 'ataque_definicion', 'ataque_potencia_disparo',
+        'ataque_efecto', 'ataque_voleas', 'ataque_penales',
+        
+        # Habilidad
+        'habilidad_regate', 'habilidad_control_balon', 'habilidad_aceleracion',
+        'habilidad_velocidad_sprint', 'habilidad_agilidad', 'habilidad_reacciones',
+        'habilidad_equilibrio',
+        
+        # Movimiento
+        'movimiento_aceleracion', 'movimiento_velocidad_sprint', 'movimiento_agilidad',
+        'movimiento_reacciones', 'movimiento_equilibrio',
+        
+        # Potencia
+        'potencia_disparo', 'potencia_salto', 'potencia_stamina', 'potencia_fuerza',
+        'potencia_disparo_lejano',
+        
+        # Mentalidad
+        'mentalidad_agresividad', 'mentalidad_intercepciones', 'mentalidad_posicionamiento',
+        'mentalidad_vision', 'mentalidad_penales', 'mentalidad_compostura',
+        
+        # Defensa
+        'defensa_marca', 'defensa_parado', 'defensa_entrada_pie',
+        
+        # Portero
+        'porteria_buceo', 'porteria_manejo', 'porteria_patada',
+        'porteria_reflejos', 'porteria_velocidad', 'porteria_posicionamiento'
     ]
     
-    col_numericas = [
-        # TOP FEATURES
-        "reputacion_internacional",
-        "valoracion_global",
-        "potencial",
-        "movimiento_reacciones",
-        
-        # FEATURES MODERADAS
-        "calidad_promedio",
-        "pase",
-        "mentalidad_compostura",
-        "regate_gambeta",
-        "mentalidad_vision",
-        "tiro_disparo",
-        "ataque_pase_corto",
-        
-        # ATAQUE
-        "ataque_definicion",
-        "ataque_cabezazo",
-        "ataque_centros",
-        "ataque_voleas",
-        
-        # FÍSICO
-        "movimiento_velocidad_sprint",
-        "movimiento_aceleracion",
-        "movimiento_agilidad",
-        "movimiento_equilibrio",
-        "fisico",
-        
-        # DEFENSA
-        "defensa",
-        "defensa_entrada_pie",
-        "defensa_entrada_deslizante",
-        "defensa_marcaje",
-        
-        # MENTAL
-        "mentalidad_agresividad",
-        "mentalidad_intercepciones",
-        "mentalidad_posicionamiento",
-        "mentalidad_penales",
-        
-        # HABILIDADES
-        "pie_debil",
-        "habilidades_regate",
-        "habilidad_regate",
-        "habilidad_control_balon",
-        "habilidad_efecto",
-        "habilidad_pase_largo",
-        "habilidad_tiros_libres",
-        
-        # FEATURES CALCULADAS
-        "diferencia_potencial",
-        "ratio_valor_salario",
-        "anos_contrato_restantes",
-        
-        # DEMOGRAFÍA
-        "edad"
-    ]
-    
-    # Verificar columnas disponibles
-    col_numericas_disponibles = [col for col in col_numericas if col in df_jugadores.columns]
-    col_categoricas_disponibles = [col for col in col_categoricas if col in df_jugadores.columns]
-    
-    print(f"   📊 Columnas numéricas: {len(col_numericas_disponibles)}/{len(col_numericas)}")
-    print(f"   📊 Columnas categóricas: {len(col_categoricas_disponibles)}/{len(col_categoricas)}")
+    # Verificar que todas las columnas existen
+    caracteristicas_disponibles = [col for col in caracteristicas if col in df_jugadores.columns]
+    print(f"   📊 Características disponibles: {len(caracteristicas_disponibles)}/{len(caracteristicas)}")
     
     # 4. Procesar por año para mantener contexto temporal
     print("\n🔄 Generando predicciones por año...")
@@ -137,33 +103,16 @@ def generar_predicciones_ml(tolerancia_porcentaje=8.0):
         df_año = df_jugadores[df_jugadores['año_datos'] == año].copy()
         print(f"      Jugadores: {len(df_año):,}")
         
-        # Preparar datos (IGUAL que preprocesamiento_modelo.py)
+        # Preparar datos
+        X = df_año[caracteristicas_disponibles].copy()
         
-        # 1. Separar categóricas y numéricas
-        X_categoricas = df_año[col_categoricas_disponibles].copy()
-        X_numericas = df_año[col_numericas_disponibles].copy()
-        
-        # 2. Target encoding para club usando club_encoding
-        if 'club' in df_año.columns:
-            X_numericas['club_valor_promedio'] = df_año['club'].map(club_encoding)
-            # Si hay clubes nuevos, rellenar con mediana del dataset
-            mediana_valor = df_año['valor_mercado_eur'].median()
-            X_numericas['club_valor_promedio'].fillna(mediana_valor, inplace=True)
-        
-        # 3. Rellenar valores faltantes en numéricas
-        X_numericas = X_numericas.fillna(X_numericas.median())
-        
-        # 4. OneHotEncoding para categóricas
-        X_cat_encoded = encoder.transform(X_categoricas)
-        
-        # 5. Concatenar matrices numéricas y categóricas codificadas
-        X_final = np.hstack([X_numericas.values, X_cat_encoded])
+        # Rellenar valores faltantes
+        X = X.fillna(X.median())
         
         # Transformar y predecir
         try:
-            # IMPORTANTE: El modelo fue entrenado con log1p(valor), hay que revertir
-            predicciones_log = modelo.predict(X_final)
-            predicciones = np.expm1(predicciones_log)  # Revertir transformación log1p
+            X_procesado = preprocesador.transform(X)
+            predicciones = modelo.predict(X_procesado)
             
             # Calcular diferencia porcentual
             df_año['valor_predicho_eur'] = predicciones

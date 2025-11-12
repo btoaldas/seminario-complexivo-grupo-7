@@ -735,7 +735,6 @@ sesion_http = crear_sesion_http()
 
 # FUNCIONES DE CARGA DE DATOS
 @st.cache_data(ttl=300)
-@st.cache_data(ttl=1800)  # Cache de 30 minutos (los filtros no cambian frecuentemente)
 def cargar_opciones_filtros():
     """Carga las opciones de filtros desde la API"""
     try:
@@ -757,7 +756,6 @@ def buscar_jugadores(params):
         st.error(f"Error al buscar jugadores: {e}")
         return None
 
-@st.cache_data(ttl=600)  # Cache de 10 minutos
 def obtener_perfil_jugador(jugador_id, año=None):
     """Obtiene el perfil completo de un jugador"""
     try:
@@ -990,39 +988,33 @@ def mostrar_modal_jugador(jugador_id, jugador_nombre, año_fifa):
         st.markdown(f"### {jugador_nombre}")
     
     with col_header_2:
-        # Mostrar solo el año actual (sin cargar años disponibles para optimizar velocidad)
-        st.markdown(f"**📅 Año FIFA:** {año_fifa}")
-        
-        # Opcionalmente, mostrar un expander para cambiar año si es necesario
-        with st.expander("🔄 Cambiar año"):
-            # Solo cargar años disponibles cuando el usuario expande
-            try:
-                url_años = f"{API_BASE_URL}/jugadores/{jugador_id}/años"
-                response = sesion_http.get(url_años, timeout=5)
-                if response.status_code == 200:
-                    años_disponibles = response.json().get("años", [año_fifa])
-                else:
-                    años_disponibles = [año_fifa]
-            except:
+        # Obtener años disponibles para este jugador
+        try:
+            url_años = f"{API_BASE_URL}/jugadores/{jugador_id}/años"
+            response = sesion_http.get(url_años, timeout=5)
+            if response.status_code == 200:
+                años_disponibles = response.json().get("años", [año_fifa])
+            else:
                 años_disponibles = [año_fifa]
-            
-            año_seleccionado = st.selectbox(
-                "Selecciona año:",
-                options=sorted(años_disponibles, reverse=True),
-                index=sorted(años_disponibles, reverse=True).index(año_fifa) if año_fifa in años_disponibles else 0,
-                key=f"selector_año_{jugador_id}_{año_fifa}",
-                label_visibility="collapsed"
-            )
-            
-            if st.button("Aplicar", key=f"btn_aplicar_{jugador_id}_{año_fifa}"):
-                st.session_state.modal_jugador_id = jugador_id
-                st.session_state.modal_jugador_nombre = jugador_nombre
-                st.session_state.modal_jugador_año = año_seleccionado
-                st.session_state.mostrar_modal = True
-                st.session_state.modal_clic_reciente = True
-                st.rerun()
+        except:
+            años_disponibles = [año_fifa]
         
-        año_seleccionado = año_fifa  # Por defecto usar el año actual
+        # Selector de año con callback para cerrar y reabrir modal
+        año_seleccionado = st.selectbox(
+            "📅 Año FIFA",
+            options=sorted(años_disponibles, reverse=True),
+            index=sorted(años_disponibles, reverse=True).index(año_fifa) if año_fifa in años_disponibles else 0,
+            key=f"selector_año_{jugador_id}_{año_fifa}"
+        )
+        
+        # Si cambió el año, cerrar modal y actualizar session_state para reabrirlo
+        if año_seleccionado != año_fifa:
+            st.session_state.modal_jugador_id = jugador_id
+            st.session_state.modal_jugador_nombre = jugador_nombre
+            st.session_state.modal_jugador_año = año_seleccionado
+            st.session_state.mostrar_modal = True
+            st.session_state.modal_clic_reciente = True
+            st.rerun()
     
     with col_header_3:
         # Slider de tolerancia para clasificación
@@ -1445,26 +1437,27 @@ tab1, tab2, tab3 = st.tabs([
     "🤖  Predicción ML"
 ])
 
+# Cargar opciones de filtros
+data_filtros = cargar_opciones_filtros()
+
+if data_filtros and "error" not in data_filtros:
+    posiciones_lista = data_filtros.get("posiciones", [])
+    nacionalidades_lista = data_filtros.get("nacionalidades", [])
+    clubes_lista = data_filtros.get("clubes", [])
+    ligas_lista = data_filtros.get("ligas", [])
+    categorias_edad = data_filtros.get("categorias_edad", [])
+else:
+    st.error("No se pudieron cargar los filtros desde la API")
+    posiciones_lista = []
+    nacionalidades_lista = []
+    clubes_lista = []
+    ligas_lista = []
+    categorias_edad = []
+
 # ============================================================================
 # TAB 1: BÚSQUEDA INTELIGENTE
 # ============================================================================
 with tab1:
-    # Cargar opciones de filtros (solo cuando se accede a este tab)
-    data_filtros = cargar_opciones_filtros()
-
-    if data_filtros and "error" not in data_filtros:
-        posiciones_lista = data_filtros.get("posiciones", [])
-        nacionalidades_lista = data_filtros.get("nacionalidades", [])
-        clubes_lista = data_filtros.get("clubes", [])
-        ligas_lista = data_filtros.get("ligas", [])
-        categorias_edad = data_filtros.get("categorias_edad", [])
-    else:
-        st.error("No se pudieron cargar los filtros desde la API")
-        posiciones_lista = []
-        nacionalidades_lista = []
-        clubes_lista = []
-        ligas_lista = []
-        categorias_edad = []
     st.markdown(f"""
     <div style='background: linear-gradient(135deg, {COLOR_ACENTO_2} 0%, {COLOR_PRIMARIO} 100%); 
          padding: 20px; border-radius: 15px; border-left: 5px solid {COLOR_DESTACADO}; margin-bottom: 25px;'>
@@ -2026,93 +2019,27 @@ with tab1:
             inverso_nacionalidades = {v: k for k, v in TRADUCCIONES_NACIONALIDADES.items()}
             nacionalidades_seleccionadas = [inverso_nacionalidades.get(nac, nac) for nac in nacionalidades_seleccionadas_es]
         
-        # Filtro de edad (unificado min-max)
-        st.markdown("**🎂 Edad:**")
-        edad_rango = st.slider(
-            "Rango de edad:",
-            min_value=16,
-            max_value=45,
-            value=(18, 35),
-            step=1,
-            label_visibility="collapsed"
-        )
-        st.caption(f"Mínimo: {edad_rango[0]} años  —  Máximo: {edad_rango[1]} años")
+        # Filtro de edad
+        edad_min = st.slider("Edad mínima:", 16, 45, 18)
+        edad_max = st.slider("Edad máxima:", 16, 45, 35)
         
-        # Filtro de valoración (unificado min-max)
-        st.markdown("**⚽ Valoración:**")
-        valoracion_rango = st.slider(
-            "Rango de valoración:",
-            min_value=40,
-            max_value=95,
-            value=(70, 95),
-            step=1,
-            label_visibility="collapsed"
-        )
-        st.caption(f"Mínimo: {valoracion_rango[0]}  —  Máximo: {valoracion_rango[1]}")
+        # Filtro de valoración
+        overall_min = st.slider("Valoración mínima:", 40, 95, 70)
         
-        # Filtro de potencial (unificado min-max)
-        st.markdown("**🌟 Potencial:**")
-        potencial_rango = st.slider(
-            "Rango de potencial:",
-            min_value=40,
-            max_value=95,
-            value=(70, 95),
-            step=1,
-            label_visibility="collapsed"
-        )
-        st.caption(f"Mínimo: {potencial_rango[0]}  —  Máximo: {potencial_rango[1]}")
+        # Filtro de potencial
+        potencial_min = st.slider("Potencial mínimo:", 40, 95, 70)
         
-        # Filtro de valor de mercado (slider + inputs manuales)
+        # Filtro de valor de mercado (rango min-max)
         st.markdown("**💰 Valor de Mercado (millones €):**")
-        
-        # Slider de rango con escala adaptativa
-        valor_rango = st.slider(
-            "Rango visual:",
+        valor_rango_millones = st.slider(
+            "Rango de valor:",
             min_value=0.0,
             max_value=200.0,
             value=(0.0, 50.0),
-            step=0.1,
+            step=0.5,
             label_visibility="collapsed"
         )
-        
-        # Inputs numéricos para valores exactos
-        col_v1, col_v2 = st.columns(2)
-        with col_v1:
-            valor_min_manual = st.number_input(
-                "💵 Mínimo (millones €):",
-                min_value=0.0,
-                max_value=200.0,
-                value=float(valor_rango[0]),
-                step=0.1,
-                format="%.1f"
-            )
-        with col_v2:
-            valor_max_manual = st.number_input(
-                "💰 Máximo (millones €):",
-                min_value=0.0,
-                max_value=200.0,
-                value=float(valor_rango[1]),
-                step=0.1,
-                format="%.1f"
-            )
-        
-        # Usar el valor manual si difiere del slider
-        valor_min_final = valor_min_manual
-        valor_max_final = valor_max_manual
-        
-        st.caption(f"📊 Rango seleccionado: €{valor_min_final:.1f}M - €{valor_max_final:.1f}M")
-        
-        # NUEVO: Filtro de clasificación ML
-        st.markdown("---")
-        st.markdown("### 🤖 Análisis Machine Learning")
-        clasificacion_ml_filtro = st.selectbox(
-            "Filtrar por valoración ML:",
-            ["Todos", "💎 Solo Infravalorados", "⚠️ Solo Sobrevalorados", "✓ Solo Justos"],
-            help="Basado en predicciones ML pre-calculadas (tolerancia 8%)\n\n"
-                 "💎 Infravalorados: El modelo predice un valor >8% mayor al actual\n"
-                 "⚠️ Sobrevalorados: El modelo predice un valor >8% menor al actual\n"
-                 "✓ Justos: La diferencia entre predicción y valor actual es <8%"
-        )
+        st.caption(f"Mínimo: €{valor_rango_millones[0]:.1f}M  —  Máximo: €{valor_rango_millones[1]:.1f}M")
         
         # Ordenamiento
         ordenar_por = st.selectbox(
@@ -2164,29 +2091,20 @@ with tab1:
             params["posiciones_jugador"] = posiciones_seleccionadas
         if nacionalidades_seleccionadas:
             params["nacionalidad"] = nacionalidades_seleccionadas
+        if edad_min:
+            params["edad_min"] = edad_min
+        if edad_max:
+            params["edad_max"] = edad_max
+        if overall_min:
+            params["valoracion_min"] = overall_min
+        if potencial_min:
+            params["potencial_min"] = potencial_min
         
-        # Filtros de rango (edad, valoración, potencial)
-        params["edad_min"] = edad_rango[0]
-        params["edad_max"] = edad_rango[1]
-        params["valoracion_min"] = valoracion_rango[0]
-        params["valoracion_max"] = valoracion_rango[1]
-        params["potencial_min"] = potencial_rango[0]
-        params["potencial_max"] = potencial_rango[1]
-        
-        # Filtro de valor de mercado (slider + manual)
-        if valor_min_final > 0:
-            params["valor_min_eur"] = valor_min_final * 1_000_000
-        if valor_max_final < 200.0:
-            params["valor_max_eur"] = valor_max_final * 1_000_000
-        
-        # NUEVO: Filtro de clasificación ML
-        if clasificacion_ml_filtro != "Todos":
-            if "💎" in clasificacion_ml_filtro:
-                params["clasificacion_ml"] = "I"
-            elif "⚠️" in clasificacion_ml_filtro:
-                params["clasificacion_ml"] = "S"
-            elif "✓" in clasificacion_ml_filtro:
-                params["clasificacion_ml"] = "J"
+        # Filtro de valor de mercado con rango min-max (nombres corregidos)
+        if valor_rango_millones[0] > 0:
+            params["valor_min_eur"] = valor_rango_millones[0] * 1_000_000
+        if valor_rango_millones[1] < 200.0:
+            params["valor_max_eur"] = valor_rango_millones[1] * 1_000_000
         
         # Buscar jugadores
         resultados = buscar_jugadores(params)
@@ -2393,9 +2311,9 @@ with tab1:
             </style>
             """, unsafe_allow_html=True)
             
-            # Mostrar encabezados (con nueva columna ML)
-            col_headers = st.columns([0.5, 1.2, 2.5, 0.7, 0.7, 1.5, 1.5, 1.5, 1, 1, 1, 0.6])
-            headers = ["#", "Foto", "Nombre", "Edad", "Año FIFA", "Nacionalidad", "Club", "Liga", "Posición", "Overall", "Potencial", "💎 ML"]
+            # Mostrar encabezados (con nueva columna Año FIFA)
+            col_headers = st.columns([0.5, 0.8, 2, 0.7, 0.7, 1.5, 1.5, 1.5, 1, 1, 1.2])
+            headers = ["#", "Foto", "Nombre", "Edad", "Año FIFA", "Nacionalidad", "Club", "Liga", "Posición", "Overall", "Potencial"]
             
             header_html = "<div class='tabla-header'>"
             for col, header in zip(col_headers, headers):
@@ -2411,14 +2329,14 @@ with tab1:
                 st.markdown("<div class='fila-jugador'>", unsafe_allow_html=True)
                 
                 with st.container():
-                    col_vals = st.columns([0.5, 1.2, 2.5, 0.7, 0.7, 1.5, 1.5, 1.5, 1, 1, 1, 0.6])
+                    col_vals = st.columns([0.5, 1.2, 2.5, 0.7, 0.7, 1.5, 1.5, 1.5, 1, 1, 1])
                     
                     with col_vals[0]:
                         st.markdown(f"<div style='text-align: center; font-size: 1.2em; color: #f0a818; font-weight: bold;'>{idx_global + 1}</div>", unsafe_allow_html=True)
                     
                     with col_vals[1]:
                         jugador_id = jugador.get('id_sofifa')
-                        nombre_jugador = jugador.get('nombre_corto', 'N/A')
+                        nombre = jugador.get('nombre_corto', 'N/A')
                         año_jugador = jugador.get('año_datos', 'N/A')
                         
                         # Obtener foto en miniatura del jugador
@@ -2462,18 +2380,18 @@ with tab1:
                         # Botón compacto y elegante con solo "Ficha"
                         if st.button("Ficha", key=f"btn_hidden_{idx_global}_{jugador_id}", type="primary", use_container_width=True):
                             st.session_state.modal_jugador_id = jugador_id
-                            st.session_state.modal_jugador_nombre = nombre_jugador
+                            st.session_state.modal_jugador_nombre = nombre
                             st.session_state.modal_jugador_año = año_jugador
                             st.session_state.mostrar_modal = True
                             st.session_state.modal_clic_reciente = True
                             st.rerun()
                     
                     with col_vals[2]:
-                        st.markdown(f"<span class='jugador-nombre'>{nombre_jugador}</span>", unsafe_allow_html=True)
+                        st.markdown(f"<span class='jugador-nombre'>{jugador.get('nombre_corto', 'N/A')}</span>", unsafe_allow_html=True)
                     
                     with col_vals[3]:
                         edad = jugador.get('edad', 'N/A')
-                        st.markdown(f"<div style='text-align: center; font-weight: 600; color: {COLOR_SECUNDARIO};'>{edad}</div>", unsafe_allow_html=True)
+                        st.markdown(f"<div style='text-align: center;'>{edad}</div>", unsafe_allow_html=True)
                     
                     with col_vals[4]:
                         # ⚽ NUEVA COLUMNA AÑO FIFA
@@ -2529,18 +2447,6 @@ with tab1:
                         potencial = jugador.get('potencial', 'N/A')
                         color_potencial = "#4CAF50" if potencial > overall else "#FF9800"
                         st.markdown(f"<div style='text-align: center; color: {color_potencial}; font-weight: bold;'>{potencial}</div>", unsafe_allow_html=True)
-                    
-                    with col_vals[11]:
-                        # NUEVA COLUMNA: Clasificación ML
-                        clasificacion = jugador.get('clasificacion_ml', None)
-                        if clasificacion == 'I':
-                            st.markdown('<div style="text-align: center; font-size: 1.5em;">💎</div>', unsafe_allow_html=True)
-                        elif clasificacion == 'S':
-                            st.markdown('<div style="text-align: center; font-size: 1.5em;">⚠️</div>', unsafe_allow_html=True)
-                        elif clasificacion == 'J':
-                            st.markdown('<div style="text-align: center; font-size: 1.2em; color: #999;">✓</div>', unsafe_allow_html=True)
-                        else:
-                            st.markdown('<div style="text-align: center; color: #666;">—</div>', unsafe_allow_html=True)
                 
                 # Cerrar wrapper de fila
                 st.markdown("</div>", unsafe_allow_html=True)
@@ -3307,193 +3213,6 @@ with tab3:
         except requests.exceptions.RequestException as e:
             with col_resultado:
                 st.error(f"Error de conexión con la API: {e}")
-    
-    # ============================================================================
-    # SECCIÓN: HERRAMIENTAS DE PRE-CÁLCULO ML
-    # ============================================================================
-    st.markdown("<br><br>", unsafe_allow_html=True)
-    st.markdown("---")
-    
-    st.markdown(f"""
-    <div style='background: linear-gradient(135deg, {COLOR_ACENTO_2} 0%, {COLOR_PRIMARIO} 100%); 
-         padding: 20px; border-radius: 15px; border-left: 5px solid {COLOR_DESTACADO}; margin-bottom: 25px;'>
-        <h2 style='color: {COLOR_DESTACADO}; margin: 0;'>🔧 Herramientas de Pre-cálculo ML</h2>
-        <p style='color: {COLOR_SECUNDARIO}; margin: 10px 0 0 0;'>
-            Regenerar clasificaciones de jugadores (Infravalorados, Sobrevalorados, Justos)
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    col_herramienta1, col_herramienta2 = st.columns([2, 1])
-    
-    with col_herramienta1:
-        st.markdown("### ⚙️ Configuración de Re-cálculo")
-        
-        st.markdown("""
-        Esta herramienta regenera las predicciones ML para todos los 122,501 jugadores del dataset.
-        Ajusta la tolerancia para cambiar cómo se clasifican los jugadores:
-        
-        - **💎 Infravalorado**: Predicción > Valor actual + tolerancia
-        - **⚠️ Sobrevalorado**: Predicción < Valor actual - tolerancia  
-        - **✓ Justo**: Diferencia dentro de la tolerancia
-        """)
-        
-        nueva_tolerancia = st.slider(
-            "Tolerancia de Clasificación (%):",
-            min_value=1,
-            max_value=30,
-            value=8,
-            step=1,
-            help="Porcentaje de diferencia entre valor predicho y real para clasificar jugadores"
-        )
-        
-        st.info(f"**Tolerancia actual: ±{nueva_tolerancia}%**")
-        
-        # Estimaciones visuales
-        col_est1, col_est2, col_est3 = st.columns(3)
-        with col_est1:
-            st.markdown(f"""
-            <div style='text-align: center; padding: 15px; background: rgba(0,255,0,0.1); border-radius: 10px;'>
-                <div style='font-size: 2em;'>💎</div>
-                <div style='font-size: 1.2em; font-weight: bold;'>~18-25%</div>
-                <div style='color: {COLOR_SECUNDARIO};'>Infravalorados</div>
-            </div>
-            """, unsafe_allow_html=True)
-        
-        with col_est2:
-            st.markdown(f"""
-            <div style='text-align: center; padding: 15px; background: rgba(255,165,0,0.1); border-radius: 10px;'>
-                <div style='font-size: 2em;'>⚠️</div>
-                <div style='font-size: 1.2em; font-weight: bold;'>~20-30%</div>
-                <div style='color: {COLOR_SECUNDARIO};'>Sobrevalorados</div>
-            </div>
-            """, unsafe_allow_html=True)
-        
-        with col_est3:
-            st.markdown(f"""
-            <div style='text-align: center; padding: 15px; background: rgba(150,150,150,0.1); border-radius: 10px;'>
-                <div style='font-size: 2em;'>✓</div>
-                <div style='font-size: 1.2em; font-weight: bold;'>~50-60%</div>
-                <div style='color: {COLOR_SECUNDARIO};'>Justos</div>
-            </div>
-            """, unsafe_allow_html=True)
-        
-        st.markdown("<br>", unsafe_allow_html=True)
-        
-        if st.button("🚀 Iniciar Re-cálculo de Predicciones ML", type="primary", use_container_width=True):
-            with st.spinner("⏳ Generando predicciones ML... Esto puede tomar 2-5 minutos..."):
-                try:
-                    response = sesion_http.post(
-                        f"{API_BASE_URL}/ml/recalcular-predicciones",
-                        json={"tolerancia_porcentaje": float(nueva_tolerancia)},
-                        timeout=600  # 10 minutos timeout
-                    )
-                    response.raise_for_status()
-                    resultado_recalc = response.json()
-                    
-                    if resultado_recalc.get("success"):
-                        st.success("✅ Predicciones ML regeneradas exitosamente!")
-                        
-                        # Mostrar métricas del resultado
-                        col_m1, col_m2, col_m3, col_m4 = st.columns(4)
-                        
-                        with col_m1:
-                            st.metric(
-                                "Total Procesado",
-                                f"{resultado_recalc.get('total_registros', 0):,}",
-                                delta="jugadores"
-                            )
-                        
-                        with col_m2:
-                            st.metric(
-                                "💎 Infravalorados",
-                                f"{resultado_recalc.get('total_infravalorados', 0):,}",
-                                delta=f"{resultado_recalc.get('porcentaje_infravalorados', 0):.1f}%"
-                            )
-                        
-                        with col_m3:
-                            st.metric(
-                                "⚠️ Sobrevalorados",
-                                f"{resultado_recalc.get('total_sobrevalorados', 0):,}",
-                                delta=f"{resultado_recalc.get('porcentaje_sobrevalorados', 0):.1f}%"
-                            )
-                        
-                        with col_m4:
-                            st.metric(
-                                "✓ Justos",
-                                f"{resultado_recalc.get('total_justos', 0):,}",
-                                delta=f"{resultado_recalc.get('porcentaje_justos', 0):.1f}%"
-                            )
-                        
-                        st.warning("🔄 **IMPORTANTE**: Reinicia el backend para aplicar los cambios al sistema de búsqueda.")
-                        
-                        st.code(f"""
-# Archivo generado:
-{resultado_recalc.get('archivo', 'datos/procesados/jugadores_predicciones_ml.csv')}
-
-# Tolerancia aplicada: {nueva_tolerancia}%
-# Fecha generación: {resultado_recalc.get('fecha_generacion', 'N/A')}
-                        """, language="bash")
-                    else:
-                        st.error(f"❌ Error: {resultado_recalc.get('error', 'Error desconocido')}")
-                
-                except requests.exceptions.Timeout:
-                    st.error("⏱️ Timeout: El proceso tomó más de 10 minutos. Intenta nuevamente.")
-                except requests.exceptions.RequestException as e:
-                    st.error(f"❌ Error de conexión: {e}")
-    
-    with col_herramienta2:
-        st.markdown("### 📊 Estado Actual")
-        
-        try:
-            response_estado = sesion_http.get(f"{API_BASE_URL}/ml/estado-predicciones", timeout=10)
-            response_estado.raise_for_status()
-            estado = response_estado.json()
-            
-            if estado.get("archivo_existe"):
-                st.success("✅ Archivo de predicciones encontrado")
-                
-                st.metric("Total Registros", f"{estado.get('total_registros', 0):,}")
-                
-                st.markdown("#### Distribución Actual:")
-                
-                infra = estado.get('total_infravalorados', 0)
-                sobre = estado.get('total_sobrevalorados', 0)
-                justos = estado.get('total_justos', 0)
-                
-                # Gráfico de dona
-                fig_dona = go.Figure(data=[go.Pie(
-                    labels=['💎 Infravalorados', '⚠️ Sobrevalorados', '✓ Justos'],
-                    values=[infra, sobre, justos],
-                    hole=0.4,
-                    marker=dict(colors=['#00ff00', '#ff4444', '#999999'])
-                )])
-                
-                fig_dona.update_layout(
-                    paper_bgcolor='rgba(0,0,0,0)',
-                    plot_bgcolor='rgba(0,0,0,0)',
-                    font=dict(color=COLOR_SECUNDARIO),
-                    height=300,
-                    showlegend=True,
-                    legend=dict(
-                        orientation="v",
-                        yanchor="middle",
-                        y=0.5,
-                        xanchor="left",
-                        x=1.1
-                    )
-                )
-                
-                st.plotly_chart(fig_dona, use_container_width=True)
-                
-                st.caption(f"Tolerancia actual: {estado.get('tolerancia_porcentaje', 'N/A')}%")
-                st.caption(f"Última actualización: {estado.get('fecha_generacion', 'N/A')}")
-            else:
-                st.warning("⚠️ No se encontró archivo de predicciones")
-                st.info("Genera las predicciones usando el botón de re-cálculo")
-        
-        except requests.exceptions.RequestException as e:
-            st.error(f"Error al obtener estado: {e}")
 
 # ============================================================================
 # MODAL GLOBAL (funciona en cualquier tab)

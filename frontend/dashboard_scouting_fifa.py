@@ -1,4 +1,4 @@
-import streamlit as st
+﻿import streamlit as st
 import streamlit.components.v1 as components
 import plotly.express as px
 import plotly.graph_objects as go
@@ -2056,20 +2056,86 @@ with tab1:
         )
         potencial_min, potencial_max = potencial_rango
         
-        # Filtro de valor de mercado (SOLO slider, simple y directo)
-        st.markdown("### 💰 Valor de Mercado (millones €)")
-        valor_rango_millones = st.slider(
-            "Rango de valor:",
-            min_value=0.0,
-            max_value=200.0,
-            value=(0.0, 50.0),
-            step=0.5,
-            help="Desliza los extremos para ajustar mínimo y máximo"
-        )
-        st.caption(f"Mínimo: €{valor_rango_millones[0]:.1f}M  —  Máximo: €{valor_rango_millones[1]:.1f}M")
+        # Filtro de valor de mercado con ZOOM DINÁMICO
+        st.markdown("### 💰 Valor de Mercado")
+        
+        # Inicializar estado para zoom
+        if "zoom_mode" not in st.session_state:
+            st.session_state.zoom_mode = False
+        if "zoom_center" not in st.session_state:
+            st.session_state.zoom_center = 25.0
+        
+        # Selector de modo discreto
+        with st.expander("🔍 Zoom", expanded=False):
+            zoom_activado = st.toggle(
+                "Activar",
+                value=st.session_state.zoom_mode,
+                help="Precisión alta para rangos pequeños"
+            )
+            st.session_state.zoom_mode = zoom_activado
+        
+        if not zoom_activado:
+            # MODO NORMAL: Vista completa 0.1M - 130M
+            valor_rango_millones = st.slider(
+                "Rango completo (€100K - €130M):",
+                min_value=0.1,
+                max_value=130.0,
+                value=(0.1, 50.0),
+                step=0.5,
+                format="%.1f",
+                help="Vista completa del rango. Activa Zoom para precisión."
+            )
+            st.caption(f"📊 Mínimo: **€{valor_rango_millones[0]:.1f}M** — Máximo: **€{valor_rango_millones[1]:.1f}M**")
+        
+        else:
+            # MODO ZOOM: Rango reducido con alta precisión
+            st.markdown("##### 🎯 Ajuste de Rango con Zoom")
+            
+            # Slider para seleccionar el centro del zoom
+            centro_zoom = st.slider(
+                "1️⃣ Centro del zoom:",
+                min_value=0.1,
+                max_value=130.0,
+                value=st.session_state.zoom_center,
+                step=1.0,
+                format="%.1f",
+                help="Selecciona el valor central para hacer zoom"
+            )
+            st.session_state.zoom_center = centro_zoom
+            
+            # Slider para seleccionar el ancho de la ventana de zoom
+            ancho_ventana = st.slider(
+                "2️⃣ Ancho de ventana (±):",
+                min_value=0.5,
+                max_value=20.0,
+                value=5.0,
+                step=0.5,
+                format="%.1f",
+                help="Rango de valores alrededor del centro"
+            )
+            
+            # Calcular límites de la ventana de zoom
+            zoom_min = max(0.1, centro_zoom - ancho_ventana)
+            zoom_max = min(130.0, centro_zoom + ancho_ventana)
+            
+            st.caption(f"🔍 Ventana de zoom: €{zoom_min:.1f}M - €{zoom_max:.1f}M")
+            
+            # Slider de precisión DENTRO de la ventana de zoom
+            valor_rango_millones = st.slider(
+                "3️⃣ Rango preciso:",
+                min_value=zoom_min,
+                max_value=zoom_max,
+                value=(zoom_min, zoom_max),
+                step=0.01,  # ¡Precisión de 10K€!
+                format="%.2f",
+                help="Ajuste fino con precisión de €10K"
+            )
+            
+            st.caption(f"✅ Seleccionado: **€{valor_rango_millones[0]:.2f}M** - **€{valor_rango_millones[1]:.2f}M**")
+            st.caption(f"   *(€{valor_rango_millones[0]*1000:.0f}K - €{valor_rango_millones[1]*1000:.0f}K)*")
         
         # 💎 FILTRO DE CLASIFICACIÓN ML (NUEVO)
-        st.markdown("**🤖 Clasificación ML:**")
+        st.markdown("### 🧠 Clasificación ML")
         clasificacion_ml_opciones = st.multiselect(
             "Filtrar por valoración ML:",
             options=["💎 Infravalorado", "⚠️ Sobrevalorado", "✓ Justo"],

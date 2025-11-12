@@ -12,8 +12,8 @@ from datetime import datetime
 import sys
 import os
 
-# Agregar path del backend al sys.path
-BASE_DIR = Path(__file__).parent.parent.parent
+# Obtener la ruta base del proyecto (3 niveles arriba desde este archivo)
+BASE_DIR = Path(__file__).parent.parent.parent.parent  # backend/scripts/ml/ -> backend/ -> proyecto/
 sys.path.append(str(BASE_DIR))
 
 def generar_predicciones_ml(tolerancia_porcentaje=8.0):
@@ -111,7 +111,12 @@ def generar_predicciones_ml(tolerancia_porcentaje=8.0):
     # 6. Transformar categóricas con encoder
     print("\n🔄 Aplicando OneHotEncoding...")
     X_categoricas_encoded = encoder.transform(X_categoricas)
-    X_categoricas_dense = X_categoricas_encoded.toarray()
+    
+    # Verificar si es sparse matrix o array
+    if hasattr(X_categoricas_encoded, 'toarray'):
+        X_categoricas_dense = X_categoricas_encoded.toarray()
+    else:
+        X_categoricas_dense = X_categoricas_encoded
     
     # 7. Concatenar numéricas + categóricas
     X_final = np.hstack([X_numericas.values, X_categoricas_dense])

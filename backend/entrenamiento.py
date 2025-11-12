@@ -55,11 +55,143 @@ if __name__ == "__main__":
         print("💾 Se creará backup automático de fifa_limpio.csv")
         print("-" * 80)
         
-        # Importar y ejecutar generador de predicciones
-        from scripts.ml.generar_predicciones_ml import generar_predicciones_ml
-        df_con_predicciones = generar_predicciones_ml(tolerancia_porcentaje=8.0)
+        # Usar modelo y encoder que YA están en memoria (no recargar)
+        import numpy as np
+        from datetime import datetime
+        import shutil
         
-        if df_con_predicciones is not None:
+        try:
+            # Cargar dataset completo
+            df_completo = pd.read_csv(DATA_PATH, low_memory=False)
+            print(f"✓ Dataset cargado: {df_completo.shape[0]:,} × {df_completo.shape[1]} columnas")
+            
+            # Preparar features para predicción (IGUAL que en preprocesamiento_modelo.py)
+            feature_cols_numeric = [
+                # TOP FEATURES
+                "reputacion_internacional",
+                "valoracion_global",
+                "potencial",
+                "movimiento_reacciones",
+                # FEATURES MODERADAS
+                "calidad_promedio",
+                "pase",
+                "mentalidad_compostura",
+                "regate_gambeta",
+                "mentalidad_vision",
+                "tiro_disparo",
+                "ataque_pase_corto",
+                # FEATURES ADICIONALES
+                "ataque_definicion",
+                "ataque_cabezazo",
+                "ataque_centros",
+                "ataque_voleas",
+                # Físicos
+                "movimiento_velocidad_sprint",
+                "movimiento_aceleracion",
+                "movimiento_agilidad",
+                "movimiento_equilibrio",
+                "fisico",
+                # Defensivos
+                "defensa",
+                "defensa_entrada_pie",
+                "defensa_entrada_deslizante",
+                "defensa_marcaje",
+                # Mentales
+                "mentalidad_agresividad",
+                "mentalidad_intercepciones",
+                "mentalidad_posicionamiento",
+                "mentalidad_penales",
+                # Habilidades
+                "pie_debil",
+                "habilidades_regate",
+                "habilidad_regate",
+                "habilidad_control_balon",
+                "habilidad_efecto",
+                "habilidad_pase_largo",
+                "habilidad_tiros_libres",
+                # Features calculadas
+                "diferencia_potencial",
+                "ratio_valor_salario",
+                "anos_contrato_restantes",
+                # Demografía
+                "edad"
+            ]
+            
+            feature_cols_categorical = [
+                "categoria_posicion",
+                "categoria_edad",
+                "pie_preferido",
+                "categoria_reputacion",
+                "liga"
+            ]
+            
+            # Aplicar target encoding para club
+            df_temp = df_completo.copy()
+            df_temp['club_encoded'] = df_temp['club'].map(club_encoding).fillna(0)
+            
+            # Features numéricas + club_encoded
+            X_numeric = df_temp[feature_cols_numeric + ['club_encoded']].values
+            
+            # Features categóricas (sin club)
+            cats_sin_club = [c for c in feature_cols_categorical if c != 'club']
+            X_categorical = df_temp[cats_sin_club]
+            
+            # OneHot encoding
+            X_cat_encoded = encoder.transform(X_categorical)
+            if hasattr(X_cat_encoded, 'toarray'):
+                X_cat_encoded = X_cat_encoded.toarray()
+            
+            # Concatenar
+            X_final = np.hstack([X_numeric, X_cat_encoded])
+            
+            print(f"✓ Features preparadas: {X_final.shape}")
+            print("⏳ Generando predicciones con modelo en memoria...")
+            
+            # PREDECIR con modelo ya cargado
+            predicciones_log = modelo.predict(X_final)
+            predicciones_eur = np.expm1(predicciones_log)
+            
+            print(f"✓ Predicciones generadas para {len(predicciones_eur):,} jugadores")
+            
+            # Calcular diferencias y clasificar
+            # LÓGICA CORRECTA:
+            # - Si valor_real < valor_predicho → diferencia NEGATIVA → INFRAVALORADO 💎
+            # - Si valor_real > valor_predicho → diferencia POSITIVA → SOBREVALORADO ⚠️
+            tolerancia = 8.0
+            df_completo['valor_predicho_eur'] = predicciones_eur
+            df_completo['diferencia_porcentual'] = (
+                (df_completo['valor_mercado_eur'] - df_completo['valor_predicho_eur']) / 
+                df_completo['valor_predicho_eur'] * 100
+            )
+            df_completo['tolerancia_porcentaje'] = tolerancia
+            
+            def clasificar(dif):
+                # Si diferencia NEGATIVA (valor_real < valor_predicho) → INFRAVALORADO
+                if dif < -tolerancia:
+                    return "INFRAVALORADO"
+                # Si diferencia POSITIVA (valor_real > valor_predicho) → SOBREVALORADO
+                elif dif > tolerancia:
+                    return "SOBREVALORADO"
+                else:
+                    return "JUSTO"
+            
+            df_completo['clasificacion_ml'] = df_completo['diferencia_porcentual'].apply(clasificar)
+            
+            print(f"✓ Clasificación ML aplicada")
+            print(f"   💎 INFRAVALORADOS: {(df_completo['clasificacion_ml'] == 'INFRAVALORADO').sum():,}")
+            print(f"   ⚠️  SOBREVALORADOS: {(df_completo['clasificacion_ml'] == 'SOBREVALORADO').sum():,}")
+            print(f"   ✓  JUSTOS:         {(df_completo['clasificacion_ml'] == 'JUSTO').sum():,}")
+            
+            # Backup
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            backup_path = DATA_PATH.replace('.csv', f'_backup_{timestamp}.csv')
+            shutil.copy2(DATA_PATH, backup_path)
+            print(f"💾 Backup guardado: {os.path.basename(backup_path)}")
+            
+            # Guardar CSV actualizado
+            df_completo.to_csv(DATA_PATH, index=False)
+            print(f"✅ CSV actualizado: {DATA_PATH}")
+            
             print("\n" + "=" * 80)
             print("ENTRENAMIENTO Y PREDICCIONES COMPLETADOS EXITOSAMENTE")
             print("=" * 80)
@@ -67,14 +199,15 @@ if __name__ == "__main__":
             print(f"  - Modelo:        {MODEL_PATH}")
             print(f"  - Encoder:       {ENCODER_PATH}")
             print(f"  - Club Encoding: {os.path.join(MODEL_DIR, 'club_encoding_fifa.joblib')}")
-            print(f"  - Dataset ML:    {DATA_PATH} (actualizado con predicciones)")
+            print(f"  - Dataset ML:    {DATA_PATH} (✓ con predicciones)")
             print("\n✅ El sistema está listo:")
             print("  - El modelo entrenado puede hacer predicciones")
             print("  - El dataset tiene columnas ML precalculadas")
             print("  - El API cargará automáticamente las clasificaciones")
             print("=" * 80 + "\n")
-        else:
-            print("\n⚠️  Predicciones ML no se pudieron generar")
+            
+        except Exception as e:
+            print(f"\n❌ Error generando predicciones: {e}")
             print("El modelo fue guardado correctamente pero el dataset no se actualizó.")
             print("=" * 80 + "\n")
     else:

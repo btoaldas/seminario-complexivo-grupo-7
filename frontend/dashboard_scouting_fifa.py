@@ -1134,9 +1134,10 @@ def mostrar_modal_jugador(jugador_id, jugador_nombre, año_fifa):
                 diferencia = prediccion.get("diferencia_porcentual", 0)
                 
                 # RECALCULAR clasificación dinámicamente basada en tolerancia del slider
-                if diferencia > tolerancia_porcentaje:
+                # LÓGICA CORRECTA: diferencia negativa = valor_real < valor_predicho = INFRAVALORADO
+                if diferencia < -tolerancia_porcentaje:
                     clasificacion = "INFRAVALORADO"
-                elif diferencia < -tolerancia_porcentaje:
+                elif diferencia > tolerancia_porcentaje:
                     clasificacion = "SOBREVALORADO"
                 else:
                     clasificacion = "JUSTO"
@@ -1176,12 +1177,13 @@ def mostrar_modal_jugador(jugador_id, jugador_nombre, año_fifa):
                 st.plotly_chart(fig_comp, use_container_width=True)
                 
                 # Clasificación con badge (usando tolerancia variable del slider)
-                if diferencia > tolerancia_porcentaje:
-                    st.success(f"✅ **{clasificacion}** (+{diferencia:.1f}%)")
-                    st.info("🔍 **Oportunidad:** Jugador potencialmente INFRAVALORADO")
-                elif diferencia < -tolerancia_porcentaje:
-                    st.warning(f"⚠️ **{clasificacion}** ({diferencia:.1f}%)")
-                    st.info("💡 **Alerta:** Jugador potencialmente SOBREVALORADO")
+                # LÓGICA CORRECTA: diferencia negativa = INFRAVALORADO
+                if diferencia < -tolerancia_porcentaje:
+                    st.success(f"💎 **{clasificacion}** ({diferencia:.1f}%)")
+                    st.info("🔍 **Oportunidad:** Jugador potencialmente INFRAVALORADO - Vale menos de lo que debería")
+                elif diferencia > tolerancia_porcentaje:
+                    st.warning(f"⚠️ **{clasificacion}** (+{diferencia:.1f}%)")
+                    st.info("💡 **Alerta:** Jugador potencialmente SOBREVALORADO - Vale más de lo que debería")
                 else:
                     st.info(f"✓ **{clasificacion}** ({diferencia:.1f}%)")
                     st.caption("Valoración acorde al mercado")
@@ -1460,7 +1462,7 @@ else:
 with tab1:
     st.markdown(f"""
     <div style='background: linear-gradient(135deg, {COLOR_ACENTO_2} 0%, {COLOR_PRIMARIO} 100%); 
-         padding: 20px; border-radius: 15px; border-left: 5px solid {COLOR_DESTACADO}; margin-bottom: 25px;'>
+         padding: 25px; border-radius: 15px; border-left: 5px solid {COLOR_DESTACADO}; margin-bottom: 25px;'>
         <h2 style='color: {COLOR_DESTACADO}; margin: 0;'>🔍 Búsqueda Inteligente de Jugadores</h2>
         <p style='color: {COLOR_SECUNDARIO}; margin: 10px 0 0 0;'>
             Encuentra jugadores usando filtros avanzados y visualiza estadísticas detalladas
@@ -1959,7 +1961,7 @@ with tab1:
         
         
         st.markdown(f"""
-        <div style='text-align: center; padding: 20px; background: linear-gradient(135deg, {COLOR_SECUNDARIO} 0%, {COLOR_ACENTO_1} 100%); border-radius: 15px; margin-bottom: 20px;'>
+        <div style='text-align: center; padding: 5px; background: linear-gradient(135deg, {COLOR_SECUNDARIO} 0%, {COLOR_ACENTO_1} 100%); border-radius: 5px; margin-bottom: 5px;'>
             <h2 style='color: white !important; margin: 0;'>🎯 Filtros Avanzados</h2>
         </div>
         """, unsafe_allow_html=True)
@@ -1987,21 +1989,23 @@ with tab1:
         
         st.markdown("---")  # Separador visual
         
-        # Filtro de posiciones (con traducciones al español)
+        # Filtro de posiciones (con traducciones al español + siglas)
         st.markdown("### ⚽ Posición en el Campo")
         posiciones_disponibles = posiciones_lista[:50]  # Top 50 posiciones
-        posiciones_traducidas = [TRADUCCIONES_POSICIONES_SIMPLE.get(pos, pos) for pos in posiciones_disponibles]
-        posiciones_seleccionadas_es = st.multiselect(
+        # Crear formato: "Portero (GK)", "Defensa Central (CB)", etc.
+        posiciones_con_siglas = [
+            f"{TRADUCCIONES_POSICIONES_SIMPLE.get(pos, pos)} <span style='font-size:0.8em; color:#888;'>({pos})</span>"
+            for pos in posiciones_disponibles
+        ]
+        posiciones_seleccionadas_display = st.multiselect(
             "Selecciona posiciones:",
-            options=posiciones_traducidas,
+            options=posiciones_disponibles,
+            format_func=lambda pos: f"{TRADUCCIONES_POSICIONES_SIMPLE.get(pos, pos)} ({pos})",
             default=None,
             placeholder="Selecciona una o más posiciones"
         )
-        # Convertir de español a inglés para la API
-        posiciones_seleccionadas = []
-        if posiciones_seleccionadas_es:
-            inverso_posiciones = {v: k for k, v in TRADUCCIONES_POSICIONES_SIMPLE.items()}
-            posiciones_seleccionadas = [inverso_posiciones.get(pos, pos) for pos in posiciones_seleccionadas_es]
+        # Ya están en formato API (siglas)
+        posiciones_seleccionadas = posiciones_seleccionadas_display
         
         # Filtro de nacionalidades (con traducciones al español)
         st.markdown("### 🌍 Nacionalidad")
@@ -2019,27 +2023,68 @@ with tab1:
             inverso_nacionalidades = {v: k for k, v in TRADUCCIONES_NACIONALIDADES.items()}
             nacionalidades_seleccionadas = [inverso_nacionalidades.get(nac, nac) for nac in nacionalidades_seleccionadas_es]
         
-        # Filtro de edad
-        edad_min = st.slider("Edad mínima:", 16, 45, 18)
-        edad_max = st.slider("Edad máxima:", 16, 45, 35)
+        # Filtro de edad (rango unificado)
+        st.markdown("### 🎂 Edad")
+        edad_rango = st.slider(
+            "Rango de edad:",
+            min_value=16,
+            max_value=45,
+            value=(18, 35),
+            help="Desliza los extremos para ajustar edad mínima y máxima"
+        )
+        edad_min, edad_max = edad_rango
         
-        # Filtro de valoración
-        overall_min = st.slider("Valoración mínima:", 40, 95, 70)
+        # Filtro de valoración (rango min-max)
+        st.markdown("### ⭐ Valoración (Overall)")
+        overall_rango = st.slider(
+            "Rango de valoración:",
+            min_value=40,
+            max_value=95,
+            value=(70, 95),
+            help="Desliza los extremos para ajustar valoración mínima y máxima"
+        )
+        overall_min, overall_max = overall_rango
         
-        # Filtro de potencial
-        potencial_min = st.slider("Potencial mínimo:", 40, 95, 70)
+        # Filtro de potencial (rango min-max)
+        st.markdown("### 🚀 Potencial")
+        potencial_rango = st.slider(
+            "Rango de potencial:",
+            min_value=40,
+            max_value=95,
+            value=(70, 95),
+            help="Desliza los extremos para ajustar potencial mínimo y máximo"
+        )
+        potencial_min, potencial_max = potencial_rango
         
-        # Filtro de valor de mercado (rango min-max)
-        st.markdown("**💰 Valor de Mercado (millones €):**")
+        # Filtro de valor de mercado (SOLO slider, simple y directo)
+        st.markdown("### 💰 Valor de Mercado (millones €)")
         valor_rango_millones = st.slider(
             "Rango de valor:",
             min_value=0.0,
             max_value=200.0,
             value=(0.0, 50.0),
             step=0.5,
-            label_visibility="collapsed"
+            help="Desliza los extremos para ajustar mínimo y máximo"
         )
         st.caption(f"Mínimo: €{valor_rango_millones[0]:.1f}M  —  Máximo: €{valor_rango_millones[1]:.1f}M")
+        
+        # 💎 FILTRO DE CLASIFICACIÓN ML (NUEVO)
+        st.markdown("**🤖 Clasificación ML:**")
+        clasificacion_ml_opciones = st.multiselect(
+            "Filtrar por valoración ML:",
+            options=["💎 Infravalorado", "⚠️ Sobrevalorado", "✓ Justo"],
+            default=[],
+            help="Filtra jugadores según la predicción del modelo ML"
+        )
+        
+        # Convertir a formato API
+        clasificacion_ml_filtro = []
+        if "💎 Infravalorado" in clasificacion_ml_opciones:
+            clasificacion_ml_filtro.append("INFRAVALORADO")
+        if "⚠️ Sobrevalorado" in clasificacion_ml_opciones:
+            clasificacion_ml_filtro.append("SOBREVALORADO")
+        if "✓ Justo" in clasificacion_ml_opciones:
+            clasificacion_ml_filtro.append("JUSTO")
         
         # Ordenamiento
         ordenar_por = st.selectbox(
@@ -2070,20 +2115,21 @@ with tab1:
         """, unsafe_allow_html=True)
     
     # RESULTADOS DE BÚSQUEDA
-    if btn_buscar or "resultados_busqueda" not in st.session_state:
-        
-        # Construir parámetros
+    # Al inicio: carga rápida solo de 2021
+    # Cuando usuario hace clic en Buscar: usa todos los filtros
+    if btn_buscar:
+        # Usuario hizo clic en buscar: usar TODOS los filtros
         params = {
             "limite": limite_resultados,
             "ordenar_por": ordenar_por,
             "orden_descendente": orden_desc
         }
         
-        # ⚽ FILTRO DE AÑO (NUEVO)
+        # ⚽ FILTRO DE AÑO
         if año_filtro != "Todos":
             params["año_datos"] = año_filtro
         
-        # ⚽ FILTRO POR NOMBRE (NUEVO)
+        # ⚽ FILTRO POR NOMBRE
         if nombre_busqueda and nombre_busqueda.strip():
             params["nombre"] = nombre_busqueda.strip()
         
@@ -2097,19 +2143,41 @@ with tab1:
             params["edad_max"] = edad_max
         if overall_min:
             params["valoracion_min"] = overall_min
+        if overall_max < 95:  # Solo si no es el máximo
+            params["valoracion_max"] = overall_max
         if potencial_min:
             params["potencial_min"] = potencial_min
+        if potencial_max < 95:  # Solo si no es el máximo
+            params["potencial_max"] = potencial_max
         
-        # Filtro de valor de mercado con rango min-max (nombres corregidos)
+        # Filtro de valor de mercado con rango min-max
         if valor_rango_millones[0] > 0:
             params["valor_min_eur"] = valor_rango_millones[0] * 1_000_000
         if valor_rango_millones[1] < 200.0:
             params["valor_max_eur"] = valor_rango_millones[1] * 1_000_000
         
-        # Buscar jugadores
+        # 💎 Filtro de clasificación ML
+        if clasificacion_ml_filtro:
+            params["clasificacion_ml"] = clasificacion_ml_filtro
+        
+        # Buscar jugadores con filtros
         resultados = buscar_jugadores(params)
         st.session_state.resultados_busqueda = resultados
+        
+    elif "resultados_busqueda" not in st.session_state:
+        # CARGA INICIAL RÁPIDA: Solo año 2021, ordenado por valor, límite 10
+        params = {
+            "limite": 10,
+            "ordenar_por": "valor_mercado_eur",
+            "orden_descendente": True,
+            "año_datos": 2021  # Solo 2021 para carga súper rápida
+        }
+        
+        resultados = buscar_jugadores(params)
+        st.session_state.resultados_busqueda = resultados
+        
     else:
+        # Cargar resultados previos guardados en sesión
         resultados = st.session_state.resultados_busqueda
     
     # Mostrar resultados
@@ -2311,9 +2379,9 @@ with tab1:
             </style>
             """, unsafe_allow_html=True)
             
-            # Mostrar encabezados (con nueva columna Año FIFA) - Anchos sincronizados con filas
-            col_headers = st.columns([0.5, 1.2, 2.5, 0.7, 0.7, 1.5, 1.5, 1.5, 1, 1, 1.2])
-            headers = ["#", "Foto", "Nombre", "Edad", "Año FIFA", "Nacionalidad", "Club", "Liga", "Posición", "Overall", "Potencial"]
+            # Mostrar encabezados (con nueva columna Año FIFA y ML) - Anchos sincronizados con filas
+            col_headers = st.columns([0.5, 1.2, 2.5, 0.7, 0.7, 1.5, 1.5, 1.5, 1, 1, 1.2, 0.8])
+            headers = ["#", "Foto", "Nombre", "Edad", "Año FIFA", "Nacionalidad", "Club", "Liga", "Posición", "Overall", "Potencial", "ML"]
             
             header_html = "<div class='tabla-header'>"
             for col, header in zip(col_headers, headers):
@@ -2329,7 +2397,7 @@ with tab1:
                 st.markdown("<div class='fila-jugador'>", unsafe_allow_html=True)
                 
                 with st.container():
-                    col_vals = st.columns([0.5, 1.2, 2.5, 0.7, 0.7, 1.5, 1.5, 1.5, 1, 1, 1.2])
+                    col_vals = st.columns([0.5, 1.2, 2.5, 0.7, 0.7, 1.5, 1.5, 1.5, 1, 1, 1.2, 0.8])
                     
                     with col_vals[0]:
                         st.markdown(f"<div style='text-align: center; font-size: 1.2em; color: #f0a818; font-weight: bold;'>{idx_global + 1}</div>", unsafe_allow_html=True)
@@ -2447,6 +2515,33 @@ with tab1:
                         potencial = jugador.get('potencial', 'N/A')
                         color_potencial = "#4CAF50" if potencial > overall else "#FF9800"
                         st.markdown(f"<div style='text-align: center; color: {color_potencial}; font-weight: bold;'>{potencial}</div>", unsafe_allow_html=True)
+                    
+                    with col_vals[11]:
+                        # 💎 NUEVA COLUMNA ML - Clasificación con iconos
+                        clasificacion_ml = jugador.get('clasificacion_ml', 'N/A')
+                        
+                        if clasificacion_ml == 'INFRAVALORADO':
+                            icono_ml = "💎"
+                            color_ml = "#00D9FF"  # Cyan brillante
+                            tooltip_ml = "Diamante en bruto - Infravalorado"
+                        elif clasificacion_ml == 'SOBREVALORADO':
+                            icono_ml = "⚠️"
+                            color_ml = "#FF9800"  # Naranja advertencia
+                            tooltip_ml = "Sobrevalorado según predicción ML"
+                        elif clasificacion_ml == 'JUSTO':
+                            icono_ml = "✓"
+                            color_ml = "#4CAF50"  # Verde
+                            tooltip_ml = "Valor justo según predicción ML"
+                        else:
+                            icono_ml = "—"
+                            color_ml = "#7890a8"
+                            tooltip_ml = "Sin clasificación ML"
+                        
+                        st.markdown(f"""
+                        <div style='text-align: center;' title='{tooltip_ml}'>
+                            <span style='font-size: 1.5em;'>{icono_ml}</span>
+                        </div>
+                        """, unsafe_allow_html=True)
                 
                 # Cerrar wrapper de fila
                 st.markdown("</div>", unsafe_allow_html=True)

@@ -69,9 +69,15 @@ print(f"  - Cargando club encoding desde: {CLUB_ENCODING_PATH}")
 club_encoding = joblib.load(CLUB_ENCODING_PATH)
 print(f"  ✓ Club encoding cargado")
 
-print(f"  - Cargando dataset desde: {DATA_PATH}")
-df_jugadores = pd.read_csv(DATA_PATH, low_memory=False)
-print(f"  ✓ Dataset cargado: {len(df_jugadores):,} jugadores")
+print(f"  - Cargando dataset desde Parquet (7x más rápido)...")
+PARQUET_PATH = DATA_PATH.replace('.csv', '.parquet')
+try:
+    df_jugadores = pd.read_parquet(PARQUET_PATH)
+    print(f"  ✓ Dataset Parquet cargado: {len(df_jugadores):,} jugadores")
+except FileNotFoundError:
+    print(f"  ⚠️  Parquet no encontrado, cargando CSV...")
+    df_jugadores = pd.read_csv(DATA_PATH, low_memory=False)
+    print(f"  ✓ Dataset CSV cargado: {len(df_jugadores):,} jugadores")
 
 print("\n✓ TODOS LOS COMPONENTES CARGADOS EXITOSAMENTE")
 
@@ -227,6 +233,7 @@ def buscar_jugadores(
     categoria_edad: Optional[List[str]] = Query(None, description="Categoría de edad (Joven/Prime/Veterano)"),
     categoria_posicion: Optional[List[str]] = Query(None, description="Categoría de posición"),
     pie_preferido: Optional[str] = Query(None, description="Pie preferido (Left/Right)"),
+    clasificacion_ml: Optional[List[str]] = Query(None, description="Clasificación ML (INFRAVALORADO/SOBREVALORADO/JUSTO)"),
     limite: Optional[int] = Query(100, ge=1, le=1000, description="Límite de resultados"),
     ordenar_por: Optional[str] = Query("valor_mercado_eur", description="Campo para ordenar"),
     orden_descendente: Optional[bool] = Query(True, description="Orden descendente")
@@ -307,6 +314,11 @@ def buscar_jugadores(
         if pie_preferido:
             df_filtrado = df_filtrado[df_filtrado["pie_preferido"] == pie_preferido]
         
+        # 💎 FILTRO DE CLASIFICACIÓN ML (NUEVO)
+        if clasificacion_ml:
+            if "clasificacion_ml" in df_filtrado.columns:
+                df_filtrado = df_filtrado[df_filtrado["clasificacion_ml"].isin(clasificacion_ml)]
+        
         # Ordenar resultados
         if ordenar_por in df_filtrado.columns:
             df_filtrado = df_filtrado.sort_values(by=ordenar_por, ascending=not orden_descendente)
@@ -324,6 +336,10 @@ def buscar_jugadores(
         # Agregar año_datos si existe en el DataFrame
         if "año_datos" in df_filtrado.columns:
             columnas_respuesta.append("año_datos")
+        
+        # Agregar clasificacion_ml si existe en el DataFrame
+        if "clasificacion_ml" in df_filtrado.columns:
+            columnas_respuesta.append("clasificacion_ml")
         
         jugadores_encontrados = df_filtrado[columnas_respuesta].to_dict("records")
         
@@ -372,13 +388,16 @@ def obtener_perfil_jugador(jugador_id: int, año: int = Query(None, description=
             valor_predicho_eur = np.expm1(valor_predicho)  # Revertir log1p
             
             valor_real = jugador_dict["valor_mercado_eur"]
-            diferencia = valor_predicho_eur - valor_real
-            diferencia_porcentual = (diferencia / valor_real * 100) if valor_real > 0 else 0
+            # LÓGICA CORRECTA: valor_real - valor_predicho
+            diferencia = valor_real - valor_predicho_eur
+            diferencia_porcentual = (diferencia / valor_predicho_eur * 100) if valor_predicho_eur > 0 else 0
             
             # Clasificar jugador
-            if diferencia_porcentual > 20:
+            # Si diferencia NEGATIVA (valor_real < valor_predicho) → INFRAVALORADO
+            if diferencia_porcentual < -20:
                 clasificacion = "Infravalorado"
-            elif diferencia_porcentual < -20:
+            # Si diferencia POSITIVA (valor_real > valor_predicho) → SOBREVALORADO
+            elif diferencia_porcentual > 20:
                 clasificacion = "Sobrevalorado"
             else:
                 clasificacion = "Valor Justo"

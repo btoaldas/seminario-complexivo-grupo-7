@@ -44,19 +44,39 @@ if __name__ == "__main__":
         print("-" * 80)
         modelo = entrenar_y_evaluar_modelos(X_train, X_test, y_train, y_test)
         
-        print("\n[PASO 5/5] GUARDANDO MODELO, ENCODER Y CLUB ENCODING")
+        print("\n[PASO 5/6] GUARDANDO MODELO, ENCODER Y CLUB ENCODING")
         print("-" * 80)
         guardar_archivos_modelo(modelo, encoder, MODEL_PATH, ENCODER_PATH, club_encoding)
         
-        print("\n" + "=" * 80)
-        print("ENTRENAMIENTO COMPLETADO EXITOSAMENTE")
-        print("=" * 80)
-        print(f"\nArchivos generados:")
-        print(f"  - Modelo:        {MODEL_PATH}")
-        print(f"  - Encoder:       {ENCODER_PATH}")
-        print(f"  - Club Encoding: {os.path.join(MODEL_DIR, 'club_encoding_fifa.joblib')}")
-        print("\nEl modelo está listo para hacer predicciones de valor de mercado.")
-        print("=" * 80 + "\n")
+        print("\n[PASO 6/6] GENERANDO PREDICCIONES ML PARA TODO EL DATASET")
+        print("-" * 80)
+        print("⚠️  Este proceso puede tardar varios minutos (122,501 jugadores)...")
+        print("💡 Se agregará: valor_predicho_eur, diferencia_porcentual, clasificacion_ml")
+        print("💾 Se creará backup automático de fifa_limpio.csv")
+        print("-" * 80)
+        
+        # Importar y ejecutar generador de predicciones
+        from scripts.ml.generar_predicciones_ml import generar_predicciones_ml
+        df_con_predicciones = generar_predicciones_ml(tolerancia_porcentaje=8.0)
+        
+        if df_con_predicciones is not None:
+            print("\n" + "=" * 80)
+            print("ENTRENAMIENTO Y PREDICCIONES COMPLETADOS EXITOSAMENTE")
+            print("=" * 80)
+            print(f"\nArchivos generados:")
+            print(f"  - Modelo:        {MODEL_PATH}")
+            print(f"  - Encoder:       {ENCODER_PATH}")
+            print(f"  - Club Encoding: {os.path.join(MODEL_DIR, 'club_encoding_fifa.joblib')}")
+            print(f"  - Dataset ML:    {DATA_PATH} (actualizado con predicciones)")
+            print("\n✅ El sistema está listo:")
+            print("  - El modelo entrenado puede hacer predicciones")
+            print("  - El dataset tiene columnas ML precalculadas")
+            print("  - El API cargará automáticamente las clasificaciones")
+            print("=" * 80 + "\n")
+        else:
+            print("\n⚠️  Predicciones ML no se pudieron generar")
+            print("El modelo fue guardado correctamente pero el dataset no se actualizó.")
+            print("=" * 80 + "\n")
     else:
         print("\n" + "=" * 80)
         print("ERROR: No se pudieron cargar los datos")

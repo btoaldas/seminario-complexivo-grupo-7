@@ -1,6 +1,7 @@
 """
-Script para pre-calcular predicciones ML de todos los jugadores
-Genera CSV con clasificaciones (Infravalorado/Sobrevalorado/Justo)
+Script para AGREGAR COLUMNAS ML a fifa_limpio.csv
+Pre-calcula predicciones para todos los jugadores (122,501 registros)
+Columnas agregadas: valor_predicho_eur, diferencia_porcentual, clasificacion_ml, tolerancia_porcentaje
 """
 
 import pandas as pd
@@ -9,9 +10,11 @@ import numpy as np
 from pathlib import Path
 from datetime import datetime
 import sys
+import os
 
 # Agregar path del backend al sys.path
-sys.path.append(str(Path(__file__).parent.parent))
+BASE_DIR = Path(__file__).parent.parent.parent
+sys.path.append(str(BASE_DIR))
 
 def generar_predicciones_ml(tolerancia_porcentaje=8.0):
     """
@@ -29,163 +32,177 @@ def generar_predicciones_ml(tolerancia_porcentaje=8.0):
     print("="*70)
     
     # Rutas
-    base_path = Path(__file__).parent.parent.parent
-    data_path = base_path / 'datos' / 'procesados'
-    models_path = base_path / 'modelos'
+    data_path = BASE_DIR / 'datos' / 'procesados'
+    models_path = BASE_DIR / 'datos' / 'modelos'
     
     # 1. Cargar dataset limpio
     print("\n📂 Cargando dataset...")
-    df_jugadores = pd.read_csv(data_path / 'fifa_limpio.csv')
-    print(f"   ✅ Cargados {len(df_jugadores):,} registros")
+    csv_path = data_path / 'fifa_limpio.csv'
+    if not csv_path.exists():
+        print(f"   ❌ Error: No se encontró {csv_path}")
+        return None
+        
+    df_jugadores = pd.read_csv(csv_path, low_memory=False)
+    print(f"   ✅ Cargados {len(df_jugadores):,} registros × {len(df_jugadores.columns)} columnas")
     
-    # 2. Cargar modelo y preprocesador
-    print("\n🤖 Cargando modelo ML...")
+    # 2. Cargar modelo, encoder y club_encoding
+    print("\n🤖 Cargando componentes ML...")
     try:
-        modelo = joblib.load(models_path / 'mejor_modelo_rf.pkl')
-        preprocesador = joblib.load(models_path / 'preprocesador.pkl')
-        print("   ✅ Modelo y preprocesador cargados")
-    except FileNotFoundError as e:
-        print(f"   ❌ Error: No se encontraron archivos del modelo: {e}")
-        print("   💡 Ejecuta primero el entrenamiento del modelo")
+        modelo_path = models_path / 'modelo_fifa.joblib'
+        encoder_path = models_path / 'encoder_fifa.joblib'
+        club_encoding_path = models_path / 'club_encoding_fifa.joblib'
+        
+        if not all([modelo_path.exists(), encoder_path.exists(), club_encoding_path.exists()]):
+            print(f"   ❌ Error: Faltan archivos del modelo en {models_path}")
+            print("   💡 Ejecuta primero: python backend/entrenamiento.py")
+            return None
+            
+        modelo = joblib.load(modelo_path)
+        encoder = joblib.load(encoder_path)
+        club_encoding = joblib.load(club_encoding_path)
+        print("   ✅ Modelo, encoder y club_encoding cargados")
+    except Exception as e:
+        print(f"   ❌ Error cargando modelo: {e}")
         return None
     
-    # 3. Características necesarias para predicción
-    caracteristicas = [
-        # Básicas
-        'edad', 'valoracion_global', 'potencial', 'altura_cm', 'peso_kg',
-        'reputacion_internacional', 'pie_debil', 'movimientos_habilidad',
-        
-        # Atributos principales
-        'ritmo', 'tiro', 'pase', 'regate', 'defensa', 'fisico',
-        
-        # Ataque
-        'ataque_cabezazo', 'ataque_definicion', 'ataque_potencia_disparo',
-        'ataque_efecto', 'ataque_voleas', 'ataque_penales',
-        
-        # Habilidad
-        'habilidad_regate', 'habilidad_control_balon', 'habilidad_aceleracion',
-        'habilidad_velocidad_sprint', 'habilidad_agilidad', 'habilidad_reacciones',
-        'habilidad_equilibrio',
-        
-        # Movimiento
-        'movimiento_aceleracion', 'movimiento_velocidad_sprint', 'movimiento_agilidad',
-        'movimiento_reacciones', 'movimiento_equilibrio',
-        
-        # Potencia
-        'potencia_disparo', 'potencia_salto', 'potencia_stamina', 'potencia_fuerza',
-        'potencia_disparo_lejano',
-        
-        # Mentalidad
-        'mentalidad_agresividad', 'mentalidad_intercepciones', 'mentalidad_posicionamiento',
-        'mentalidad_vision', 'mentalidad_penales', 'mentalidad_compostura',
-        
-        # Defensa
-        'defensa_marca', 'defensa_parado', 'defensa_entrada_pie',
-        
-        # Portero
-        'porteria_buceo', 'porteria_manejo', 'porteria_patada',
-        'porteria_reflejos', 'porteria_velocidad', 'porteria_posicionamiento'
+    # 3. Preparar columnas necesarias (exactamente como en preprocesamiento_modelo.py)
+    print("\n🔄 Preparando características ML...")
+    
+    col_numericas = [
+        "reputacion_internacional", "valoracion_global", "potencial", "movimiento_reacciones",
+        "calidad_promedio", "pase", "mentalidad_compostura", "regate_gambeta",
+        "mentalidad_vision", "tiro_disparo", "ataque_pase_corto", "ataque_definicion",
+        "ataque_cabezazo", "ataque_centros", "ataque_voleas", "movimiento_velocidad_sprint",
+        "movimiento_aceleracion", "movimiento_agilidad", "movimiento_equilibrio", "fisico",
+        "defensa", "defensa_entrada_pie", "defensa_entrada_deslizante", "defensa_marcaje",
+        "mentalidad_agresividad", "mentalidad_intercepciones", "mentalidad_posicionamiento",
+        "mentalidad_penales", "pie_debil", "habilidades_regate", "habilidad_regate",
+        "habilidad_control_balon", "habilidad_efecto", "habilidad_pase_largo",
+        "habilidad_tiros_libres", "diferencia_potencial", "ratio_valor_salario",
+        "anos_contrato_restantes", "edad"
     ]
     
-    # Verificar que todas las columnas existen
-    caracteristicas_disponibles = [col for col in caracteristicas if col in df_jugadores.columns]
-    print(f"   📊 Características disponibles: {len(caracteristicas_disponibles)}/{len(caracteristicas)}")
+    col_categoricas = [
+        "categoria_posicion", "categoria_edad", "pie_preferido", 
+        "categoria_reputacion", "liga"
+    ]
     
-    # 4. Procesar por año para mantener contexto temporal
-    print("\n🔄 Generando predicciones por año...")
-    resultados = []
+    # Verificar columnas disponibles
+    col_numericas_disponibles = [col for col in col_numericas if col in df_jugadores.columns]
+    col_categoricas_disponibles = [col for col in col_categoricas if col in df_jugadores.columns]
     
-    años_unicos = sorted(df_jugadores['año_datos'].unique())
+    print(f"   📊 Numéricas: {len(col_numericas_disponibles)}/{len(col_numericas)}")
+    print(f"   📊 Categóricas: {len(col_categoricas_disponibles)}/{len(col_categoricas)}")
     
-    for año in años_unicos:
-        print(f"\n   📅 Procesando año {año}...")
+    # 4. Aplicar Target Encoding para club
+    print("\n🏟️  Aplicando Target Encoding para club...")
+    # Usar club_encoding cargado desde el archivo
+    df_jugadores['club_valor_promedio'] = df_jugadores['club'].map(club_encoding)
+    df_jugadores['club_valor_promedio'].fillna(club_encoding.mean(), inplace=True)
+    
+    # Agregar club_valor_promedio a las columnas numéricas
+    col_numericas_disponibles.append('club_valor_promedio')
+    
+    # 5. Extraer X numéricas y categóricas
+    print("\n� Extrayendo features...")
+    X_numericas = df_jugadores[col_numericas_disponibles].fillna(0)
+    X_categoricas = df_jugadores[col_categoricas_disponibles].fillna('Desconocido')
+    
+    # 6. Transformar categóricas con encoder
+    print("\n🔄 Aplicando OneHotEncoding...")
+    X_categoricas_encoded = encoder.transform(X_categoricas)
+    X_categoricas_dense = X_categoricas_encoded.toarray()
+    
+    # 7. Concatenar numéricas + categóricas
+    X_final = np.hstack([X_numericas.values, X_categoricas_dense])
+    print(f"   ✅ Shape final: {X_final.shape}")
+    
+    # 8. Hacer predicciones
+    print("\n🤖 Generando predicciones ML (esto puede tardar 1-2 minutos)...")
+    try:
+        predicciones_log = modelo.predict(X_final)
+        predicciones_eur = np.expm1(predicciones_log)  # Revertir log1p
         
-        df_año = df_jugadores[df_jugadores['año_datos'] == año].copy()
-        print(f"      Jugadores: {len(df_año):,}")
+        print(f"   ✅ Predicciones generadas: {len(predicciones_eur):,}")
         
-        # Preparar datos
-        X = df_año[caracteristicas_disponibles].copy()
-        
-        # Rellenar valores faltantes
-        X = X.fillna(X.median())
-        
-        # Transformar y predecir
-        try:
-            X_procesado = preprocesador.transform(X)
-            predicciones = modelo.predict(X_procesado)
-            
-            # Calcular diferencia porcentual
-            df_año['valor_predicho_eur'] = predicciones
-            
-            # Evitar división por cero
-            df_año['diferencia_porcentual'] = np.where(
-                df_año['valor_mercado_eur'] > 0,
-                ((df_año['valor_predicho_eur'] - df_año['valor_mercado_eur']) 
-                 / df_año['valor_mercado_eur'] * 100),
-                0
-            )
-            
-            # Clasificar según tolerancia
-            def clasificar(diff):
-                if diff > tolerancia_porcentaje:
-                    return 'I'  # Infravalorado
-                elif diff < -tolerancia_porcentaje:
-                    return 'S'  # Sobrevalorado
-                else:
-                    return 'J'  # Justo
-            
-            df_año['clasificacion_ml'] = df_año['diferencia_porcentual'].apply(clasificar)
-            
-            # Guardar solo columnas necesarias
-            df_resultado = df_año[[
-                'id_sofifa',
-                'año_datos',
-                'valor_mercado_eur',
-                'valor_predicho_eur',
-                'diferencia_porcentual',
-                'clasificacion_ml'
-            ]].copy()
-            
-            resultados.append(df_resultado)
-            
-            # Estadísticas del año
-            total_i = (df_resultado['clasificacion_ml'] == 'I').sum()
-            total_s = (df_resultado['clasificacion_ml'] == 'S').sum()
-            total_j = (df_resultado['clasificacion_ml'] == 'J').sum()
-            
-            print(f"      💎 Infravalorados: {total_i:,}")
-            print(f"      ⚠️ Sobrevalorados: {total_s:,}")
-            print(f"      ✓ Justos: {total_j:,}")
-            
-        except Exception as e:
-            print(f"      ❌ Error procesando año {año}: {e}")
-            continue
+    except Exception as e:
+        print(f"   ❌ Error en predicción: {e}")
+        return None
     
-    # 5. Concatenar todos los años
-    print("\n📦 Consolidando resultados...")
-    df_final = pd.concat(resultados, ignore_index=True)
+    # 9. Calcular diferencia porcentual y clasificar
+    print("\n📊 Calculando diferencias y clasificando...")
     
-    # 6. Agregar metadata
-    df_final['tolerancia_porcentaje'] = tolerancia_porcentaje
-    df_final['fecha_generacion'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    # Evitar división por cero
+    diferencias_porcentuales = np.where(
+        df_jugadores['valor_predicho_eur'] > 0,
+        ((predicciones_eur - df_jugadores['valor_mercado_eur']) 
+         / predicciones_eur * 100),
+        0
+    )
     
-    # 7. Guardar CSV
-    output_path = data_path / 'jugadores_predicciones_ml.csv'
-    df_final.to_csv(output_path, index=False)
+    # Clasificar según tolerancia
+    def clasificar(diff):
+        if diff > tolerancia_porcentaje:
+            return 'INFRAVALORADO'
+        elif diff < -tolerancia_porcentaje:
+            return 'SOBREVALORADO'
+        else:
+            return 'JUSTO'
+    
+    clasificaciones = [clasificar(d) for d in diferencias_porcentuales]
+    
+    # 10. Agregar columnas al DataFrame original
+    print("\n➕ Agregando columnas ML al dataset...")
+    df_jugadores['valor_predicho_eur'] = predicciones_eur
+    df_jugadores['diferencia_porcentual'] = diferencias_porcentuales
+    df_jugadores['clasificacion_ml'] = clasificaciones
+    df_jugadores['tolerancia_porcentaje'] = tolerancia_porcentaje
+    
+    # Estadísticas
+    total_i = (df_jugadores['clasificacion_ml'] == 'INFRAVALORADO').sum()
+    total_s = (df_jugadores['clasificacion_ml'] == 'SOBREVALORADO').sum()
+    total_j = (df_jugadores['clasificacion_ml'] == 'JUSTO').sum()
+    
+    print(f"   💎 Infravalorados: {total_i:,} ({total_i/len(df_jugadores)*100:.1f}%)")
+    print(f"   ⚠️ Sobrevalorados: {total_s:,} ({total_s/len(df_jugadores)*100:.1f}%)")
+    print(f"   ✓ Justos: {total_j:,} ({total_j/len(df_jugadores)*100:.1f}%)")
+    
+    # 11. Guardar CSV actualizado con backup
+    print("\n� Guardando fifa_limpio.csv actualizado...")
+    
+    # Crear backup del archivo original (sin columnas ML)
+    backup_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    backup_path = data_path / f'fifa_limpio_backup_{backup_timestamp}.csv'
+    
+    # Leer CSV original para backup (sin las columnas nuevas)
+    df_original = pd.read_csv(csv_path, low_memory=False)
+    df_original.to_csv(backup_path, index=False)
+    print(f"   ✅ Backup creado: {backup_path.name}")
+    
+    # Guardar dataset actualizado con columnas ML
+    output_path = data_path / 'fifa_limpio.csv'
+    df_jugadores.to_csv(output_path, index=False)
     
     print("\n" + "="*70)
-    print("✅ PREDICCIONES ML GENERADAS EXITOSAMENTE")
+    print("✅ COLUMNAS ML AGREGADAS EXITOSAMENTE A fifa_limpio.csv")
     print("="*70)
     print(f"📁 Archivo: {output_path}")
-    print(f"📊 Total registros: {len(df_final):,}")
-    print(f"\n📈 Distribución:")
-    print(f"   💎 Infravalorados: {(df_final['clasificacion_ml']=='I').sum():,} ({(df_final['clasificacion_ml']=='I').sum()/len(df_final)*100:.1f}%)")
-    print(f"   ⚠️ Sobrevalorados: {(df_final['clasificacion_ml']=='S').sum():,} ({(df_final['clasificacion_ml']=='S').sum()/len(df_final)*100:.1f}%)")
-    print(f"   ✓ Justos: {(df_final['clasificacion_ml']=='J').sum():,} ({(df_final['clasificacion_ml']=='J').sum()/len(df_final)*100:.1f}%)")
-    print(f"\n🎯 Tolerancia utilizada: {tolerancia_porcentaje}%")
+    print(f"📊 Registros: {len(df_jugadores):,}")
+    print(f"📊 Columnas totales: {len(df_jugadores.columns)}")
+    print(f"\n📊 Columnas ML agregadas:")
+    print(f"   • valor_predicho_eur")
+    print(f"   • diferencia_porcentual")
+    print(f"   • clasificacion_ml")
+    print(f"   • tolerancia_porcentaje")
+    print(f"\n📈 Distribución de clasificaciones:")
+    print(f"   💎 Infravalorados: {total_i:,} ({total_i/len(df_jugadores)*100:.1f}%)")
+    print(f"   ⚠️ Sobrevalorados: {total_s:,} ({total_s/len(df_jugadores)*100:.1f}%)")
+    print(f"   ✓ Justos: {total_j:,} ({total_j/len(df_jugadores)*100:.1f}%)")
+    print(f"\n🎯 Tolerancia: {tolerancia_porcentaje}%")
+    print(f"💾 Backup: {backup_path.name}")
     print("="*70)
     
-    return df_final
+    return df_jugadores
 
 
 if __name__ == "__main__":

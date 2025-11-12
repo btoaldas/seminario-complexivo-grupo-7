@@ -2311,9 +2311,9 @@ with tab1:
             </style>
             """, unsafe_allow_html=True)
             
-            # Mostrar encabezados (con columna ML para clasificación) - Anchos sincronizados con filas
-            col_headers = st.columns([0.5, 1.2, 2.5, 0.7, 0.7, 1.5, 1.5, 1.5, 1, 1, 1, 0.8])
-            headers = ["#", "Foto", "Nombre", "Edad", "Año FIFA", "Nacionalidad", "Club", "Liga", "Posición", "Overall", "Potencial", "ML"]
+            # Mostrar encabezados (con nueva columna Año FIFA) - Anchos sincronizados con filas
+            col_headers = st.columns([0.5, 1.2, 2.5, 0.7, 0.7, 1.5, 1.5, 1.5, 1, 1, 1.2])
+            headers = ["#", "Foto", "Nombre", "Edad", "Año FIFA", "Nacionalidad", "Club", "Liga", "Posición", "Overall", "Potencial"]
             
             header_html = "<div class='tabla-header'>"
             for col, header in zip(col_headers, headers):
@@ -2329,7 +2329,7 @@ with tab1:
                 st.markdown("<div class='fila-jugador'>", unsafe_allow_html=True)
                 
                 with st.container():
-                    col_vals = st.columns([0.5, 1.2, 2.5, 0.7, 0.7, 1.5, 1.5, 1.5, 1, 1, 1, 0.8])
+                    col_vals = st.columns([0.5, 1.2, 2.5, 0.7, 0.7, 1.5, 1.5, 1.5, 1, 1, 1.2])
                     
                     with col_vals[0]:
                         st.markdown(f"<div style='text-align: center; font-size: 1.2em; color: #f0a818; font-weight: bold;'>{idx_global + 1}</div>", unsafe_allow_html=True)
@@ -2447,41 +2447,6 @@ with tab1:
                         potencial = jugador.get('potencial', 'N/A')
                         color_potencial = "#4CAF50" if potencial > overall else "#FF9800"
                         st.markdown(f"<div style='text-align: center; color: {color_potencial}; font-weight: bold;'>{potencial}</div>", unsafe_allow_html=True)
-                    
-                    with col_vals[11]:
-                        # Calcular clasificación ML inline para evitar 20 llamadas al API
-                        # Usamos una predicción simplificada basada en stats del jugador
-                        overall = jugador.get('valoracion_global', 70)
-                        potencial = jugador.get('potencial', 70)
-                        edad = jugador.get('edad', 25)
-                        valor_real = jugador.get('valor_mercado_eur', 0)
-                        
-                        # Heurística simple: jugadores jóvenes con alto potencial vs overall tienden a estar infravalorados
-                        diferencia_pot = potencial - overall
-                        factor_edad = max(0, (30 - edad) / 10) if edad < 30 else 0
-                        
-                        # Estimación rápida (sin llamar al API por rendimiento)
-                        if diferencia_pot > 5 and edad < 25 and valor_real < 20_000_000:
-                            # Joven con potencial: probablemente infravalorado
-                            icono_ml = "💎"
-                            tooltip = "Diamante en bruto"
-                            color_ml = "#4CAF50"
-                        elif edad > 30 and valor_real > 50_000_000:
-                            # Veterano caro: posible sobrevaloración
-                            icono_ml = "⚠️"
-                            tooltip = "Alerta sobrevaloración"
-                            color_ml = "#FF5722"
-                        else:
-                            # Valoración equilibrada
-                            icono_ml = "⚖️"
-                            tooltip = "Valoración ajustada"
-                            color_ml = "#2196F3"
-                        
-                        st.markdown(f"""
-                        <div style='text-align: center; font-size: 1.5em;' title='{tooltip}'>
-                            <span style='color: {color_ml};'>{icono_ml}</span>
-                        </div>
-                        """, unsafe_allow_html=True)
                 
                 # Cerrar wrapper de fila
                 st.markdown("</div>", unsafe_allow_html=True)

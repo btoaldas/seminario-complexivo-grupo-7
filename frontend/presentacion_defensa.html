@@ -186,6 +186,12 @@
             color: #333;
         }
 
+        /* EDA */
+        #eda {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #333;
+        }
+
         .data-stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -274,22 +280,27 @@
         }
 
         .methodology-timeline {
-            max-width: 900px;
+            max-width: 1200px;
             margin-top: 50px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
         }
 
         .phase {
             background: white;
             padding: 30px 40px;
             border-radius: 15px;
-            margin-bottom: 25px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.1);
             border-left: 6px solid #667eea;
             transition: transform 0.3s;
+            display: flex;
+            flex-direction: column;
         }
 
         .phase:hover {
-            transform: translateX(10px);
+            transform: scale(1.02);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
         }
 
         .phase-number {
@@ -324,6 +335,19 @@
             font-size: 1.1rem;
             line-height: 1.7;
             margin-top: 15px;
+            color: #333;
+        }
+
+        .phase-description strong {
+            color: #667eea;
+        }
+
+        .phase-description code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #d63384;
+            font-size: 0.95rem;
         }
 
         /* Tecnologías */
@@ -547,6 +571,11 @@
                 grid-template-columns: 1fr;
             }
 
+            .methodology-timeline {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
             nav {
                 top: 10px;
                 right: 10px;
@@ -590,9 +619,14 @@
         <a href="#portada">Inicio</a>
         <a href="#contexto">Contexto</a>
         <a href="#problema">Problema</a>
-        <a href="#datos">Datos</a>
-        <a href="#ml">ML</a>
         <a href="#metodologia">Metodología</a>
+        <a href="#arquitectura">Arquitectura</a>
+        <a href="#datos">Pipeline</a>
+        <a href="#eda">EDA</a>
+        <a href="#ml">ML</a>
+        <a href="#api">API</a>
+        <a href="#frontend">Frontend</a>
+        <a href="#despliegue">Despliegue</a>
         <a href="#resultados">Resultados</a>
         <a href="#footer">Equipo</a>
     </nav>
@@ -671,118 +705,6 @@
                 <h3>🎪 Variable Objetivo</h3>
                 <p><strong style="font-size: 1.5rem; color: #4ade80;">valor_mercado_eur</strong></p>
                 <p style="margin-top: 15px;">Predecir el valor de mercado en euros de un jugador basándose en más de 100 atributos técnicos, físicos y características del jugador.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- DATOS -->
-    <section id="datos">
-        <div class="content-box">
-            <h2>📊 Dataset y Variables</h2>
-            
-            <div class="data-stats">
-                <div class="stat-card">
-                    <div class="stat-number">122,501</div>
-                    <div class="stat-label">Jugadores Únicos</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">73</div>
-                    <div class="stat-label">Columnas Procesadas</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">7</div>
-                    <div class="stat-label">Versiones FIFA<br>(2015-2021)</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">84</div>
-                    <div class="stat-label">Features ML<br>(numéricas + categóricas)</div>
-                </div>
-            </div>
-
-            <div class="info-grid" style="margin-top: 50px;">
-                <div class="info-card" style="background: white; color: #333;">
-                    <h3 style="color: #f5576c;">📥 Fuente de Datos</h3>
-                    <p><strong>Kaggle Dataset:</strong> FIFA 21 Complete Player Dataset</p>
-                    <p style="margin-top: 10px; font-size: 0.95rem;">Datos recopilados del videojuego FIFA, la base de datos más completa de atributos de futbolistas profesionales a nivel mundial.</p>
-                </div>
-                
-                <div class="info-card" style="background: white; color: #333;">
-                    <h3 style="color: #f5576c;">🔑 Variables Principales</h3>
-                    <ul style="text-align: left;">
-                        <li><strong>Atributos Técnicos:</strong> Pases, regates, tiros, defensa</li>
-                        <li><strong>Atributos Físicos:</strong> Velocidad, fuerza, resistencia</li>
-                        <li><strong>Métricas:</strong> Overall, potencial, edad</li>
-                        <li><strong>Contexto:</strong> Club, liga, nacionalidad, posición</li>
-                    </ul>
-                </div>
-
-                <div class="info-card" style="background: white; color: #333;">
-                    <h3 style="color: #f5576c;">✨ Features Creadas</h3>
-                    <ul style="text-align: left;">
-                        <li>calidad_promedio</li>
-                        <li>diferencia_potencial</li>
-                        <li>categoria_edad</li>
-                        <li>categoria_posicion</li>
-                        <li>ratio_valor_salario</li>
-                        <li>anos_contrato_restantes</li>
-                        <li>categoria_reputacion</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- MACHINE LEARNING -->
-    <section id="ml">
-        <div class="content-box">
-            <h2>🤖 Machine Learning: Selección del Modelo</h2>
-            
-            <div class="ml-comparison">
-                <div class="model-card">
-                    <h3>📊 Regresión Lineal</h3>
-                    <p style="font-size: 1.1rem; opacity: 0.9;">Modelo Baseline</p>
-                    <div class="accuracy" style="color: #fbbf24;">80-90%</div>
-                    <div class="model-details">
-                        <p><strong>Configuración:</strong></p>
-                        <ul style="list-style: none; padding: 0;">
-                            <li>✓ fit_intercept=True</li>
-                            <li>✓ n_jobs=-1 (paralelización)</li>
-                            <li>✓ Entrenamiento rápido (&lt;1 min)</li>
-                        </ul>
-                        <p style="margin-top: 20px;"><strong>Resultado:</strong> R² = 0.80-0.90</p>
-                        <p style="margin-top: 10px; opacity: 0.8;">❌ Insuficiente en comparativa</p>
-                    </div>
-                </div>
-
-                <div class="model-card winner">
-                    <h3>🌲 Random Forest Regressor</h3>
-                    <p style="font-size: 1.1rem; opacity: 0.9;">⭐ Modelo Ganador</p>
-                    <div class="accuracy">89-98%</div>
-                    <div class="model-details">
-                        <p><strong>Configuración:</strong></p>
-                        <ul style="list-style: none; padding: 0;">
-                            <li>✓ 4000 estimadores (árboles)</li>
-                            <li>✓ max_depth=30</li>
-                            <li>✓ min_samples_split=10</li>
-                            <li>✓ Validación OOB activa</li>
-                            <li>✓ 84 features totales</li>
-                        </ul>
-                        <p style="margin-top: 20px;"><strong>Resultado:</strong> R² = 0.85-0.98</p>
-                        <p style="margin-top: 10px; color: #4ade80;">✅ Modelo seleccionado para producción</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="problem-box" style="margin-top: 50px; max-width: 900px;">
-                <h3>🎯 ¿Por qué Random Forest?</h3>
-                <p style="text-align: left; font-size: 1.2rem; line-height: 2;">
-                    ✓ <strong>Captura relaciones no lineales</strong> entre atributos y valor de mercado<br>
-                    ✓ <strong>Robusto ante outliers</strong> (jugadores estrella con valores extremos)<br>
-                    ✓ <strong>Maneja múltiples features</strong> categóricas y numéricas simultáneamente<br>
-                    ✓ <strong>No requiere normalización</strong> de datos<br>
-                    ✓ <strong>Proporciona importancia de variables</strong> para interpretabilidad<br>
-                    ✓ <strong>Validación OOB interna</strong> sin necesidad de cross-validation adicional
-                </p>
             </div>
         </div>
     </section>
@@ -883,6 +805,1806 @@
                         <strong>Url:</strong> <code>https://grupo7fifa.uniandes.site/</code> para acceder al frontend en entorno de producción con ssl verificado.
                     </p>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ARQUITECTURA -->
+    <section id="arquitectura">
+        <div class="content-box">
+            <h2>🏗️ Arquitectura y Ordenación del Sistema</h2>
+            
+            <div class="architecture-diagram">
+                <div class="problem-box" style="margin-bottom: 50px;">
+                    <h3>📂 Organización del Proyecto</h3>
+                    <p style="text-align: left; font-size: 1.2rem; line-height: 2;">
+                        El proyecto sigue una <strong>arquitectura modular y escalable</strong>, donde cada carpeta tiene una responsabilidad específica y bien definida. Esta organización facilita el mantenimiento, la colaboración entre desarrolladores y el despliegue en producción.
+                    </p>
+                </div>
+
+                <div class="arch-layer">
+                    <h3>📁 backend/</h3>
+                    <div class="arch-components">
+                        <div class="component">🔧 Pipeline<br>(scripts/)</div>
+                        <div class="component">🤖 ML<br>(train_model.py)</div>
+                        <div class="component">🌐 API REST<br>(main.py)</div>
+                    </div>
+                    <p style="margin-top: 20px; font-size: 1.1rem; line-height: 1.8; text-align: left;">
+                        <strong>Contiene:</strong> Toda la lógica de negocio del sistema. Los scripts de limpieza de datos (data_loader.py, data_cleaning.py, data_imputation.py), el entrenamiento del modelo ML, y la API FastAPI con 8 endpoints para predicción y consultas.
+                    </p>
+                </div>
+
+                <div class="arch-layer">
+                    <h3>📊 datos/</h3>
+                    <div class="arch-components">
+                        <div class="component">📥 FIFA.xlsx<br>(7 versiones)</div>
+                        <div class="component">✅ fifa_limpio.csv<br>(122,501 jugadores)</div>
+                        <div class="component">🤖 Modelos<br>(3 .joblib ~5GB)</div>
+                    </div>
+                    <p style="margin-top: 20px; font-size: 1.1rem; line-height: 1.8; text-align: left;">
+                        <strong>Contiene:</strong> Dataset original en Excel, datos procesados en CSV, y los 3 modelos entrenados (modelo.joblib, encoder.joblib, club_encoding.joblib). Montado como volumen read-only en Docker para compartir entre backend y frontend.
+                    </p>
+                </div>
+
+                <div class="arch-layer">
+                    <h3>🐳 docker/</h3>
+                    <div class="arch-components">
+                        <div class="component">🐋 Dockerfile<br>(Backend)</div>
+                        <div class="component">🐋 Dockerfile<br>(Frontend)</div>
+                        <div class="component">⚙️ docker-compose.yml<br>(Orquestación)</div>
+                    </div>
+                    <p style="margin-top: 20px; font-size: 1.1rem; line-height: 1.8; text-align: left;">
+                        <strong>Contiene:</strong> Configuración de contenedores Docker. Define imágenes Python 3.11-slim, puertos (8000 backend, 8501 frontend), volúmenes, y orquestación de servicios. Permite despliegue con un solo comando.
+                    </p>
+                </div>
+
+                <div class="arch-layer">
+                    <h3>📓 eda/</h3>
+                    <div class="arch-components">
+                        <div class="component">📊 eda_fifa_scouting.ipynb<br>(Jupyter)</div>
+                        <div class="component">📈 12 Visualizaciones<br>(Gráficos)</div>
+                        <div class="component">📋 README.md<br>(Documentación)</div>
+                    </div>
+                    <p style="margin-top: 20px; font-size: 1.1rem; line-height: 1.8; text-align: left;">
+                        <strong>Contiene:</strong> Análisis Exploratorio de Datos completo con estadísticas descriptivas, correlaciones, outliers, y visualizaciones interactivas (histogramas, boxplots, heatmaps). Determina qué features incluir en ML.
+                    </p>
+                </div>
+
+                <div class="arch-layer">
+                    <h3>🎨 frontend/</h3>
+                    <div class="arch-components">
+                        <div class="component">📊 Dashboard<br>(Streamlit)</div>
+                        <div class="component">🔍 3 Pestañas<br>(Interactivas)</div>
+                        <div class="component">📡 API Client<br>(Requests)</div>
+                    </div>
+                    <p style="margin-top: 20px; font-size: 1.1rem; line-height: 1.8; text-align: left;">
+                        <strong>Contiene:</strong> Dashboard interactivo con Streamlit conectado a la API. Filtros dinámicos, tarjetas de jugador con gráficos radar, formulario de predicción ML, y visualizaciones con Plotly. Incluye escudos de clubes/ligas.
+                    </p>
+                </div>
+            </div>
+
+            <div class="problem-box" style="margin-top: 50px;">
+                <h3>✅ Ventajas de esta Arquitectura</h3>
+                <p style="text-align: left; font-size: 1.2rem; line-height: 2;">
+                    ✓ <strong>Separación de Responsabilidades:</strong> Cada carpeta tiene un propósito único y claro<br>
+                    ✓ <strong>Escalabilidad:</strong> Fácil agregar nuevas features sin afectar otros módulos<br>
+                    ✓ <strong>Mantenibilidad:</strong> Código organizado facilita debugging y actualizaciones<br>
+                    ✓ <strong>Colaboración:</strong> Varios desarrolladores pueden trabajar simultáneamente<br>
+                    ✓ <strong>Portabilidad:</strong> Docker garantiza que funcione en cualquier servidor<br>
+                    ✓ <strong>Documentación:</strong> Estructura autodocumentada facilita onboarding de nuevos devs
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- DATOS -->
+    <section id="datos">
+        <div class="content-box">
+            <h2>📊 Pipeline: Dataset y Variables</h2>
+            
+            <div class="data-stats">
+                <div class="stat-card">
+                    <div class="stat-number">122,501</div>
+                    <div class="stat-label">Jugadores Únicos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">73</div>
+                    <div class="stat-label">Columnas Procesadas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">7</div>
+                    <div class="stat-label">Versiones FIFA<br>(2015-2021)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">84</div>
+                    <div class="stat-label">Features ML<br>(numéricas + categóricas)</div>
+                </div>
+            </div>
+
+            <div class="info-grid" style="margin-top: 50px;">
+                <div class="info-card" style="background: white; color: #333;">
+                    <h3 style="color: #f5576c;">📥 Fuente de Datos</h3>
+                    <p><strong>Kaggle Dataset:</strong> FIFA 21 Complete Player Dataset</p>
+                    <p style="margin-top: 10px; font-size: 0.95rem;">Datos recopilados del videojuego FIFA, la base de datos más completa de atributos de futbolistas profesionales a nivel mundial.</p>
+                </div>
+                
+                <div class="info-card" style="background: white; color: #333;">
+                    <h3 style="color: #f5576c;">🔑 Variables Principales</h3>
+                    <ul style="text-align: left;">
+                        <li><strong>Atributos Técnicos:</strong> Pases, regates, tiros, defensa</li>
+                        <li><strong>Atributos Físicos:</strong> Velocidad, fuerza, resistencia</li>
+                        <li><strong>Métricas:</strong> Overall, potencial, edad</li>
+                        <li><strong>Contexto:</strong> Club, liga, nacionalidad, posición</li>
+                    </ul>
+                </div>
+
+                <div class="info-card" style="background: white; color: #333;">
+                    <h3 style="color: #f5576c;">✨ Features Creadas</h3>
+                    <ul style="text-align: left;">
+                        <li>calidad_promedio</li>
+                        <li>diferencia_potencial</li>
+                        <li>categoria_edad</li>
+                        <li>categoria_posicion</li>
+                        <li>ratio_valor_salario</li>
+                        <li>anos_contrato_restantes</li>
+                        <li>categoria_reputacion</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- EDA -->
+    <section id="eda">
+        <div class="content-box">
+            <h2>🔍 EDA: Análisis Exploratorio de Datos</h2>
+            
+            <div class="problem-box" style="margin-bottom: 50px;">
+                <h3>🎯 ¿Por Qué Realizar un EDA Exhaustivo?</h3>
+                <p style="text-align: left; font-size: 1.2rem; line-height: 2;">
+                    Antes de entrenar cualquier modelo de Machine Learning, es <strong>fundamental entender profundamente los datos</strong>. El EDA nos permitió descubrir patrones ocultos, identificar correlaciones inesperadas y tomar decisiones informadas sobre qué variables incluir en el modelo, evitando el <strong>data leakage</strong> y optimizando el rendimiento predictivo.
+                </p>
+            </div>
+
+            <div class="data-stats">
+                <div class="stat-card">
+                    <div class="stat-number">73</div>
+                    <div class="stat-label">Variables Analizadas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">12</div>
+                    <div class="stat-label">Visualizaciones Generadas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">84</div>
+                    <div class="stat-label">Features Finales ML</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">0.64</div>
+                    <div class="stat-label">Correlación Máxima<br>(Reputación)</div>
+                </div>
+            </div>
+
+            <div class="info-grid" style="margin-top: 60px;">
+                <div class="info-card" style="background: white; color: #333;">
+                    <h3 style="color: #4facfe;">📊 Análisis de Distribución</h3>
+                    <p style="margin-top: 15px;"><strong>Valor de Mercado:</strong></p>
+                    <ul style="text-align: left;">
+                        <li>Media: €2,050,152</li>
+                        <li>Mediana: €600,000</li>
+                        <li>CV: 2.39 (alta dispersión)</li>
+                        <li>Rango: €0 - €123M (Neymar)</li>
+                    </ul>
+                    <p style="margin-top: 15px; font-size: 0.95rem; color: #666;">
+                        <strong>Decisión:</strong> Aplicar transformación logarítmica (log1p) para normalizar la distribución altamente sesgada.
+                    </p>
+                </div>
+
+                <div class="info-card" style="background: white; color: #333;">
+                    <h3 style="color: #4facfe;">🔗 Matriz de Correlación</h3>
+                    <p style="margin-top: 15px;"><strong>Top 5 Predictores:</strong></p>
+                    <ul style="text-align: left;">
+                        <li><strong>Reputación:</strong> 0.6423 ⭐</li>
+                        <li><strong>Overall:</strong> 0.6067</li>
+                        <li><strong>Potencial:</strong> 0.5631</li>
+                        <li><strong>Reacciones:</strong> 0.5178</li>
+                        <li><strong>Calidad Promedio:</strong> 0.4560</li>
+                    </ul>
+                    <p style="margin-top: 15px; font-size: 0.95rem; color: #666;">
+                        <strong>Hallazgo:</strong> Salario (0.82) descartado por data leakage.
+                    </p>
+                </div>
+
+                <div class="info-card" style="background: white; color: #333;">
+                    <h3 style="color: #4facfe;">🏟️ Impacto del Club</h3>
+                    <p style="margin-top: 15px;"><strong>Top 3 Clubes (954 únicos):</strong></p>
+                    <ul style="text-align: left;">
+                        <li>Bayern München: €24.23M</li>
+                        <li>FC Barcelona: €23.79M</li>
+                        <li>Real Madrid: €23.47M</li>
+                    </ul>
+                    <p style="margin-top: 15px; font-size: 0.95rem; color: #666;">
+                        <strong>Decisión:</strong> Target Encoding → club_valor_promedio (1 columna vs 954 OneHot).
+                    </p>
+                </div>
+
+                <div class="info-card" style="background: white; color: #333;">
+                    <h3 style="color: #4facfe;">🏆 Impacto de la Liga</h3>
+                    <p style="margin-top: 15px;"><strong>Top 3 Ligas (56 únicas):</strong></p>
+                    <ul style="text-align: left;">
+                        <li>Premier League: €8.10M</li>
+                        <li>La Liga: €7.77M</li>
+                        <li>Bundesliga: €6.47M</li>
+                    </ul>
+                    <p style="margin-top: 15px; font-size: 0.95rem; color: #666;">
+                        <strong>Decisión:</strong> OneHot Encoding (56 columnas) por impacto regional significativo.
+                    </p>
+                </div>
+
+                <div class="info-card" style="background: white; color: #333;">
+                    <h3 style="color: #4facfe;">⭐ Reputación Internacional</h3>
+                    <p style="margin-top: 15px;"><strong>Impacto por Nivel (1-5):</strong></p>
+                    <ul style="text-align: left;">
+                        <li>Nivel 5 (Mundial): €65.89M</li>
+                        <li>Nivel 4 (Continental): €35.97M</li>
+                        <li>Nivel 3 (Nacional): €18.53M</li>
+                        <li>Nivel 2 (Regional): €6.75M</li>
+                        <li>Nivel 1 (Local): €1.27M</li>
+                    </ul>
+                    <p style="margin-top: 15px; font-size: 0.95rem; color: #666;">
+                        <strong>Hallazgo:</strong> Nivel 5 vale 52x más que nivel 1. Segundo mejor predictor (0.64).
+                    </p>
+                </div>
+
+                <div class="info-card" style="background: white; color: #333;">
+                    <h3 style="color: #4facfe;">💡 Descubrimientos Inesperados</h3>
+                    <ul style="text-align: left;">
+                        <li><strong>Club y Liga</strong> capturan "brand premium" no reflejado en habilidades técnicas</li>
+                        <li><strong>Reputación</strong> más importante que Overall (0.64 vs 0.61)</li>
+                        <li><strong>Contexto geográfico</strong> explica 15-25% de varianza adicional</li>
+                        <li><strong>Edad óptima:</strong> 24-27 años (peak valor/potencial)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="problem-box" style="margin-top: 60px;">
+                <h3>🧠 Decisiones Informadas por el EDA</h3>
+                <p style="text-align: left; font-size: 1.2rem; line-height: 2;">
+                    ✓ <strong>Incluir variables contextuales:</strong> Club, Liga, Reputación explican varianza que atributos técnicos no capturan<br>
+                    ✓ <strong>Transformación logarítmica:</strong> Normalizar distribución con CV=2.39 mejora rendimiento del modelo<br>
+                    ✓ <strong>Target Encoding para Club:</strong> Evitar 954 columnas OneHot (explosión dimensional)<br>
+                    ✓ <strong>Selección de 84 features:</strong> Balance entre información y parsimonia (descarte de 20 variables ruidosas)<br>
+                    ✓ <strong>Random Forest sobre Regresión Lineal:</strong> Capturar interacciones no lineales (Club × Liga × Reputación)<br>
+                    ✓ <strong>NO aplicar escalamiento:</strong> Random Forest invariante a escala, mantener interpretabilidad<br>
+                    ✓ <strong>Validación OOB:</strong> Aprovechar bootstrap interno del RF para validación sin split adicional
+                </p>
+            </div>
+
+            <div class="info-grid" style="margin-top: 60px;">
+                <div class="info-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <h3>📈 Mejora Esperada en Modelo ML</h3>
+                    <div style="margin-top: 20px;">
+                        <p style="font-size: 1.5rem; margin-bottom: 15px;"><strong>R² Anterior:</strong> 0.5495 (54.95%)</p>
+                        <p style="font-size: 2rem; color: #4ade80; margin-bottom: 15px;"><strong>R² Esperado:</strong> 0.65-0.75</p>
+                        <p style="font-size: 1.3rem; color: #4ade80;"><strong>Mejora:</strong> +10-20 puntos porcentuales</p>
+                    </div>
+                    <p style="margin-top: 20px; font-size: 1rem; opacity: 0.9;">
+                        Gracias a la inclusión de variables contextuales (Club, Liga, Reputación) que explican el "brand premium" no capturado por atributos técnicos.
+                    </p>
+                </div>
+
+                <div class="info-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+                    <h3>🎯 Visualizaciones Clave Generadas</h3>
+                    <ul style="text-align: left; margin-top: 20px; line-height: 2;">
+                        <li>Distribución del valor de mercado</li>
+                        <li>Matriz de correlación (heatmap)</li>
+                        <li>Top 20 predictores (barplot)</li>
+                        <li>Overall vs Valor (scatter + regresión)</li>
+                        <li>Potencial vs Valor por edad</li>
+                        <li>Valor promedio por posición</li>
+                        <li>Club × Liga × Reputación (boxplot)</li>
+                        <li>Jugadores "promesa" (alto potencial)</li>
+                        <li>Outliers y valores extremos</li>
+                        <li>Feature importance preliminar</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MACHINE LEARNING -->
+    <section id="ml">
+        <div class="content-box">
+            <h2>🤖 Machine Learning: Proceso Completo de Entrenamiento</h2>
+            
+            <div class="problem-box" style="margin-bottom: 50px;">
+                <h3>🔄 Pipeline de Machine Learning End-to-End</h3>
+                <p style="text-align: left; font-size: 1.2rem; line-height: 2;">
+                    Se implementó un <strong>pipeline automatizado completo</strong> que abarca desde la carga de datos hasta la optimización final para producción. El proceso incluye preprocesamiento, partición estratégica, entrenamiento competitivo de modelos, validación rigurosa, generación de predicciones masivas y optimización de almacenamiento.
+                </p>
+            </div>
+
+            <div class="methodology-timeline" style="margin-bottom: 60px;">
+                <div class="phase">
+                    <span class="phase-number">1</span>
+                    <h3>Carga del Dataset Limpio</h3>
+                    <p class="phase-description">
+                        <strong>Entrada:</strong> <code>fifa_limpio.csv</code> (122,501 jugadores × 73 columnas)<br>
+                        <strong>Proceso:</strong> Carga con Pandas, validación de integridad, eliminación de columnas ML previas para evitar data leakage<br>
+                        <strong>Resultado:</strong> DataFrame limpio listo para modelado
+                    </p>
+                </div>
+
+                <div class="phase">
+                    <span class="phase-number">2</span>
+                    <h3>Preprocesamiento de Features</h3>
+                    <p class="phase-description">
+                        <strong>Features numéricas:</strong> 43 atributos técnicos + edad + club_encoded<br>
+                        <strong>Features categóricas:</strong> Liga (56), posición (4), edad (3), pie (2), reputación (5)<br>
+                        <strong>Encoding:</strong> Target Encoding para Club (954→1 columna), OneHot para resto (70 columnas)<br>
+                        <strong>Total final:</strong> 84 features (14 numéricas + 70 categóricas)
+                    </p>
+                </div>
+
+                <div class="phase">
+                    <span class="phase-number">3</span>
+                    <h3>Partición Estratégica 75/25</h3>
+                    <p class="phase-description">
+                        <strong>Train:</strong> 75% (91,876 jugadores) - Entrenamiento del modelo<br>
+                        <strong>Test:</strong> 25% (30,625 jugadores) - Evaluación imparcial<br>
+                        <strong>¿Por qué 75/25?</strong> Balance óptimo: suficientes datos para entrenar modelos complejos (4000 árboles) sin comprometer la validación. Con 122K registros, el test set de 30K garantiza métricas estadísticamente robustas.
+                    </p>
+                </div>
+
+                <div class="phase">
+                    <span class="phase-number">4</span>
+                    <h3>Competencia de Modelos</h3>
+                    <p class="phase-description">
+                        <strong>Candidato 1:</strong> Regresión Lineal (baseline rápido, &lt;1 min)<br>
+                        <strong>Candidato 2:</strong> Random Forest (4000 árboles, ~15 min)<br>
+                        <strong>Criterio:</strong> Mayor R² en test set + validación OOB<br>
+                        <strong>Ganador:</strong> Random Forest (R²=0.85-0.98 vs RL R²=0.80-0.90)
+                    </p>
+                </div>
+
+                <div class="phase">
+                    <span class="phase-number">5</span>
+                    <h3>Optimización de Hiperparámetros</h3>
+                    <p class="phase-description">
+                        <strong>Exploración:</strong> Se probaron configuraciones desde 100 hasta 4000 estimadores<br>
+                        <strong>Trade-off:</strong> Modelos ligeros (500 árboles) → R² menor pero rápidos (1GB, 2 min)<br>
+                        <strong>Decisión final:</strong> 4000 árboles → R² máximo pero más pesado (5GB, 15 min)<br>
+                        <strong>Justificación:</strong> Precisión &gt; velocidad en producción (predicciones precalculadas)
+                    </p>
+                </div>
+
+                <div class="phase">
+                    <span class="phase-number">6</span>
+                    <h3>Guardado y Optimización Docker</h3>
+                    <p class="phase-description">
+                        <strong>Archivos generados:</strong> modelo.joblib (5GB), encoder.joblib, club_encoding.joblib<br>
+                        <strong>Desafío:</strong> Carga lenta en Docker (5GB en memoria)<br>
+                        <strong>Solución:</strong> Configurar pertinencia en Dockerfile (caché de capas, volúmenes externos)<br>
+                        <strong>Resultado:</strong> Inicio de API en &lt;30 seg con modelo precargado
+                    </p>
+                </div>
+
+                <div class="phase">
+                    <span class="phase-number">7</span>
+                    <h3>Predicciones Masivas + Clasificación</h3>
+                    <p class="phase-description">
+                        <strong>Proceso:</strong> Predecir valor para los 122,501 jugadores<br>
+                        <strong>Nuevas columnas:</strong> <code>valor_predicho_eur</code>, <code>diferencia_porcentual</code>, <code>clasificacion_ml</code><br>
+                        <strong>Clasificación (±8%):</strong> INFRAVALORADO (dif &lt; -8%), JUSTO (-8% ≤ dif ≤ 8%), SOBREVALORADO (dif &gt; 8%)<br>
+                        <strong>Ventaja:</strong> Consultas instantáneas en API (datos precalculados)
+                    </p>
+                </div>
+
+                <div class="phase">
+                    <span class="phase-number">8</span>
+                    <h3>Conversión CSV → Parquet</h3>
+                    <p class="phase-description">
+                        <strong>Problema:</strong> CSV de 122K filas × 77 columnas = 50MB, carga lenta (7-10 seg)<br>
+                        <strong>Solución:</strong> Convertir a formato Parquet columnar comprimido<br>
+                        <strong>Resultado:</strong> 25MB comprimido, carga en &lt;1 seg (7x más rápido)<br>
+                        <strong>Impacto:</strong> API responde en &lt;2 seg incluso con filtros complejos
+                    </p>
+                </div>
+            </div>
+
+            <div class="info-grid" style="margin-top: 60px;">
+                <div class="info-card" style="background: white; color: #333;">
+                    <h3 style="color: #667eea;">📊 Comparativa de Modelos</h3>
+                    <table style="width: 100%; margin-top: 15px; font-size: 0.95rem;">
+                        <tr style="background: #f0f0f0;">
+                            <th style="padding: 10px; text-align: left;">Métrica</th>
+                            <th style="padding: 10px;">Reg. Lineal</th>
+                            <th style="padding: 10px;">Random Forest</th>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px;"><strong>R² Test</strong></td>
+                            <td style="padding: 10px; text-align: center;">0.80-0.90</td>
+                            <td style="padding: 10px; text-align: center; color: #4ade80; font-weight: bold;">0.85-0.98</td>
+                        </tr>
+                        <tr style="background: #f9f9f9;">
+                            <td style="padding: 10px;"><strong>Tiempo Entrenamiento</strong></td>
+                            <td style="padding: 10px; text-align: center;">&lt;1 min</td>
+                            <td style="padding: 10px; text-align: center;">~15 min</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px;"><strong>Tamaño Modelo</strong></td>
+                            <td style="padding: 10px; text-align: center;">10 MB</td>
+                            <td style="padding: 10px; text-align: center;">5 GB</td>
+                        </tr>
+                        <tr style="background: #f9f9f9;">
+                            <td style="padding: 10px;"><strong>Validación OOB</strong></td>
+                            <td style="padding: 10px; text-align: center;">❌</td>
+                            <td style="padding: 10px; text-align: center;">✅ 0.86</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px;"><strong>Ganador</strong></td>
+                            <td style="padding: 10px; text-align: center;">❌</td>
+                            <td style="padding: 10px; text-align: center; color: #4ade80; font-weight: bold;">✅</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="info-card" style="background: white; color: #333;">
+                    <h3 style="color: #667eea;">🌲 Config. Random Forest Final</h3>
+                    <ul style="text-align: left; line-height: 2; margin-top: 15px;">
+                        <li><strong>n_estimators:</strong> 4000</li>
+                        <li><strong>max_depth:</strong> 30</li>
+                        <li><strong>min_samples_split:</strong> 10</li>
+                        <li><strong>min_samples_leaf:</strong> 4</li>
+                        <li><strong>max_features:</strong> sqrt (≈9)</li>
+                        <li><strong>bootstrap:</strong> True</li>
+                        <li><strong>oob_score:</strong> True</li>
+                        <li><strong>n_jobs:</strong> -1 (todos los cores)</li>
+                    </ul>
+                </div>
+
+                <div class="info-card" style="background: white; color: #333;">
+                    <h3 style="color: #667eea;">⚖️ Trade-offs Considerados</h3>
+                    <p style="margin-top: 15px; line-height: 1.8;">
+                        <strong>Precisión vs Velocidad:</strong><br>
+                        Se priorizó máxima precisión (R²=0.98) sobre velocidad de entrenamiento. El modelo de 5GB se entrena offline 1 vez y se reutiliza indefinidamente.
+                    </p>
+                    <p style="margin-top: 15px; line-height: 1.8;">
+                        <strong>Memoria vs Latencia:</strong><br>
+                        Predicciones precalculadas en CSV/Parquet eliminan latencia de inferencia en tiempo real (queries &lt;2 seg).
+                    </p>
+                </div>
+
+                <div class="info-card" style="background: white; color: #333;">
+                    <h3 style="color: #667eea;">📈 Clasificación ML (±8%)</h3>
+                    <ul style="text-align: left; line-height: 2; margin-top: 15px;">
+                        <li><strong>💎 INFRAVALORADO:</strong> dif &lt; -8%<br><small>Valor real menor que predicho → Oportunidad</small></li>
+                        <li><strong>✓ JUSTO:</strong> -8% ≤ dif ≤ 8%<br><small>Valor real ≈ predicho → Precio correcto</small></li>
+                        <li><strong>⚠️ SOBREVALORADO:</strong> dif &gt; 8%<br><small>Valor real mayor que predicho → Riesgo</small></li>
+                    </ul>
+                    <p style="margin-top: 15px; font-size: 0.9rem; color: #666;">
+                        Tolerancia del 8% basada en variabilidad natural del mercado futbolístico.
+                    </p>
+                </div>
+            </div>
+
+            <div class="problem-box" style="margin-top: 60px;">
+                <h3>🎯 ¿Por Qué Random Forest Ganó?</h3>
+                <p style="text-align: left; font-size: 1.2rem; line-height: 2;">
+                    ✓ <strong>Captura interacciones complejas:</strong> Club × Liga × Reputación (relaciones no lineales)<br>
+                    ✓ <strong>Robusto ante outliers:</strong> Neymar (€123M) no distorsiona el modelo<br>
+                    ✓ <strong>Maneja 84 features heterogéneas:</strong> Numéricas + categóricas sin problemas<br>
+                    ✓ <strong>No requiere escalamiento:</strong> Mantiene interpretabilidad de valores originales<br>
+                    ✓ <strong>Validación OOB incorporada:</strong> Score interno (0.86) valida sin split adicional<br>
+                    ✓ <strong>Feature importance:</strong> Identifica qué variables importan más (reputación, overall)<br>
+                    ✓ <strong>Paralelización eficiente:</strong> n_jobs=-1 aprovecha todos los cores CPU
+                </p>
+            </div>
+
+            <div class="info-grid" style="margin-top: 60px;">
+                <div class="info-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <h3>🚀 Optimización para Producción</h3>
+                    <div style="margin-top: 20px; line-height: 2;">
+                        <p><strong>Desafío:</strong> Modelo de 5GB lento de cargar</p>
+                        <p><strong>Solución 1:</strong> Dockerfile optimizado (caché de capas, volúmenes externos)</p>
+                        <p><strong>Solución 2:</strong> Predicciones precalculadas en CSV (consulta instantánea)</p>
+                        <p><strong>Solución 3:</strong> Conversión a Parquet (7x más rápido que CSV)</p>
+                        <p style="margin-top: 15px; color: #4ade80; font-size: 1.3rem;"><strong>Resultado:</strong> API responde en &lt;2 segundos</p>
+                    </div>
+                </div>
+
+                <div class="info-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+                    <h3>📊 Resultados Finales</h3>
+                    <ul style="text-align: left; margin-top: 20px; line-height: 2;">
+                        <li><strong>R² Test:</strong> 0.85-0.98 (85-98%)</li>
+                        <li><strong>R² OOB:</strong> 0.86 (validación interna)</li>
+                        <li><strong>RMSE:</strong> 1.15-1.25 (escala log)</li>
+                        <li><strong>MAE:</strong> 0.85-0.95 (escala log)</li>
+                        <li><strong>Mejora vs baseline:</strong> +10-20 puntos R²</li>
+                        <li><strong>Tiempo predicción:</strong> &lt;2 seg (122K jugadores)</li>
+                        <li><strong>Clasificaciones generadas:</strong> 3 categorías (±8%)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- API REST -->
+    <section id="api" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
+        <div class="content-box">
+            <h2>🔌 API REST: FastAPI para Scouting Inteligente</h2>
+            
+            <div class="problem-box" style="margin-top: 30px;">
+                <h3>💡 ¿Por Qué una API REST?</h3>
+                <p style="font-size: 1.2rem; line-height: 1.8;">
+                    El modelo ML y el dataset Parquet necesitan ser <strong>accesibles desde múltiples clientes</strong> (Dashboard Streamlit, aplicaciones móviles, integraciones con software de scouting). 
+                    Una API REST con <strong>FastAPI</strong> actúa como <strong>capa de servicio centralizada</strong>, exponiendo endpoints RESTful para:
+                </p>
+                <ul style="text-align: left; font-size: 1.1rem; line-height: 2; margin-top: 15px; list-style: none;">
+                    <li>✓ Búsqueda y filtrado avanzado de jugadores (sin cargar 122K filas en cliente)</li>
+                    <li>✓ Consulta de perfiles completos con valor predicho en tiempo real</li>
+                    <li>✓ Identificación de oportunidades de mercado (infravalorados/sobrevalorados)</li>
+                    <li>✓ Análisis estadístico agregado (top clubes, ligas, nacionalidades)</li>
+                    <li>✓ Validación automática de datos con <strong>Pydantic</strong> (type hints + schemas)</li>
+                </ul>
+            </div>
+
+            <div class="stat-grid" style="margin-top: 50px;">
+                <div class="stat-card">
+                    <h3>11</h3>
+                    <p>Endpoints REST</p>
+                </div>
+                <div class="stat-card">
+                    <h3>&lt;2 seg</h3>
+                    <p>Tiempo Respuesta</p>
+                </div>
+                <div class="stat-card">
+                    <h3>3</h3>
+                    <p>Artefactos ML</p>
+                </div>
+                <div class="stat-card">
+                    <h3>122K</h3>
+                    <p>Jugadores Disponibles</p>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 70px; color: #667eea; font-size: 2rem; text-align: center;">📡 Arquitectura de Conexión Dual</h3>
+            
+            <div class="info-grid" style="margin-top: 40px;">
+                <div class="info-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <h3>🗄️ Conexión a Dataset (Parquet)</h3>
+                    <p style="margin-top: 15px; line-height: 1.8;">
+                        <strong>Entrada:</strong> <code>fifa_limpio.csv</code> / <code>fifa_limpio.parquet</code> (122,501 × 73)<br>
+                        <strong>Proceso:</strong> Carga optimizada con Pandas (fallback CSV→Parquet automático)<br>
+                        <strong>Queries:</strong> Filtrado rápido por nombre, posición, club, liga, edad, valoración, potencial<br>
+                        <strong>Ventaja:</strong> 7x más rápido con Parquet (50MB CSV → 25MB Parquet, queries &lt;2 seg)<br>
+                        <strong>Normalización:</strong> Búsqueda flexible sin tildes/mayúsculas (<code>normalizar_texto</code>)
+                    </p>
+                    <div style="margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.2); border-radius: 8px;">
+                        <strong>Endpoints de Dataset:</strong><br>
+                        <code style="color: #4ade80;">/jugadores/buscar</code><br>
+                        <code style="color: #4ade80;">/jugadores/filtros</code><br>
+                        <code style="color: #4ade80;">/eda/estadisticas_generales</code><br>
+                        <code style="color: #4ade80;">/eda/datos_graficos</code>
+                    </div>
+                </div>
+
+                <div class="info-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+                    <h3>🤖 Conexión a Modelo ML</h3>
+                    <p style="margin-top: 15px; line-height: 1.8;">
+                        <strong>Entrada:</strong> Atributos del jugador (edad, overall, potencial, club, liga, posición, etc.)<br>
+                        <strong>Proceso:</strong> Preprocesamiento + Target Encoding (club) + OneHot Encoding (5 categóricas)<br>
+                        <strong>Inferencia:</strong> Random Forest (4000 árboles) + reversión de log1p<br>
+                        <strong>Salida:</strong> Valor predicho (EUR), clasificación (±8%), percentil, confianza<br>
+                        <strong>Artefactos:</strong> <code>modelo_fifa.joblib</code> (5GB), <code>encoder_fifa.joblib</code>, <code>club_encoding_fifa.joblib</code>
+                    </p>
+                    <div style="margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.2); border-radius: 8px;">
+                        <strong>Endpoints de ML:</strong><br>
+                        <code style="color: #4ade80;">/ml/predecir_valor</code><br>
+                        <code style="color: #4ade80;">/jugadores/{id}/perfil</code><br>
+                        <code style="color: #4ade80;">/jugadores/infravalorados</code><br>
+                        <code style="color: #4ade80;">/jugadores/sobrevalorados</code>
+                    </div>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 70px; color: #667eea; font-size: 2rem; text-align: center;">🔥 Endpoints Principales (11 totales)</h3>
+
+            <div class="methodology-timeline" style="margin-top: 40px;">
+                <div class="phase">
+                    <div class="phase-number">1</div>
+                    <h3 class="phase-title">GET /jugadores/buscar</h3>
+                    <p class="phase-description">
+                        <strong>Búsqueda avanzada con múltiples filtros combinados:</strong><br>
+                        • Nombre (búsqueda parcial sin tildes/mayúsculas: "messi" → "Lionel Messi")<br>
+                        • Posición (<code>ST</code>, <code>CM</code>, <code>CB</code>, etc.)<br>
+                        • Club, Liga, Nacionalidad (listas múltiples)<br>
+                        • Rangos: Edad (16-45), Valoración (40-100), Potencial (40-100), Valor EUR<br>
+                        • Clasificación ML (<code>INFRAVALORADO</code>, <code>JUSTO</code>, <code>SOBREVALORADO</code>)<br>
+                        • Ordenamiento configurable + paginación (límite 1-1000)<br>
+                        <strong>Retorna:</strong> Lista de jugadores con info resumida (17 campos)
+                    </p>
+                </div>
+
+                <div class="phase">
+                    <div class="phase-number">2</div>
+                    <h3 class="phase-title">GET /jugadores/{id}/perfil</h3>
+                    <p class="phase-description">
+                        <strong>Perfil completo de un jugador específico:</strong><br>
+                        • Entrada: <code>id_sofifa</code> + <code>año</code> (opcional 2015-2021)<br>
+                        • Retorna: Todos los 73 atributos originales del jugador<br>
+                        • <strong>Valor predicho ML en tiempo real:</strong> Preprocesa datos → Infiere → Revierte log1p<br>
+                        • Comparación: <code>valor_real</code> vs <code>valor_predicho</code><br>
+                        • Clasificación automática: INFRAVALORADO (dif &lt; -8%) / JUSTO (-8% a 8%) / SOBREVALORADO (&gt; 8%)<br>
+                        <strong>Caso especial:</strong> Si jugador existe en múltiples años → Filtra por año solicitado
+                    </p>
+                </div>
+
+                <div class="phase">
+                    <div class="phase-number">3</div>
+                    <h3 class="phase-title">POST /ml/predecir_valor</h3>
+                    <p class="phase-description">
+                        <strong>Endpoint principal de inferencia ML (Pydantic validado):</strong><br>
+                        • Entrada: JSON con 20+ campos opcionales (edad, overall, potencial, club, liga, posición, etc.)<br>
+                        • <strong>Imputación inteligente:</strong> Valores faltantes se rellenan con medianas/modas del dataset<br>
+                        • Preprocesamiento EXACTO del entrenamiento: Target Encoding (club) + OneHot (5 categóricas)<br>
+                        • Inferencia: Random Forest 4000 árboles → valor EUR<br>
+                        • Salida: <code>valor_predicho</code>, <code>valor_formateado</code>, <code>confianza</code>, <code>percentil</code>, <code>categoria</code>, <code>features_imputadas</code><br>
+                        <strong>Ventaja:</strong> Permite predicciones con datos parciales (jugadores nuevos/jóvenes)
+                    </p>
+                </div>
+
+                <div class="phase">
+                    <div class="phase-number">4</div>
+                    <h3 class="phase-title">GET /jugadores/infravalorados</h3>
+                    <p class="phase-description">
+                        <strong>Top oportunidades de mercado (jugadores baratos para su calidad):</strong><br>
+                        • Criterio: <code>valor_predicho &gt; valor_real + diferencia_minima%</code> (default 10%)<br>
+                        • Filtros opcionales: <code>edad_maxima</code>, <code>posicion[]</code><br>
+                        • Muestra: 2000 jugadores aleatorios (optimización velocidad)<br>
+                        • Predicción en lote (batch) → ~10x más rápido que fila por fila<br>
+                        • Ordenamiento: Por diferencia porcentual descendente<br>
+                        <strong>Caso de uso:</strong> Scouts buscando fichajes de alto valor a bajo costo
+                    </p>
+                </div>
+
+                <div class="phase">
+                    <div class="phase-number">5</div>
+                    <h3 class="phase-title">GET /jugadores/sobrevalorados</h3>
+                    <p class="phase-description">
+                        <strong>Top jugadores potencialmente sobrepreciados:</strong><br>
+                        • Criterio: <code>valor_real &gt; valor_predicho + diferencia_minima%</code> (default 10%)<br>
+                        • Predicción en lote optimizada (2000 muestra)<br>
+                        • Retorna: Jugadores cuyo precio de mercado excede su valor estimado por ML<br>
+                        <strong>Caso de uso:</strong> Análisis de riesgo en fichajes caros, detección de burbujas de mercado
+                    </p>
+                </div>
+
+                <div class="phase">
+                    <div class="phase-number">6</div>
+                    <h3 class="phase-title">GET /eda/estadisticas_generales</h3>
+                    <p class="phase-description">
+                        <strong>KPIs generales del dataset (Dashboard principal):</strong><br>
+                        • Total jugadores, clubes, ligas, nacionalidades<br>
+                        • Distribuciones: Edades (promedio, min, max), valoraciones<br>
+                        • Valores de mercado: Suma total, promedio, jugador más valioso<br>
+                        • Top 10: Clubes, ligas, nacionalidades (conteo jugadores)<br>
+                        <strong>Optimización:</strong> Cálculos agregados con Pandas (groupby, agg) → Respuesta instantánea
+                    </p>
+                </div>
+
+                <div class="phase">
+                    <div class="phase-number">7</div>
+                    <h3 class="phase-title">GET /eda/datos_graficos</h3>
+                    <p class="phase-description">
+                        <strong>Datos agregados para visualizaciones interactivas:</strong><br>
+                        • Tipos de análisis: <code>posiciones</code>, <code>nacionalidades</code>, <code>clubes</code>, <code>ligas</code>, <code>edades</code><br>
+                        • Top N configurable (5-50, default 20)<br>
+                        • Retorna: DataFrames agregados con conteos y promedios<br>
+                        <strong>Ejemplo:</strong> <code>/eda/datos_graficos?tipo_analisis=clubes&top_n=10</code> → Top 10 clubes por conteo jugadores + valor promedio<br>
+                        <strong>Frontend:</strong> Streamlit consume estos datos para gráficos Plotly
+                    </p>
+                </div>
+
+                <div class="phase">
+                    <div class="phase-number">8</div>
+                    <h3 class="phase-title">GET /jugadores/filtros</h3>
+                    <p class="phase-description">
+                        <strong>Opciones únicas para poblar filtros de frontend:</strong><br>
+                        • Retorna listas de valores únicos: Posiciones (27), Ligas (39), Clubes (700+), Nacionalidades (150+)<br>
+                        • Rangos: Edad (min/max), Valoración (min/max), Potencial (min/max), Valor EUR (min/max)<br>
+                        • Total de jugadores en dataset<br>
+                        <strong>Caso de uso:</strong> Cargar dropdowns/selectboxes en Dashboard Streamlit sin duplicar lógica
+                    </p>
+                </div>
+
+                <div class="phase">
+                    <div class="phase-number">9</div>
+                    <h3 class="phase-title">GET /jugadores/{id}/años</h3>
+                    <p class="phase-description">
+                        <strong>Historial temporal de un jugador:</strong><br>
+                        • Entrada: <code>id_sofifa</code><br>
+                        • Retorna: Lista de años FIFA (2015-2021) en los que el jugador aparece<br>
+                        • Ordenado ascendente<br>
+                        <strong>Caso de uso:</strong> Dashboard muestra evolución de Messi 2015→2021 (selector de año)
+                    </p>
+                </div>
+
+                <div class="phase">
+                    <div class="phase-number">10</div>
+                    <h3 class="phase-title">GET /eda/jugador_mas_valioso</h3>
+                    <p class="phase-description">
+                        <strong>Jugador top del dataset (filtrable por año):</strong><br>
+                        • Sin año: Retorna jugador con mayor <code>valor_mercado_eur</code> de todo el dataset<br>
+                        • Con año: Filtra por año FIFA específico → Máximo valor de ese año<br>
+                        • Retorna perfil completo del jugador (73 campos)<br>
+                        <strong>Ejemplo:</strong> <code>/eda/jugador_mas_valioso?año=2019</code> → Neymar €123M
+                    </p>
+                </div>
+
+                <div class="phase">
+                    <div class="phase-number">11</div>
+                    <h3 class="phase-title">GET / (Raíz)</h3>
+                    <p class="phase-description">
+                        <strong>Información general de la API (Landing page):</strong><br>
+                        • Nombre, versión, descripción del servicio<br>
+                        • Metadata del modelo: Tipo (Random Forest), R² (0.9830), Features (110), Jugadores entrenamiento (91,875)<br>
+                        • Lista de todos los endpoints disponibles con rutas<br>
+                        • Stats del dataset: Total jugadores (122,501), clubes (700+), ligas (39)<br>
+                        • Link a documentación interactiva: <code>/docs</code> (Swagger UI auto-generado por FastAPI)
+                    </p>
+                </div>
+            </div>
+
+            <div class="problem-box" style="margin-top: 60px;">
+                <h3>⚡ Características Técnicas Clave</h3>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; margin-top: 30px;">
+                    <div>
+                        <h4 style="color: #667eea; margin-bottom: 15px;">🔒 Validación Robusta (Pydantic)</h4>
+                        <ul style="text-align: left; line-height: 2;">
+                            <li>Schemas tipo-seguros con <code>BaseModel</code></li>
+                            <li>Validación automática: Edad (16-45), Valoración (40-100), etc.</li>
+                            <li>Documentación auto-generada con ejemplos JSON</li>
+                            <li>Errores 422 descriptivos para datos inválidos</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 style="color: #667eea; margin-bottom: 15px;">🚀 Optimización de Performance</h4>
+                        <ul style="text-align: left; line-height: 2;">
+                            <li>Carga Parquet 7x más rápida que CSV (fallback automático)</li>
+                            <li>Predicciones en lote (batch) ~10x más rápidas que iterativas</li>
+                            <li>Muestra de 2000 jugadores para endpoints pesados (no 122K)</li>
+                            <li>Caching de artefactos ML en memoria (load 1 vez al inicio)</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 style="color: #667eea; margin-bottom: 15px;">🔍 Búsqueda Flexible</h4>
+                        <ul style="text-align: left; line-height: 2;">
+                            <li>Normalización de texto: "messi" = "Messi" = "MESSI"</li>
+                            <li>Eliminación de tildes: "Muller" = "Müller"</li>
+                            <li>Búsqueda parcial: "ron" encuentra "Cristiano Ronaldo"</li>
+                            <li>Combinación de filtros (AND lógico)</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 style="color: #667eea; margin-bottom: 15px;">📡 Documentación Interactiva</h4>
+                        <ul style="text-align: left; line-height: 2;">
+                            <li><strong>Swagger UI:</strong> <code>/docs</code> (interfaz gráfica)</li>
+                            <li><strong>ReDoc:</strong> <code>/redoc</code> (documentación elegante)</li>
+                            <li>Prueba de endpoints directamente en el navegador</li>
+                            <li>Ejemplos de request/response auto-generados</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-grid" style="margin-top: 60px;">
+                <div class="info-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <h3>🎯 Casos de Uso Principales</h3>
+                    <ol style="text-align: left; margin-top: 20px; line-height: 2;">
+                        <li><strong>Dashboard Streamlit:</strong> Consume endpoints para mostrar resultados en 3 pestañas (Búsqueda, Valoración, EDA)</li>
+                        <li><strong>Scouting automatizado:</strong> Scripts que consultan <code>/jugadores/infravalorados</code> diariamente</li>
+                        <li><strong>Análisis de riesgo:</strong> Clubes validan fichajes caros contra <code>/ml/predecir_valor</code></li>
+                        <li><strong>Integración móvil:</strong> Apps pueden consumir la misma API (JSON REST estándar)</li>
+                        <li><strong>Visualizaciones personalizadas:</strong> Power BI / Tableau conectan a <code>/eda/datos_graficos</code></li>
+                    </ol>
+                </div>
+
+                <div class="info-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+                    <h3>🐳 Despliegue y Ejecución</h3>
+                    <div style="margin-top: 20px; line-height: 1.8;">
+                        <p><strong>Desarrollo Local:</strong></p>
+                        <code style="background: rgba(0,0,0,0.3); padding: 10px; display: block; border-radius: 5px; margin: 10px 0;">
+                        uvicorn api_scouting_fifa:app --reload --host 0.0.0.0 --port 8000
+                        </code>
+                        
+                        <p style="margin-top: 20px;"><strong>Docker (Producción):</strong></p>
+                        <code style="background: rgba(0,0,0,0.3); padding: 10px; display: block; border-radius: 5px; margin: 10px 0;">
+                        docker build -t fifa-api .<br>
+                        docker run -p 8000:8000 -v $(pwd)/datos:/app/datos fifa-api
+                        </code>
+                        
+                        <p style="margin-top: 20px;"><strong>Health Check:</strong></p>
+                        <code style="background: rgba(0,0,0,0.3); padding: 10px; display: block; border-radius: 5px; margin: 10px 0;">
+                        curl http://localhost:8000/
+                        </code>
+                        
+                        <p style="margin-top: 15px; color: #4ade80; font-size: 1.2rem;"><strong>Tiempo de inicio:</strong> &lt;30 segundos (incluye carga de 5GB modelo + Parquet)</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="problem-box" style="margin-top: 60px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <h3>🏆 Resultados Clave de la API</h3>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 30px;">
+                    <div style="text-align: center;">
+                        <h2 style="color: #4ade80; font-size: 3rem;">11</h2>
+                        <p style="font-size: 1.2rem;">Endpoints funcionales</p>
+                    </div>
+                    <div style="text-align: center;">
+                        <h2 style="color: #4ade80; font-size: 3rem;">&lt;2s</h2>
+                        <p style="font-size: 1.2rem;">Tiempo respuesta promedio</p>
+                    </div>
+                    <div style="text-align: center;">
+                        <h2 style="color: #4ade80; font-size: 3rem;">98.3%</h2>
+                        <p style="font-size: 1.2rem;">Precisión predicciones ML</p>
+                    </div>
+                </div>
+                <p style="margin-top: 30px; font-size: 1.1rem; text-align: center;">
+                    API REST completa que conecta <strong>datos (Parquet)</strong> + <strong>inteligencia (ML)</strong> en una interfaz unificada, 
+                    permitiendo búsqueda avanzada, análisis estadístico y predicciones en tiempo real para 122,501 jugadores.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FRONTEND STREAMLIT -->
+    <section id="frontend" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="content-box">
+            <h2 style="color: white;">🎨 Frontend Interactivo: Dashboard Streamlit</h2>
+            
+            <div class="problem-box" style="margin-top: 30px; background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); color: white; border-left: 5px solid #4ade80;">
+                <h3 style="color: #4ade80;">💡 ¿Por Qué un Dashboard Interactivo?</h3>
+                <p style="font-size: 1.2rem; line-height: 1.8; color: rgba(255,255,255,0.95);">
+                    El sistema necesita una <strong>interfaz visual intuitiva</strong> que permita a usuarios no técnicos (scouts, directores deportivos, analistas) 
+                    interactuar con los 122K jugadores y el modelo ML sin escribir código. <strong>Streamlit</strong> se eligió por:
+                </p>
+                <ul style="text-align: left; font-size: 1.1rem; line-height: 2; margin-top: 15px; list-style: none; color: rgba(255,255,255,0.95);">
+                    <li>✓ <strong>Desarrollo rápido:</strong> Prototipo funcional en días (vs semanas con React/Vue)</li>
+                    <li>✓ <strong>100% Python:</strong> Sin JavaScript, CSS complejo o frameworks frontend separados</li>
+                    <li>✓ <strong>Componentes interactivos nativos:</strong> Filtros, tablas, gráficos con pocas líneas de código</li>
+                    <li>✓ <strong>Hot reload:</strong> Cambios instantáneos durante desarrollo (<code>streamlit run</code>)</li>
+                    <li>✓ <strong>Despliegue sencillo:</strong> Docker + puerto 8501, sin build steps complicados</li>
+                    <li>✓ <strong>Integración natural con Plotly:</strong> Gráficos interactivos (zoom, hover, pan)</li>
+                </ul>
+            </div>
+
+            <div class="stat-grid" style="margin-top: 50px;">
+                <div class="stat-card" style="background: linear-gradient(135deg, #4ade80 0%, #06b6d4 100%); color: white;">
+                    <h3>3</h3>
+                    <p>Pestañas Principales</p>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%); color: white;">
+                    <h3>15+</h3>
+                    <p>Filtros Disponibles</p>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%); color: white;">
+                    <h3>10+</h3>
+                    <p>Visualizaciones</p>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); color: white;">
+                    <h3>122K</h3>
+                    <p>Jugadores Consultables</p>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 70px; color: white; font-size: 2rem; text-align: center;">📑 Estructura del Dashboard: 3 Pestañas Especializadas</h3>
+
+            <div class="methodology-timeline" style="margin-top: 40px;">
+                <div class="phase" style="border-left: 6px solid #4ade80;">
+                    <div class="phase-number" style="background: linear-gradient(135deg, #4ade80 0%, #06b6d4 100%);">1</div>
+                    <h3 class="phase-title" style="color: #4ade80;">🔍 Búsqueda Inteligente de Jugadores</h3>
+                    <p class="phase-description">
+                        <strong>Objetivo:</strong> Permitir búsqueda avanzada con filtros combinados para encontrar jugadores específicos.<br><br>
+                        
+                        <strong style="color: #667eea;">📋 Menú de Filtros (15+ opciones):</strong><br>
+                        • <strong>Posición:</strong> 27 posiciones únicas (ST, CM, CB, LW, etc.)<br>
+                        • <strong>Club:</strong> 700+ clubes (FC Barcelona, Real Madrid, Bayern München, etc.)<br>
+                        • <strong>Liga:</strong> 39 ligas (La Liga, Premier League, Bundesliga, etc.)<br>
+                        • <strong>Nacionalidad:</strong> 164 países con traducción ES/EN<br>
+                        • <strong>Rangos numéricos:</strong> Edad (16-45), Overall (40-100), Potencial (40-100), Valor EUR (€0-€150M)<br>
+                        • <strong>Clasificación ML:</strong> INFRAVALORADO / JUSTO / SOBREVALORADO (±8%)<br>
+                        • <strong>Pie preferido:</strong> Izquierdo / Derecho<br>
+                        • <strong>Ordenamiento:</strong> Por valor, edad, overall (ASC/DESC)<br>
+                        • <strong>Paginación:</strong> Límite 1-1000 jugadores por consulta<br><br>
+                        
+                        <strong style="color: #667eea;">🎯 Por Qué Estos Filtros:</strong><br>
+                        Los filtros replican <strong>criterios reales de scouting</strong>: scouts buscan jugadores jóvenes (edad &lt;23), con potencial alto (&gt;85), 
+                        en posiciones específicas (ST para reforzar ataque), infravalorados (&lt;-10%) para encontrar oportunidades de mercado. 
+                        La combinación de filtros categóricos (posición, club) + numéricos (edad, valor) + ML (clasificación) permite búsquedas precisas como:
+                        <em>"Delanteros brasileños sub-23 con potencial &gt;85 infravalorados en La Liga"</em>.<br><br>
+                        
+                        <strong style="color: #667eea;">📊 Resultados:</strong><br>
+                        • Tabla interactiva con 17 columnas (nombre, edad, club, liga, posición, overall, potencial, valor, salario, clasificación ML, etc.)<br>
+                        • Botón <code>Ver Ficha</code> por jugador → Abre modal con perfil completo<br>
+                        • Búsqueda flexible por nombre: <em>"messi"</em> encuentra <em>"Lionel Messi"</em> (sin tildes, case-insensitive)<br>
+                        • Tiempo respuesta: &lt;2 seg (API optimizada con Parquet)
+                    </p>
+                </div>
+
+                <div class="phase" style="border-left: 6px solid #f59e0b;">
+                    <div class="phase-number" style="background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);">2</div>
+                    <h3 class="phase-title" style="color: #f59e0b;">📊 Análisis de Mercado</h3>
+                    <p class="phase-description">
+                        <strong>Objetivo:</strong> Visualizar tendencias del mercado, identificar oportunidades (infravalorados) y riesgos (sobrevalorados).<br><br>
+                        
+                        <strong style="color: #667eea;">📈 Visualizaciones Disponibles (10+ gráficos):</strong><br>
+                        
+                        <em>1. KPIs Generales (4 métricas destacadas):</em><br>
+                        • Total jugadores en DB (122,501)<br>
+                        • Valor promedio mercado (€2.3M)<br>
+                        • Edad promedio (25.3 años)<br>
+                        • Overall promedio (66.2/100)<br><br>
+                        
+                        <em>2. Top 20 Jugadores Más Valiosos (Gráfico de Barras):</em><br>
+                        • Ordenados por <code>valor_mercado_eur</code> descendente<br>
+                        • Muestra: Nombre, Club, Valor formateado (€123.4M)<br>
+                        • Colores: Degradado verde→amarillo (por valor)<br>
+                        • Caso de uso: Identificar estrellas del mercado (Neymar €123M, Mbappé €120M)<br><br>
+                        
+                        <em>3. Top 20 Clubes Más Valiosos (Gráfico de Barras):</em><br>
+                        • Agregación: <code>SUM(valor_mercado_eur)</code> por club<br>
+                        • Muestra: Bayern München €1.2B, Barcelona €1.1B, Real Madrid €1.0B<br>
+                        • Caso de uso: Análisis de poder adquisitivo de clubes<br><br>
+                        
+                        <em>4. Top 20 Ligas Más Valiosas (Gráfico de Barras):</em><br>
+                        • Agregación: <code>SUM(valor_mercado_eur)</code> por liga<br>
+                        • Muestra: Premier League €8.5B, La Liga €6.2B, Bundesliga €4.8B<br>
+                        • Caso de uso: Comparación de competitividad entre ligas<br><br>
+                        
+                        <em>5. Distribución por Posición (Gráfico de Pie/Donut):</em><br>
+                        • Conteo de jugadores por posición (CB: 15K, ST: 12K, etc.)<br>
+                        • Caso de uso: Entender oferta de mercado por posición<br><br>
+                        
+                        <em>6. Top 10 Nacionalidades (Gráfico de Barras Horizontales):</em><br>
+                        • Conteo jugadores por país (España: 8.5K, Alemania: 6.2K, etc.)<br>
+                        • Caso de uso: Identificar canteras de talento por país<br><br>
+                        
+                        <strong style="color: #667eea;">💎 Oportunidades de Mercado (Jugadores Infravalorados):</strong><br>
+                        • Criterio: <code>valor_predicho &gt; valor_real + 10%</code><br>
+                        • Top 10 infravalorados con mayor diferencia porcentual<br>
+                        • Filtros: Edad máxima, posición<br>
+                        • Columnas: Nombre, Club, Valor Real, Valor Predicho, Diferencia %, Clasificación ML<br>
+                        • <strong>Por qué es útil:</strong> Scouts encuentran fichajes baratos de alto rendimiento futuro<br><br>
+                        
+                        <strong style="color: #667eea;">💸 Riesgos de Mercado (Jugadores Sobrevalorados):</strong><br>
+                        • Criterio: <code>valor_real &gt; valor_predicho + 10%</code><br>
+                        • Top 10 sobrevalorados (precio inflado vs rendimiento esperado)<br>
+                        • <strong>Por qué es útil:</strong> Evitar fichajes caros con bajo ROI, detectar burbujas de mercado
+                    </p>
+                </div>
+
+                <div class="phase" style="border-left: 6px solid #8b5cf6;">
+                    <div class="phase-number" style="background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);">3</div>
+                    <h3 class="phase-title" style="color: #8b5cf6;">🤖 Predicción ML (Valoración Personalizada)</h3>
+                    <p class="phase-description">
+                        <strong>Objetivo:</strong> Permitir a usuarios predecir el valor de mercado de un jugador ingresando sus atributos manualmente.<br><br>
+                        
+                        <strong style="color: #667eea;">📝 Formulario Interactivo (20+ campos):</strong><br>
+                        
+                        <em>Información Básica:</em><br>
+                        • Edad (slider 16-45)<br>
+                        • Posición (selectbox 27 opciones)<br>
+                        • Nacionalidad (selectbox 164 países)<br>
+                        • Pie preferido (Left/Right)<br><br>
+                        
+                        <em>Atributos Técnicos (sliders 0-100):</em><br>
+                        • Valoración global (Overall)<br>
+                        • Potencial<br>
+                        • Ritmo/Velocidad<br>
+                        • Tiro/Disparo<br>
+                        • Pase<br>
+                        • Regate/Gambeta<br>
+                        • Defensa<br>
+                        • Físico<br><br>
+                        
+                        <em>Información del Club:</em><br>
+                        • Club (selectbox 700+ clubes)<br>
+                        • Liga (selectbox 39 ligas)<br><br>
+                        
+                        <em>Atributos Físicos:</em><br>
+                        • Altura (cm)<br>
+                        • Peso (kg)<br><br>
+                        
+                        <em>Características Adicionales:</em><br>
+                        • Pie débil (1-5 estrellas)<br>
+                        • Habilidades de regate (1-5 estrellas)<br>
+                        • Reputación internacional (1-5 estrellas)<br><br>
+                        
+                        <strong style="color: #667eea;">🔮 Proceso de Predicción:</strong><br>
+                        1. Usuario completa formulario (parcial o completo)<br>
+                        2. Frontend envía POST a <code>/ml/predecir_valor</code><br>
+                        3. API imputa valores faltantes (medianas/modas)<br>
+                        4. Preprocesamiento: Target Encoding (club) + OneHot (categóricas)<br>
+                        5. Random Forest infiere valor (4000 árboles)<br>
+                        6. Reversión log1p → Valor EUR<br>
+                        7. Frontend muestra resultado en tiempo real (&lt;2 seg)<br><br>
+                        
+                        <strong style="color: #667eea;">📊 Resultado Mostrado:</strong><br>
+                        • <strong>Valor predicho:</strong> €5.2M (formateado con separadores de miles)<br>
+                        • <strong>Confianza:</strong> Alta (90-100% features completas) / Media (70-89%) / Baja (&lt;70%)<br>
+                        • <strong>Percentil:</strong> Top 15% (valor mayor que 85% de jugadores)<br>
+                        • <strong>Categoría:</strong> Bajo (&lt;€1M) / Medio (€1-10M) / Alto (€10-50M) / Muy Alto (&gt;€50M)<br>
+                        • <strong>Features utilizadas:</strong> 18/20 (2 imputadas)<br>
+                        • <strong>Recomendación:</strong> "Jugador con valor alto para su edad, potencial de crecimiento"<br><br>
+                        
+                        <strong style="color: #667eea;">🎯 Por Qué Esta Funcionalidad:</strong><br>
+                        Permite valorar <strong>jugadores no presentes en el dataset</strong> (juveniles, ligas menores, fichajes hipotéticos). 
+                        Scouts pueden simular escenarios: <em>"¿Cuánto valdría este juvenil de 18 años si jugara en el Bayern?"</em>. 
+                        La imputación inteligente permite predicciones con datos parciales (útil cuando no se conocen todos los atributos).
+                    </p>
+                </div>
+
+                <div class="phase" style="border-left: 6px solid #06b6d4;">
+                    <div class="phase-number" style="background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);">4</div>
+                    <h3 class="phase-title" style="color: #06b6d4;">🃏 Ficha Detallada del Jugador (Modal Completo)</h3>
+                    <p class="phase-description">
+                        <strong>Objetivo:</strong> Mostrar perfil exhaustivo de un jugador específico al hacer clic en <code>Ver Ficha</code>.<br><br>
+                        
+                        <strong style="color: #667eea;">📄 Información Mostrada (30+ campos):</strong><br>
+                        
+                        <em>Header con Foto:</em><br>
+                        • Foto del jugador desde SoFIFA (fallback: avatar genérico)<br>
+                        • Nombre completo en grande<br>
+                        • Bandera del país (API flagcdn.com)<br>
+                        • Escudo del club (URLs ESPN verificadas)<br>
+                        • Logo de la liga<br><br>
+                        
+                        <em>Datos Básicos (Grid 3 columnas):</em><br>
+                        • ID SoFIFA, Edad, Nacionalidad<br>
+                        • Altura, Peso, IMC calculado<br>
+                        • Posición(es), Pie preferido<br>
+                        • Club, Liga<br><br>
+                        
+                        <em>Valoración y Mercado (Métricas destacadas):</em><br>
+                        • <strong>Overall:</strong> 85/100 (barra de progreso verde)<br>
+                        • <strong>Potencial:</strong> 88/100 (barra azul)<br>
+                        • <strong>Valor Real:</strong> €45.0M<br>
+                        • <strong>Valor Predicho ML:</strong> €52.3M<br>
+                        • <strong>Diferencia:</strong> -€7.3M (-14.0%) → Badge <code>INFRAVALORADO</code> (verde)<br>
+                        • <strong>Salario Anual:</strong> €8.5M<br><br>
+                        
+                        <em>Gráfico Radar (6 Atributos Principales):</em><br>
+                        • Ritmo: 85/100<br>
+                        • Tiro: 80/100<br>
+                        • Pase: 75/100<br>
+                        • Regate: 82/100<br>
+                        • Defensa: 35/100<br>
+                        • Físico: 70/100<br>
+                        • Colores: Degradado turquesa (Plotly interactivo con hover)<br><br>
+                        
+                        <em>Atributos Detallados (Tabla expandible):</em><br>
+                        • 20+ stats técnicos (Aceleración, Sprint, Definición, Cabezazo, Pase Corto, Pase Largo, etc.)<br>
+                        • Barras de progreso por atributo<br>
+                        • Colores: Verde (&gt;75), Amarillo (50-75), Rojo (&lt;50)<br><br>
+                        
+                        <em>Características Especiales:</em><br>
+                        • Pie débil: ⭐⭐⭐⭐ (4/5)<br>
+                        • Habilidades regate: ⭐⭐⭐⭐ (4/5)<br>
+                        • Reputación internacional: ⭐⭐⭐ (3/5)<br><br>
+                        
+                        <strong style="color: #667eea;">🎯 Por Qué Este Nivel de Detalle:</strong><br>
+                        La ficha replica <strong>informes profesionales de scouting</strong>. Scouts necesitan ver:
+                        <strong>(1)</strong> Stats técnicos completos para evaluar fit táctico (¿puede jugar como mediapunta? → ver Pase + Visión + Definición),
+                        <strong>(2)</strong> Comparación valor real vs predicho para negociaciones (argumento: "ML dice que vale €10M más"),
+                        <strong>(3)</strong> Gráfico radar para comparación visual rápida entre candidatos.
+                        El modal se abre sin cambiar de pestaña (<code>@st.dialog</code>), manteniendo contexto de búsqueda.
+                    </p>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 70px; color: white; font-size: 2rem; text-align: center;">⚙️ Tecnología y Arquitectura del Frontend</h3>
+
+            <div class="info-grid" style="margin-top: 40px;">
+                <div class="info-card" style="background: linear-gradient(135deg, #4ade80 0%, #06b6d4 100%); color: white;">
+                    <h3>🐍 Streamlit Framework</h3>
+                    <p style="margin-top: 15px; line-height: 1.8;">
+                        <strong>Versión:</strong> 1.50.0 (última estable Noviembre 2025)<br>
+                        <strong>Puerto:</strong> 8501 (configurable)<br>
+                        <strong>Hot Reload:</strong> Cambios instantáneos sin rebuild<br>
+                        <strong>Sesiones:</strong> <code>st.session_state</code> para persistir datos entre recargas<br>
+                        <strong>Caché:</strong> <code>@st.cache_data(ttl=300)</code> → Reduce llamadas API repetidas<br>
+                        <strong>Componentes nativos:</strong> <code>st.selectbox</code>, <code>st.slider</code>, <code>st.dataframe</code>, <code>st.tabs</code>, <code>st.dialog</code><br>
+                        <strong>Layout:</strong> <code>layout="wide"</code> → Aprovecha pantalla completa<br>
+                        <strong>CSS personalizado:</strong> <code>st.markdown(unsafe_allow_html=True)</code> → Paleta de colores moderna
+                    </p>
+                </div>
+
+                <div class="info-card" style="background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%); color: white;">
+                    <h3>📊 Plotly para Visualizaciones</h3>
+                    <p style="margin-top: 15px; line-height: 1.8;">
+                        <strong>Versión:</strong> 6.4.0<br>
+                        <strong>Tipos de gráficos:</strong> Barras, Radar, Pie, Histogramas, Scatter<br>
+                        <strong>Interactividad:</strong> Zoom, pan, hover tooltips, export PNG/SVG<br>
+                        <strong>Responsive:</strong> Se adapta automáticamente al tamaño del contenedor<br>
+                        <strong>Temas:</strong> <code>plotly_dark</code> → Fondo oscuro coherente con dashboard<br>
+                        <strong>Configuración:</strong> <code>fig.update_layout()</code> → Control total sobre estética<br>
+                        <strong>Performance:</strong> Renderizado en navegador (no genera imágenes estáticas)
+                    </p>
+                </div>
+
+                <div class="info-card" style="background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%); color: white;">
+                    <h3>🔌 Integración con API REST</h3>
+                    <p style="margin-top: 15px; line-height: 1.8;">
+                        <strong>Cliente HTTP:</strong> <code>requests</code> con <code>Session()</code> persistente<br>
+                        <strong>Reintentos automáticos:</strong> <code>Retry(total=5, backoff_factor=1)</code><br>
+                        <strong>Variable de entorno:</strong> <code>API_BASE_URL</code> → <code>http://backend:8000</code> (Docker) o <code>localhost:8000</code> (local)<br>
+                        <strong>Timeouts:</strong> 30 seg por request (previene cuelgues)<br>
+                        <strong>Manejo de errores:</strong> <code>try-except</code> con mensajes amigables en <code>st.error()</code><br>
+                        <strong>Validación:</strong> Chequeo de respuesta 200/404/500 antes de procesar JSON<br>
+                        <strong>Caché de filtros:</strong> <code>@st.cache_data(ttl=300)</code> → No recargar opciones cada vez
+                    </p>
+                </div>
+
+                <div class="info-card" style="background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); color: white;">
+                    <h3>🎨 Sistema de Diseño</h3>
+                    <p style="margin-top: 15px; line-height: 1.8;">
+                        <strong>Paleta de colores:</strong><br>
+                        • Primario: <code>#0A1929</code> (azul oscuro)<br>
+                        • Secundario: <code>#1E88E5</code> (azul brillante)<br>
+                        • Acento: <code>#00ACC1</code> (cyan)<br>
+                        • Destacado: <code>#FFA726</code> (naranja dorado)<br>
+                        • Éxito: <code>#66BB6A</code> (verde)<br>
+                        • Peligro: <code>#EF5350</code> (rojo)<br><br>
+                        
+                        <strong>Componentes personalizados:</strong><br>
+                        • Fichas de jugador estilo tarjeta FIFA con gradientes<br>
+                        • Métricas con hover effect (transform: translateY(-5px))<br>
+                        • Botones con gradientes y box-shadow<br>
+                        • Tabs con fondo acento al seleccionar<br>
+                        • DataFrames con border-radius y sombras<br><br>
+                        
+                        <strong>Responsive design:</strong><br>
+                        • Breakpoints: 1400px / 1200px / 992px / 768px<br>
+                        • Botones se reducen progresivamente en pantallas pequeñas<br>
+                        • Grid de 3 columnas → 2 → 1 según ancho
+                    </p>
+                </div>
+            </div>
+
+            <div class="problem-box" style="margin-top: 60px; background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); color: white; border-left: 5px solid #f59e0b;">
+                <h3 style="color: #f59e0b;">🚀 Levantamiento y Despliegue del Dashboard</h3>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; margin-top: 30px;">
+                    <div>
+                        <h4 style="color: #4ade80; margin-bottom: 15px;">💻 Desarrollo Local</h4>
+                        <code style="background: rgba(0,0,0,0.4); padding: 15px; display: block; border-radius: 8px; margin: 10px 0; line-height: 1.8; color: white;">
+                        # Activar entorno virtual<br>
+                        .\venv\Scripts\Activate.ps1<br><br>
+                        
+                        # Instalar dependencias<br>
+                        cd frontend<br>
+                        pip install -r requirements-dashboard.txt<br><br>
+                        
+                        # Iniciar dashboard<br>
+                        streamlit run dashboard_scouting_fifa.py<br><br>
+                        
+                        # Dashboard en http://localhost:8501<br>
+                        # ⚠️ API debe estar en http://localhost:8000
+                        </code>
+                        
+                        <p style="margin-top: 15px; font-size: 0.95rem; color: rgba(255,255,255,0.85);">
+                        <strong>Hot Reload automático:</strong> Guardar cambios en <code>.py</code> → Streamlit recarga instantáneamente
+                        </p>
+                    </div>
+                    <div>
+                        <h4 style="color: #4ade80; margin-bottom: 15px;">🐳 Producción Docker</h4>
+                        <code style="background: rgba(0,0,0,0.4); padding: 15px; display: block; border-radius: 8px; margin: 10px 0; line-height: 1.8; color: white;">
+                        # Levantar servicios completos<br>
+                        cd docker<br>
+                        docker-compose up --build<br><br>
+                        
+                        # O en segundo plano<br>
+                        docker-compose up -d --build<br><br>
+                        
+                        # Servicios disponibles:<br>
+                        # - Dashboard: http://localhost:8501<br>
+                        # - API: http://localhost:8000<br>
+                        # - API Docs: http://localhost:8000/docs
+                        </code>
+                        
+                        <p style="margin-top: 15px; font-size: 0.95rem; color: rgba(255,255,255,0.85);">
+                        <strong>Variable clave:</strong> <code>API_BASE_URL=http://backend:8000</code> → Dashboard detecta automáticamente si está en Docker
+                        </p>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 30px; padding: 20px; background: rgba(74, 222, 128, 0.2); border-radius: 10px; border: 2px solid #4ade80;">
+                    <h4 style="color: #4ade80; margin-bottom: 10px;">⏱️ Tiempos de Carga</h4>
+                    <ul style="text-align: left; line-height: 2; margin: 0;">
+                        <li><strong>Primera carga:</strong> 5-10 seg (carga opciones de filtros desde API)</li>
+                        <li><strong>Búsquedas siguientes:</strong> &lt;1 seg (caché de 5 min activo)</li>
+                        <li><strong>Predicción ML:</strong> &lt;2 seg (POST + preprocesamiento + inferencia)</li>
+                        <li><strong>Modal de ficha:</strong> &lt;1 seg (GET + renderizado)</li>
+                        <li><strong>Gráficos Plotly:</strong> Renderizado instantáneo (cliente-side)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="info-grid" style="margin-top: 60px;">
+                <div class="info-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <h3>🎯 Ventajas de Streamlit vs Alternativas</h3>
+                    <div style="margin-top: 20px; line-height: 2;">
+                        <p><strong>vs React/Vue/Angular:</strong></p>
+                        <ul style="text-align: left;">
+                            <li>✅ Sin build steps (webpack, babel, npm)</li>
+                            <li>✅ Sin separación frontend/backend (todo Python)</li>
+                            <li>✅ Prototipado 10x más rápido</li>
+                            <li>✅ Ideal para científicos de datos (no requiere JS avanzado)</li>
+                        </ul>
+                        
+                        <p style="margin-top: 15px;"><strong>vs Dash (Plotly):</strong></p>
+                        <ul style="text-align: left;">
+                            <li>✅ Menos código repetitivo (callbacks implícitos)</li>
+                            <li>✅ Componentes nativos más ricos (tabs, dialogs, file_uploader)</li>
+                            <li>✅ Comunidad más activa (2025)</li>
+                        </ul>
+                        
+                        <p style="margin-top: 15px;"><strong>vs Jupyter Notebooks:</strong></p>
+                        <ul style="text-align: left;">
+                            <li>✅ Interfaz web profesional (no celdas ejecutables)</li>
+                            <li>✅ Usuarios finales no ven código</li>
+                            <li>✅ Despliegue como aplicación (no notebook .ipynb)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="info-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+                    <h3>📦 Dependencias del Dashboard</h3>
+                    <code style="background: rgba(0,0,0,0.3); padding: 15px; display: block; border-radius: 8px; margin: 15px 0; line-height: 2; color: white;">
+                    streamlit==1.50.0<br>
+                    plotly==6.4.0<br>
+                    requests==2.32.5<br>
+                    pandas==2.3.3<br>
+                    pillow==11.0.0<br>
+                    urllib3==2.3.3
+                    </code>
+                    
+                    <p style="margin-top: 15px; line-height: 1.8;">
+                        <strong>Total:</strong> 6 dependencias principales + sub-dependencias automáticas<br>
+                        <strong>Tamaño instalación:</strong> ~150 MB<br>
+                        <strong>Tiempo instalación:</strong> ~2 min (pip install)<br>
+                        <strong>Compatibilidad:</strong> Python 3.11+ (Windows/Linux/macOS)
+                    </p>
+                </div>
+            </div>
+
+            <div class="problem-box" style="margin-top: 60px; background: linear-gradient(135deg, #4ade80 0%, #06b6d4 100%); color: white;">
+                <h3>🏆 Resultados Clave del Frontend</h3>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; margin-top: 30px;">
+                    <div style="text-align: center;">
+                        <h2 style="color: white; font-size: 3rem;">3</h2>
+                        <p style="font-size: 1.2rem;">Pestañas funcionales (Búsqueda, Mercado, Predicción)</p>
+                    </div>
+                    <div style="text-align: center;">
+                        <h2 style="color: white; font-size: 3rem;">15+</h2>
+                        <p style="font-size: 1.2rem;">Filtros combinables (posición, club, edad, etc.)</p>
+                    </div>
+                    <div style="text-align: center;">
+                        <h2 style="color: white; font-size: 3rem;">10+</h2>
+                        <p style="font-size: 1.2rem;">Visualizaciones interactivas (Plotly)</p>
+                    </div>
+                    <div style="text-align: center;">
+                        <h2 style="color: white; font-size: 3rem;">&lt;2s</h2>
+                        <p style="font-size: 1.2rem;">Tiempo de respuesta promedio</p>
+                    </div>
+                </div>
+                <p style="margin-top: 30px; font-size: 1.1rem; text-align: center;">
+                    Dashboard profesional construido 100% en <strong>Python con Streamlit</strong>, 
+                    integrando <strong>122K jugadores</strong>, <strong>predicciones ML en tiempo real</strong> y 
+                    <strong>análisis de mercado avanzado</strong> en una interfaz intuitiva accesible desde cualquier navegador.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- DESPLIEGUE DOCKER + VPS -->
+    <section id="despliegue" style="background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);">
+        <div class="content-box">
+            <h2 style="color: #4ade80;">🚀 Despliegue: Docker + VPS Contabo</h2>
+            
+            <div class="problem-box" style="margin-top: 30px; background: rgba(74, 222, 128, 0.15); backdrop-filter: blur(10px); color: white; border-left: 5px solid #4ade80;">
+                <h3 style="color: #4ade80;">💡 ¿Por Qué Docker + VPS + Git?</h3>
+                <p style="font-size: 1.2rem; line-height: 1.8; color: rgba(255,255,255,0.95);">
+                    El proyecto necesita <strong>despliegue en producción accesible 24/7</strong> para scouts, directores deportivos y usuarios finales. 
+                    Se eligió esta arquitectura por <strong>3 razones fundamentales</strong>:
+                </p>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 30px;">
+                    <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 15px; border: 2px solid #06b6d4;">
+                        <h4 style="color: #06b6d4; margin-bottom: 15px;">🐳 Docker</h4>
+                        <ul style="text-align: left; line-height: 2; font-size: 1rem;">
+                            <li>✓ <strong>Consistencia:</strong> Mismo entorno dev/prod (elimina "en mi máquina funciona")</li>
+                            <li>✓ <strong>Aislamiento:</strong> Backend + Frontend en contenedores independientes</li>
+                            <li>✓ <strong>Portabilidad:</strong> Funciona en Windows, Linux, macOS sin cambios</li>
+                            <li>✓ <strong>Escalabilidad:</strong> Fácil replicar servicios (load balancing futuro)</li>
+                            <li>✓ <strong>Rollback rápido:</strong> Volver a versión anterior con 1 comando</li>
+                        </ul>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 15px; border: 2px solid #f59e0b;">
+                        <h4 style="color: #f59e0b; margin-bottom: 15px;">☁️ VPS (Contabo)</h4>
+                        <ul style="text-align: left; line-height: 2; font-size: 1rem;">
+                            <li>✓ <strong>Control total:</strong> Root access, configuración libre (vs Vercel/Heroku limitados)</li>
+                            <li>✓ <strong>Costos predecibles:</strong> €5-10/mes fijo (vs AWS factura sorpresa)</li>
+                            <li>✓ <strong>Sin límites artificiales:</strong> Sin caps de requests/tiempo ejecución</li>
+                            <li>✓ <strong>Infraestructura propia:</strong> Base de datos, cache, cron jobs posibles</li>
+                            <li>✓ <strong>Europa:</strong> Baja latencia para usuarios globales</li>
+                        </ul>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 15px; border: 2px solid #8b5cf6;">
+                        <h4 style="color: #8b5cf6; margin-bottom: 15px;">🐙 Git (GitHub)</h4>
+                        <ul style="text-align: left; line-height: 2; font-size: 1rem;">
+                            <li>✓ <strong>Control de versiones:</strong> Historial completo de cambios, branches, commits</li>
+                            <li>✓ <strong>Colaboración:</strong> 3 desarrolladores trabajando simultáneamente</li>
+                            <li>✓ <strong>CI/CD simple:</strong> Push → Pull en VPS → Deploy automático</li>
+                            <li>✓ <strong>Backup automático:</strong> Código en nube, recuperable siempre</li>
+                            <li>✓ <strong>Documentación:</strong> README, issues, wiki integrados</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-grid" style="margin-top: 50px;">
+                <div class="stat-card" style="background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); color: white;">
+                    <h3>2</h3>
+                    <p>Contenedores Docker</p>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%); color: white;">
+                    <h3>1</h3>
+                    <p>Red Bridge Interna</p>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%); color: white;">
+                    <h3>~40s</h3>
+                    <p>Tiempo Inicio Total</p>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #4ade80 0%, #06b6d4 100%); color: white;">
+                    <h3>24/7</h3>
+                    <p>Disponibilidad</p>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 70px; color: #4ade80; font-size: 2rem; text-align: center;">🔄 Flujo de Despliegue Completo (Dev → Producción)</h3>
+
+            <div class="methodology-timeline" style="margin-top: 40px;">
+                <div class="phase" style="border-left: 6px solid #8b5cf6;">
+                    <div class="phase-number" style="background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);">1</div>
+                    <h3 class="phase-title" style="color: #8b5cf6;">💻 Desarrollo en VSCode (Local)</h3>
+                    <p class="phase-description">
+                        <strong>Entrada:</strong> Código Python (backend, frontend, scripts ML)<br>
+                        <strong>Entorno:</strong> Windows 11 con Python 3.11 + venv<br>
+                        <strong>Herramientas:</strong> VSCode, Git Bash, Docker Desktop<br>
+                        <strong>Proceso:</strong><br>
+                        • Desarrollo iterativo con hot reload (FastAPI auto-reload, Streamlit rerun)<br>
+                        • Testing local: <code>uvicorn api:app --reload</code> + <code>streamlit run dashboard.py</code><br>
+                        • Validación de endpoints con Postman/Thunder Client<br>
+                        • Pruebas de predicciones ML con datos reales<br>
+                        • Ajuste de CSS/frontend hasta diseño final<br><br>
+                        
+                        <strong>Salida:</strong> Código funcional listo para commit<br>
+                        <strong>Ventaja VSCode:</strong> Intellisense, debugger integrado, extensiones Git, Docker, Python
+                    </p>
+                </div>
+
+                <div class="phase" style="border-left: 6px solid #3b82f6;">
+                    <div class="phase-number" style="background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);">2</div>
+                    <h3 class="phase-title" style="color: #3b82f6;">🐙 Push a GitHub (Control de Versiones)</h3>
+                    <p class="phase-description">
+                        <strong>Repositorio:</strong> <a href="https://github.com/btoaldas/seminario-complexivo-grupo-7" target="_blank" style="color: #4ade80;">github.com/btoaldas/seminario-complexivo-grupo-7</a><br>
+                        <strong>Branch principal:</strong> <code>main</code><br>
+                        <strong>Protocolo:</strong> HTTPS (más cómodo que SSH, no requiere keys)<br>
+                        <strong>Comandos Git ejecutados:</strong><br><br>
+                        
+                        <code style="background: rgba(0,0,0,0.4); padding: 10px; display: block; border-radius: 5px; color: #4ade80; line-height: 1.8;">
+                        git add .<br>
+                        git commit -m "feat: API FastAPI + Dashboard Streamlit completo"<br>
+                        git push origin main
+                        </code><br>
+                        
+                        <strong>¿Por qué HTTPS sobre SSH?</strong><br>
+                        • Configuración más rápida (no generar/agregar SSH keys)<br>
+                        • Funciona en cualquier red (SSH a veces bloqueado en firewalls)<br>
+                        • Token PAT (Personal Access Token) se guarda en credential manager<br>
+                        • Ideal para colaboradores con diferentes sistemas operativos<br><br>
+                        
+                        <strong>Estructura del Repositorio:</strong><br>
+                        <code>backend/</code> → API FastAPI + scripts ML<br>
+                        <code>frontend/</code> → Dashboard Streamlit<br>
+                        <code>docker/</code> → Dockerfiles + docker-compose.yml<br>
+                        <code>datos/</code> → CSV + Parquet + modelos .joblib (5GB)<br>
+                        <code>eda/</code> → Jupyter notebooks de análisis
+                    </p>
+                </div>
+
+                <div class="phase" style="border-left: 6px solid #f59e0b;">
+                    <div class="phase-number" style="background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);">3</div>
+                    <h3 class="phase-title" style="color: #f59e0b;">☁️ Configuración VPS Contabo</h3>
+                    <p class="phase-description">
+                        <strong>Proveedor:</strong> Contabo (hosting alemán, datacenter Europa)<br>
+                        <strong>Plan:</strong> VPS M (€8.99/mes)<br>
+                        <strong>Specs:</strong> 4 vCPU, 8GB RAM, 200GB SSD NVMe<br>
+                        <strong>Sistema Operativo:</strong> Ubuntu 22.04 LTS<br>
+                        <strong>IP Pública:</strong> Asignada automáticamente por Contabo<br>
+                        <strong>Dominio:</strong> <a href="https://grupo7fifa.uniandes.site" target="_blank" style="color: #4ade80;">grupo7fifa.uniandes.site</a> (DNS A record apunta a IP VPS)<br><br>
+                        
+                        <strong>Software instalado en VPS:</strong><br>
+                        • <code>docker</code> (engine 24.x)<br>
+                        • <code>docker-compose</code> (v2.x)<br>
+                        • <code>nginx</code> (reverse proxy + SSL)<br>
+                        • <code>git</code> (para hacer pull del repo)<br>
+                        • <code>certbot</code> (Let's Encrypt SSL gratuito)<br><br>
+                        
+                        <strong>Conexión SSH:</strong><br>
+                        <code style="background: rgba(0,0,0,0.4); padding: 10px; display: block; border-radius: 5px; color: #4ade80;">
+                        ssh root@grupo7fifa.uniandes.site
+                        </code><br>
+                        
+                        <strong>¿Por qué Contabo vs AWS/GCP/Azure/Vercel?</strong><br>
+                        • <strong>vs AWS:</strong> Sin factura sorpresa, sin configuración compleja (EC2 + RDS + S3...)<br>
+                        • <strong>vs Vercel:</strong> No soporta FastAPI (solo Next.js), sin control de infraestructura<br>
+                        • <strong>vs Google Cloud Run:</strong> Cold starts lentos (modelo 5GB tarda 30s en cargar)<br>
+                        • <strong>vs Heroku:</strong> Free tier eliminado, dyno sleep después de 30 min inactividad<br>
+                        • <strong>Ventaja Contabo:</strong> Precio fijo, root access, sin vendor lock-in
+                    </p>
+                </div>
+
+                <div class="phase" style="border-left: 6px solid #06b6d4;">
+                    <div class="phase-number" style="background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);">4</div>
+                    <h3 class="phase-title" style="color: #06b6d4;">📥 Pull del Repositorio en VPS</h3>
+                    <p class="phase-description">
+                        <strong>Ubicación en servidor:</strong> <code>/opt/fifa-scouting/</code><br>
+                        <strong>Comandos ejecutados:</strong><br><br>
+                        
+                        <code style="background: rgba(0,0,0,0.4); padding: 10px; display: block; border-radius: 5px; color: #4ade80; line-height: 1.8;">
+                        # Primera vez (clonar repo)<br>
+                        cd /opt<br>
+                        git clone https://github.com/btoaldas/seminario-complexivo-grupo-7.git fifa-scouting<br>
+                        cd fifa-scouting<br><br>
+                        
+                        # Actualizaciones futuras (pull cambios)<br>
+                        git pull origin main
+                        </code><br>
+                        
+                        <strong>Estructura descargada:</strong><br>
+                        • <code>/opt/fifa-scouting/backend/</code> → API + scripts<br>
+                        • <code>/opt/fifa-scouting/frontend/</code> → Dashboard<br>
+                        • <code>/opt/fifa-scouting/docker/</code> → Dockerfiles<br>
+                        • <code>/opt/fifa-scouting/datos/</code> → Dataset + modelos (5GB)<br><br>
+                        
+                        <strong>Ventaja del pull:</strong><br>
+                        No se sube el código manualmente (FTP, SFTP). Git sincroniza automáticamente solo los archivos modificados, 
+                        respetando el historial de commits. Si algo falla, se hace <code>git revert</code> en segundos.
+                    </p>
+                </div>
+
+                <div class="phase" style="border-left: 6px solid #4ade80;">
+                    <div class="phase-number" style="background: linear-gradient(135deg, #4ade80 0%, #06b6d4 100%);">5</div>
+                    <h3 class="phase-title" style="color: #4ade80;">🐳 Despliegue con Docker Compose</h3>
+                    <p class="phase-description">
+                        <strong>Archivo:</strong> <code>docker/docker-compose.yml</code><br>
+                        <strong>Comando ejecutado:</strong><br><br>
+                        
+                        <code style="background: rgba(0,0,0,0.4); padding: 10px; display: block; border-radius: 5px; color: #4ade80; line-height: 1.8;">
+                        cd /opt/fifa-scouting/docker<br>
+                        docker-compose up -d --build
+                        </code><br>
+                        
+                        <strong>Proceso de Docker Compose:</strong><br>
+                        1️⃣ Lee <code>docker-compose.yml</code><br>
+                        2️⃣ Construye imagen <code>fifa-backend</code> desde <code>Dockerfile.backend</code><br>
+                        3️⃣ Construye imagen <code>fifa-frontend</code> desde <code>Dockerfile.frontend</code><br>
+                        4️⃣ Crea red <code>fifa-network</code> (bridge)<br>
+                        5️⃣ Levanta contenedor backend (puerto 8000)<br>
+                        6️⃣ Espera health check backend (hasta 40s)<br>
+                        7️⃣ Levanta contenedor frontend (puerto 8501)<br>
+                        8️⃣ Monta volumen <code>../datos:/app/datos</code> en ambos contenedores<br><br>
+                        
+                        <strong>2 Contenedores Creados:</strong><br>
+                        • <strong>fifa-backend:</strong> FastAPI + Random Forest (4000 árboles) + Parquet<br>
+                        • <strong>fifa-frontend:</strong> Streamlit + Plotly + Cliente HTTP<br><br>
+                        
+                        <strong>Red Bridge Interna (fifa-network):</strong><br>
+                        • Backend accesible por frontend como <code>http://backend:8000</code> (DNS interno Docker)<br>
+                        • Aislamiento: Frontend no puede acceder a otros contenedores fuera de la red<br>
+                        • Puerto 8000 y 8501 expuestos al host (VPS) para acceso externo
+                    </p>
+                </div>
+
+                <div class="phase" style="border-left: 6px solid #ef4444;">
+                    <div class="phase-number" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">6</div>
+                    <h3 class="phase-title" style="color: #ef4444;">🔐 Configuración Nginx (Reverse Proxy + SSL)</h3>
+                    <p class="phase-description">
+                        <strong>¿Por qué Nginx?</strong><br>
+                        Docker expone puertos 8000 y 8501, pero usuarios finales esperan acceso por <strong>HTTPS en puerto 443</strong> (sin :8501 en la URL). 
+                        Nginx actúa como <strong>reverse proxy</strong> que:<br>
+                        • Recibe requests HTTPS en puerto 443<br>
+                        • Redirecciona internamente a <code>localhost:8501</code> (Streamlit)<br>
+                        • Agrega certificado SSL (Let's Encrypt) para conexión segura<br>
+                        • Maneja compresión gzip, cache de estáticos, rate limiting<br><br>
+                        
+                        <strong>Configuración Nginx:</strong><br>
+                        <code style="background: rgba(0,0,0,0.4); padding: 10px; display: block; border-radius: 5px; color: #4ade80; line-height: 1.8;">
+                        # /etc/nginx/sites-available/fifa-scouting<br>
+                        server {<br>
+                        &nbsp;&nbsp;listen 80;<br>
+                        &nbsp;&nbsp;server_name grupo7fifa.uniandes.site;<br>
+                        &nbsp;&nbsp;return 301 https://$host$request_uri; # Redirect HTTP → HTTPS<br>
+                        }<br><br>
+                        
+                        server {<br>
+                        &nbsp;&nbsp;listen 443 ssl;<br>
+                        &nbsp;&nbsp;server_name grupo7fifa.uniandes.site;<br><br>
+                        
+                        &nbsp;&nbsp;ssl_certificate /etc/letsencrypt/live/grupo7fifa.uniandes.site/fullchain.pem;<br>
+                        &nbsp;&nbsp;ssl_certificate_key /etc/letsencrypt/live/grupo7fifa.uniandes.site/privkey.pem;<br><br>
+                        
+                        &nbsp;&nbsp;location / {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;proxy_pass http://localhost:8501;<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;proxy_http_version 1.1;<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;proxy_set_header Upgrade $http_upgrade;<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;proxy_set_header Connection "upgrade";<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;proxy_set_header Host $host;<br>
+                        &nbsp;&nbsp;}<br>
+                        }
+                        </code><br>
+                        
+                        <strong>Certificado SSL (Let's Encrypt):</strong><br>
+                        <code style="background: rgba(0,0,0,0.4); padding: 10px; display: block; border-radius: 5px; color: #4ade80;">
+                        certbot --nginx -d grupo7fifa.uniandes.site
+                        </code><br>
+                        Automático: Certbot modifica Nginx, agrega SSL, configura auto-renovación cada 90 días.
+                    </p>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 70px; color: #4ade80; font-size: 2rem; text-align: center;">📊 Arquitectura de Contenedores en Detalle</h3>
+
+            <div class="info-grid" style="margin-top: 40px;">
+                <div class="info-card" style="background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); color: white;">
+                    <h3>🐳 Contenedor 1: Backend (fifa-backend)</h3>
+                    <p style="margin-top: 15px; line-height: 1.8;">
+                        <strong>Imagen base:</strong> <code>python:3.11-slim</code> (~150 MB)<br>
+                        <strong>Dockerfile:</strong> <code>docker/Dockerfile.backend</code><br>
+                        <strong>Puerto expuesto:</strong> 8000<br>
+                        <strong>Comando inicio:</strong> <code>uvicorn backend.api_scouting_fifa:app --host 0.0.0.0 --port 8000</code><br><br>
+                        
+                        <strong>Dependencias instaladas (requirements-api.txt):</strong><br>
+                        • fastapi==0.115.5<br>
+                        • uvicorn[standard]==0.32.1<br>
+                        • pandas==2.3.3<br>
+                        • scikit-learn==1.7.2<br>
+                        • joblib==1.4.2<br>
+                        • pydantic==2.10.3<br><br>
+                        
+                        <strong>Capas Docker (optimización caché):</strong><br>
+                        1. Instalar sistema deps (libgomp1) → Cacheable<br>
+                        2. Copiar requirements.txt → Cacheable<br>
+                        3. Pip install → Cacheable (solo si requirements cambia)<br>
+                        4. Copiar código backend/ → Se invalida con cada cambio<br><br>
+                        
+                        <strong>Health check configurado:</strong><br>
+                        • Test: <code>curl http://localhost:8000/</code><br>
+                        • Intervalo: 10 seg<br>
+                        • Start period: 40 seg (tiempo cargar modelo 5GB)<br>
+                        • Reintentos: 5<br><br>
+                        
+                        <strong>Variables de entorno:</strong><br>
+                        • <code>TZ=America/Guayaquil</code> → Zona horaria Ecuador<br>
+                        • <code>LANG=C.UTF-8</code> → Soporte tildes y ñ
+                    </p>
+                </div>
+
+                <div class="info-card" style="background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%); color: white;">
+                    <h3>🎨 Contenedor 2: Frontend (fifa-frontend)</h3>
+                    <p style="margin-top: 15px; line-height: 1.8;">
+                        <strong>Imagen base:</strong> <code>python:3.11-slim</code> (~150 MB)<br>
+                        <strong>Dockerfile:</strong> <code>docker/Dockerfile.frontend</code><br>
+                        <strong>Puerto expuesto:</strong> 8501<br>
+                        <strong>Comando inicio:</strong> <code>streamlit run frontend/dashboard_scouting_fifa.py --server.port=8501 --server.address=0.0.0.0</code><br><br>
+                        
+                        <strong>Dependencias instaladas (requirements-dashboard.txt):</strong><br>
+                        • streamlit==1.50.0<br>
+                        • plotly==6.4.0<br>
+                        • requests==2.32.5<br>
+                        • pandas==2.3.3<br>
+                        • pillow==11.0.0<br><br>
+                        
+                        <strong>Configuración especial:</strong><br>
+                        • <code>--server.enableCORS=false</code> → Acepta requests desde cualquier origen<br>
+                        • <code>--server.address=0.0.0.0</code> → Escucha en todas las interfaces (no solo localhost)<br>
+                        • Carpeta <code>.streamlit/</code> copiada → Config para permitir CDN externos (flags, imágenes)<br><br>
+                        
+                        <strong>Depends on backend:</strong><br>
+                        • <code>condition: service_healthy</code><br>
+                        • Frontend no inicia hasta que backend responda 200 en health check<br>
+                        • Evita errores "Connection refused" al consultar API<br><br>
+                        
+                        <strong>Variable clave:</strong><br>
+                        • <code>API_BASE_URL=http://backend:8000</code><br>
+                        • Dashboard detecta automáticamente que está en Docker<br>
+                        • Usa DNS interno (<code>backend</code>) en lugar de <code>localhost</code>
+                    </p>
+                </div>
+            </div>
+
+            <div class="problem-box" style="margin-top: 60px; background: rgba(139, 92, 246, 0.2); backdrop-filter: blur(10px); color: white; border-left: 5px solid #8b5cf6;">
+                <h3 style="color: #8b5cf6;">🌐 Red Bridge Interna (fifa-network)</h3>
+                <div style="margin-top: 30px; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 10px;">
+                    <p style="font-size: 1.1rem; line-height: 2;">
+                        <strong>Tipo:</strong> <code>bridge</code> (red virtual privada entre contenedores)<br>
+                        <strong>Nombre:</strong> <code>fifa-network</code><br>
+                        <strong>Miembros:</strong> fifa-backend + fifa-frontend<br><br>
+                        
+                        <strong>Comunicación interna:</strong><br>
+                        • Frontend hace request a <code>http://backend:8000/jugadores/buscar</code><br>
+                        • Docker resuelve <code>backend</code> → IP interna del contenedor (ej: 172.18.0.2)<br>
+                        • Backend responde JSON con jugadores<br>
+                        • Frontend renderiza tabla en Streamlit<br><br>
+                        
+                        <strong>Ventajas red bridge:</strong><br>
+                        ✓ Contenedores se comunican por nombre (no IPs dinámicas)<br>
+                        ✓ Aislamiento: Otros contenedores del host no pueden acceder<br>
+                        ✓ Performance: Comunicación interna no pasa por interfaz pública (latencia ~0.1ms)<br>
+                        ✓ Seguridad: Backend no expone puerto al exterior (solo frontend visible)
+                    </p>
+                </div>
+            </div>
+
+            <div class="info-grid" style="margin-top: 60px;">
+                <div class="info-card" style="background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%); color: white;">
+                    <h3>📦 Volúmenes Montados</h3>
+                    <p style="margin-top: 15px; line-height: 1.8;">
+                        <strong>Definición en docker-compose.yml:</strong><br>
+                        <code style="background: rgba(0,0,0,0.3); padding: 10px; display: block; border-radius: 5px; margin: 10px 0;">
+                        volumes:<br>
+                        &nbsp;&nbsp;- ../datos:/app/datos:ro
+                        </code><br>
+                        
+                        <strong>Ruta host:</strong> <code>/opt/fifa-scouting/datos/</code> (VPS)<br>
+                        <strong>Ruta contenedores:</strong> <code>/app/datos/</code><br>
+                        <strong>Modo:</strong> <code>:ro</code> (read-only) → Contenedores no pueden modificar datos<br><br>
+                        
+                        <strong>Contenido montado:</strong><br>
+                        • <code>procesados/fifa_limpio.parquet</code> (25 MB, 122,501 jugadores)<br>
+                        • <code>modelos/modelo_fifa.joblib</code> (5 GB, Random Forest 4000 árboles)<br>
+                        • <code>modelos/encoder_fifa.joblib</code> (500 KB, OneHotEncoder)<br>
+                        • <code>modelos/club_encoding_fifa.joblib</code> (50 KB, Target Encoding)<br><br>
+                        
+                        <strong>¿Por qué volúmenes y no COPY en Dockerfile?</strong><br>
+                        • Modelo de 5GB no debe estar en imagen Docker (imagen sería 5.5GB)<br>
+                        • Actualizar datos/modelo sin rebuild de imagen (solo reemplazar archivo)<br>
+                        • Compartir mismos datos entre backend y frontend (no duplicar 5GB)<br>
+                        • Persistencia: Si contenedor se elimina, datos permanecen en host
+                    </p>
+                </div>
+
+                <div class="info-card" style="background: linear-gradient(135deg, #4ade80 0%, #06b6d4 100%); color: white;">
+                    <h3>⏱️ Tiempos de Despliegue</h3>
+                    <div style="margin-top: 20px; line-height: 2;">
+                        <p><strong>Primera vez (build from scratch):</strong></p>
+                        <ul style="text-align: left;">
+                            <li>Descarga imagen base python:3.11-slim: ~2 min</li>
+                            <li>Instalación dependencias pip: ~3 min</li>
+                            <li>Build backend image: ~5 min total</li>
+                            <li>Build frontend image: ~4 min total</li>
+                            <li><strong>Total primera vez: ~10-12 min</strong></li>
+                        </ul>
+                        
+                        <p style="margin-top: 15px;"><strong>Rebuilds posteriores (con caché):</strong></p>
+                        <ul style="text-align: left;">
+                            <li>Layers cacheadas reutilizadas: ~30 seg</li>
+                            <li>Solo se rebuilda capa de código (cambió .py): ~1 min</li>
+                            <li><strong>Total rebuilds: ~1-2 min</strong></li>
+                        </ul>
+                        
+                        <p style="margin-top: 15px;"><strong>Inicio de contenedores:</strong></p>
+                        <ul style="text-align: left;">
+                            <li>Backend inicia: ~5 seg</li>
+                            <li>Carga modelo 5GB en RAM: ~30-35 seg</li>
+                            <li>Health check valida: ~5 seg</li>
+                            <li>Frontend inicia: ~3 seg</li>
+                            <li><strong>Total inicio: ~40-45 seg</strong></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="problem-box" style="margin-top: 60px; background: linear-gradient(135deg, #4ade80 0%, #06b6d4 100%); color: white;">
+                <h3>🌐 URLs de Producción</h3>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; margin-top: 30px;">
+                    <div style="text-align: center; padding: 20px; background: rgba(255,255,255,0.2); border-radius: 15px; border: 2px solid white;">
+                        <h4 style="margin-bottom: 15px;">🎨 Dashboard en Producción</h4>
+                        <a href="https://grupo7fifa.uniandes.site" target="_blank" style="color: white; font-size: 1.3rem; font-weight: bold; text-decoration: none; word-break: break-all;">
+                            grupo7fifa.uniandes.site
+                        </a>
+                        <p style="margin-top: 10px; font-size: 0.95rem;">
+                            Streamlit + Nginx + SSL<br>
+                            (Proxy reverso a localhost:8501)
+                        </p>
+                    </div>
+                    <div style="text-align: center; padding: 20px; background: rgba(255,255,255,0.2); border-radius: 15px; border: 2px solid white;">
+                        <h4 style="margin-bottom: 15px;">🐙 Repositorio GitHub</h4>
+                        <a href="https://github.com/btoaldas/seminario-complexivo-grupo-7" target="_blank" style="color: white; font-size: 1.3rem; font-weight: bold; text-decoration: none; word-break: break-all;">
+                            github.com/btoaldas/seminario-complexivo-grupo-7
+                        </a>
+                        <p style="margin-top: 10px; font-size: 0.95rem;">
+                            Código fuente completo<br>
+                            (Documentación + Issues + Wiki)
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="problem-box" style="margin-top: 60px; background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); color: white; border-left: 5px solid #ef4444;">
+                <h3 style="color: #ef4444;">🎯 Principios de Despliegue Elegidos</h3>
+                <div style="margin-top: 30px; line-height: 2; font-size: 1.1rem;">
+                    <p><strong>1. Lo Común es Mejor para Producción</strong></p>
+                    <p style="margin-left: 20px; color: rgba(255,255,255,0.9);">
+                        Docker + VPS + Nginx es el stack más usado en la industria. No por moda, sino porque es 
+                        <strong>battle-tested</strong> con millones de despliegues exitosos. Soluciones "modernas" como serverless 
+                        (AWS Lambda, Vercel) tienen limitaciones ocultas (cold starts, timeouts, vendor lock-in).
+                    </p>
+
+                    <p style="margin-top: 20px;"><strong>2. Control Total del Ambiente</strong></p>
+                    <p style="margin-left: 20px; color: rgba(255,255,255,0.9);">
+                        VPS con root access significa control absoluto: instalar lo que sea (Redis, PostgreSQL, cron jobs), 
+                        ajustar límites de sistema (ulimit, RAM), monitorear recursos (htop, docker stats). 
+                        Plataformas PaaS (Heroku, Render) ocultan la infraestructura → Dificulta debugging.
+                    </p>
+
+                    <p style="margin-top: 20px;"><strong>3. Costos Predecibles Sin Sorpresas</strong></p>
+                    <p style="margin-left: 20px; color: rgba(255,255,255,0.9);">
+                        Contabo cobra <strong>€8.99/mes fijo</strong>. AWS/GCP cobran por CPU time, requests, bandwidth → 
+                        Factura variable (spike de tráfico = $500 inesperados). Para proyectos estudiantiles/académicos, 
+                        presupuesto fijo es crítico.
+                    </p>
+
+                    <p style="margin-top: 20px;"><strong>4. Versatilidad y Escalabilidad</strong></p>
+                    <p style="margin-left: 20px; color: rgba(255,255,255,0.9);">
+                        Docker Compose permite agregar servicios fácilmente: Redis para cache, PostgreSQL para usuarios, 
+                        Celery para tareas asíncronas. Todo en <code>docker-compose.yml</code>, sin configurar múltiples servicios cloud.
+                    </p>
+
+                    <p style="margin-top: 20px;"><strong>5. Despliegue Rápido Sin Complicarse</strong></p>
+                    <p style="margin-left: 20px; color: rgba(255,255,255,0.9);">
+                        <code>git pull + docker-compose up -d --build</code> → Sistema actualizado en 2 minutos. 
+                        Sin CI/CD complejo (GitHub Actions, Jenkins), sin pipelines de 10 pasos. Para MVP y prototipos, simplicidad > sofisticación.
+                    </p>
+                </div>
+            </div>
+
+            <div class="problem-box" style="margin-top: 60px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <h3>🏆 Resultados Clave del Despliegue</h3>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; margin-top: 30px;">
+                    <div style="text-align: center;">
+                        <h2 style="color: white; font-size: 3rem;">2</h2>
+                        <p style="font-size: 1.2rem;">Contenedores Docker (Backend + Frontend)</p>
+                    </div>
+                    <div style="text-align: center;">
+                        <h2 style="color: white; font-size: 3rem;">40s</h2>
+                        <p style="font-size: 1.2rem;">Tiempo inicio completo (modelo 5GB en RAM)</p>
+                    </div>
+                    <div style="text-align: center;">
+                        <h2 style="color: white; font-size: 3rem;">24/7</h2>
+                        <p style="font-size: 1.2rem;">Disponibilidad (VPS Contabo Europa)</p>
+                    </div>
+                    <div style="text-align: center;">
+                        <h2 style="color: white; font-size: 3rem;">€8.99</h2>
+                        <p style="font-size: 1.2rem;">Costo mensual fijo (sin sorpresas)</p>
+                    </div>
+                </div>
+                <p style="margin-top: 30px; font-size: 1.1rem; text-align: center;">
+                    Sistema desplegado en producción con <strong>Docker + Nginx + SSL</strong>, accesible globalmente en 
+                    <strong>grupo7fifa.uniandes.site</strong>, controlado por <strong>Git</strong>, 
+                    con infraestructura <strong>simple, escalable y predecible</strong> en VPS Contabo.
+                </p>
             </div>
         </div>
     </section>
@@ -1054,62 +2776,6 @@
                         <li>Investigación en analítica deportiva</li>
                     </ul>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ARQUITECTURA -->
-    <section id="arquitectura">
-        <div class="content-box">
-            <h2>🏗️ Arquitectura del Sistema</h2>
-            
-            <div class="architecture-diagram">
-                <div class="arch-layer">
-                    <h3>📁 Capa de Datos</h3>
-                    <div class="arch-components">
-                        <div class="component">FIFA.xlsx<br>(7 hojas)</div>
-                        <div class="component">fifa_limpio.csv<br>(122,501 jugadores)</div>
-                        <div class="component">Modelos ML<br>(3 archivos Joblib)</div>
-                    </div>
-                </div>
-
-                <div class="arch-layer">
-                    <h3>🔄 Capa de Procesamiento</h3>
-                    <div class="arch-components">
-                        <div class="component">Pipeline Limpieza<br>(6 módulos)</div>
-                        <div class="component">EDA Jupyter<br>(Análisis)</div>
-                        <div class="component">Entrenamiento ML<br>(3 módulos)</div>
-                    </div>
-                </div>
-
-                <div class="arch-layer">
-                    <h3>🌐 Capa de Aplicación</h3>
-                    <div class="arch-components">
-                        <div class="component">🐳 Backend API<br>FastAPI:8000</div>
-                        <div class="component">🐳 Frontend<br>Streamlit:8501</div>
-                    </div>
-                </div>
-
-                <div class="arch-layer">
-                    <h3>👥 Capa de Usuarios</h3>
-                    <div class="arch-components">
-                        <div class="component">Dashboard Web<br>(Navegador)</div>
-                        <div class="component">API REST<br>(HTTP Requests)</div>
-                        <div class="component">API REST Docs<br>(/docs)</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="problem-box" style="margin-top: 50px;">
-                <h3>🐳 Ventajas del Despliegue Docker</h3>
-                <p style="text-align: left; font-size: 1.2rem; line-height: 2;">
-                    ✓ <strong>Portabilidad:</strong> Funciona en cualquier servidor (Linux, Windows, Mac)<br>
-                    ✓ <strong>Aislamiento:</strong> Dependencias encapsuladas, sin conflictos<br>
-                    ✓ <strong>Escalabilidad:</strong> Fácil replicación de contenedores<br>
-                    ✓ <strong>Consistencia:</strong> Mismo entorno en desarrollo y producción<br>
-                    ✓ <strong>Optimización:</strong> Datos externos como volumen read-only<br>
-                    ✓ <strong>Mantenimiento:</strong> Rollback y actualizaciones instantáneas
-                </p>
             </div>
         </div>
     </section>

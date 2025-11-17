@@ -15,10 +15,10 @@
       - fifa-network
     healthcheck:
       test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8000/')"]
-      interval: 10s
-      timeout: 5s
+      interval: 15s
+      timeout: 20s
       retries: 5
-      start_period: 40s
+      start_period: 150s
 
   frontend:
     build:

@@ -31,26 +31,68 @@
         /* Navegación fija */
         nav {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%) translateX(100%);
             z-index: 1000;
             background: rgba(255, 255, 255, 0.95);
-            padding: 15px 25px;
-            border-radius: 30px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            padding: 8px 12px;
+            border-radius: 20px 0 0 20px;
+            box-shadow: -4px 0 15px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            transition: transform 0.3s ease;
+        }
+
+        nav.visible {
+            transform: translateY(-50%) translateX(0);
         }
 
         nav a {
-            margin: 0 10px;
+            margin: 0;
             text-decoration: none;
             color: #333;
-            font-weight: 600;
-            font-size: 14px;
+            font-weight: 500;
+            font-size: 11px;
             transition: color 0.3s;
+            padding: 4px 8px;
+            border-radius: 8px;
+            white-space: nowrap;
         }
 
         nav a:hover {
             color: #0066cc;
+        }
+
+        /* Botón toggle del menú */
+        .nav-toggle {
+            position: fixed;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            z-index: 1001;
+            background: rgba(255, 255, 255, 0.95);
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-toggle:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .nav-toggle:active {
+            transform: translateY(-50%) scale(0.95);
         }
 
         /* Portada */
@@ -58,6 +100,29 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             text-align: center;
+            position: relative;
+        }
+
+        #portada::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('imagenes/fondo1.png');
+            background-size: cover;
+            background-position: top center;
+            background-repeat: no-repeat;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        #portada > * {
+            position: relative;
+            z-index: 1;
         }
 
         #portada h1 {
@@ -86,6 +151,56 @@
             font-size: 1.2rem;
             line-height: 2;
             animation: fadeInUp 1.6s ease;
+        }
+
+        /* Logo en secciones */
+        section:not(#portada) {
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Logo superior derecho */
+        section:not(#portada)::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            width: 180px;
+            height: 180px;
+            background-image: url('imagenes/logo.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0.9;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        /* Media luna degradada en esquina inferior derecha */
+        section:not(#portada)::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 50%;
+            height: 50%;
+            background: radial-gradient(
+                ellipse at top left,
+                rgba(50, 100, 200, 0.1) 0%,
+                rgba(70, 130, 220, 0.2) 25%,
+                rgba(100, 150, 230, 0.3) 50%,
+                rgba(255, 255, 255, 0.4) 75%,
+                rgba(255, 255, 255, 0.5) 100%
+            );
+            border-radius: 100% 0 0 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Asegurar que el contenido esté por encima */
+        section:not(#portada) > * {
+            position: relative;
+            z-index: 2;
         }
 
         /* Contexto */
@@ -614,8 +729,11 @@
 </head>
 <body>
 
+    <!-- Botón toggle del menú -->
+    <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle navigation">☰</button>
+
     <!-- Navegación -->
-    <nav>
+    <nav id="mainNav">
         <a href="#portada">Inicio</a>
         <a href="#contexto">Contexto</a>
         <a href="#problema">Problema</a>
@@ -633,6 +751,7 @@
 
     <!-- PORTADA -->
     <section id="portada">
+        <br>
         <h1>⚽ Sistema de Scouting y Valoración<br>de Jugadores de Fútbol FIFA</h1>
         <p class="subtitle">Predicción de Valor de Mercado mediante Machine Learning</p>
         <div class="university">
@@ -651,6 +770,8 @@
     <section id="contexto">
         <div class="content-box">
             <h2>📚 Contexto Académico</h2>
+
+           
             <div class="info-grid">
                 <div class="info-card">
                     <h3>📖 Asignatura</h3>
@@ -684,7 +805,72 @@
                 </div>
             </div>
         </div>
+ <!-- Enlaces de Acceso -->
+            <div class="problem-box" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin-bottom: 50px; padding: 40px; max-width: 100%;">
+                <h3 style="color: white; font-size: 1.8rem; margin-bottom: 30px;">🚀 Accesos al Sistema en Producción</h3>
+                <p style="color: white; font-size: 1.2rem; margin-bottom: 30px; line-height: 1.8;">
+                    Te invitamos a explorar el sistema completo desplegado en la nube:
+                </p>
+                
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 30px; width: 100%;">
+                    <!-- Dashboard Principal -->
+                    <a href="https://grupo7fifa.uniandes.site/" target="_blank" rel="noopener noreferrer" 
+                       style="background: white; padding: 25px; border-radius: 15px; text-decoration: none; 
+                              transition: transform 0.3s ease, box-shadow 0.3s ease; display: block;
+                              box-shadow: 0 10px 30px rgba(0,0,0,0.2);"
+                       onmouseover="this.style.transform='translateY(-10px)'; this.style.boxShadow='0 15px 40px rgba(0,0,0,0.3)';"
+                       onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.2)';">
+                        <div style="font-size: 3rem; margin-bottom: 15px;">📊</div>
+                        <h4 style="color: #667eea; font-size: 1.3rem; margin-bottom: 10px;">Dashboard Interactivo</h4>
+                        <p style="color: #666; font-size: 0.95rem; line-height: 1.6;">
+                            Interfaz principal con Streamlit para búsqueda, análisis de mercado y predicciones ML
+                        </p>
+                        <p style="color: #667eea; font-size: 0.9rem; margin-top: 15px; font-weight: bold;">
+                            🔗 https://grupo7fifa.uniandes.site/
+                        </p>
+                    </a>
+
+                    <!-- API Backend -->
+                    <a href="http://grupo7fifa.uniandes.site:8000/docs" target="_blank" rel="noopener noreferrer" 
+                       style="background: white; padding: 25px; border-radius: 15px; text-decoration: none; 
+                              transition: transform 0.3s ease, box-shadow 0.3s ease; display: block;
+                              box-shadow: 0 10px 30px rgba(0,0,0,0.2);"
+                       onmouseover="this.style.transform='translateY(-10px)'; this.style.boxShadow='0 15px 40px rgba(0,0,0,0.3)';"
+                       onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.2)';">
+                        <div style="font-size: 3rem; margin-bottom: 15px;">🌐</div>
+                        <h4 style="color: #667eea; font-size: 1.3rem; margin-bottom: 10px;">API REST (FastAPI)</h4>
+                        <p style="color: #666; font-size: 0.95rem; line-height: 1.6;">
+                            Documentación interactiva Swagger con 11 endpoints para consultas y predicciones
+                        </p>
+                        <p style="color: #667eea; font-size: 0.9rem; margin-top: 15px; font-weight: bold;">
+                            🔗 http://grupo7fifa.uniandes.site:8000/docs
+                        </p>
+                    </a>
+
+                    <!-- GitHub Repository -->
+                    <a href="https://github.com/btoaldas/seminario-complexivo-grupo-7" target="_blank" rel="noopener noreferrer" 
+                       style="background: white; padding: 25px; border-radius: 15px; text-decoration: none; 
+                              transition: transform 0.3s ease, box-shadow 0.3s ease; display: block;
+                              box-shadow: 0 10px 30px rgba(0,0,0,0.2);"
+                       onmouseover="this.style.transform='translateY(-10px)'; this.style.boxShadow='0 15px 40px rgba(0,0,0,0.3)';"
+                       onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.2)';">
+                        <div style="font-size: 3rem; margin-bottom: 15px;">💻</div>
+                        <h4 style="color: #667eea; font-size: 1.3rem; margin-bottom: 10px;">Repositorio GitHub</h4>
+                        <p style="color: #666; font-size: 0.95rem; line-height: 1.6;">
+                            Código fuente completo, documentación técnica, notebooks y configuración Docker
+                        </p>
+                        <p style="color: #667eea; font-size: 0.9rem; margin-top: 15px; font-weight: bold;">
+                            🔗 https://github.com/btoaldas/seminario-complexivo-grupo-7
+                        </p>
+                    </a>
+                </div>
+            </div>
+
+
     </section>
+
+
+
 
     <!-- PROBLEMA -->
     <section id="problema">
@@ -712,99 +898,68 @@
     <!-- METODOLOGÍA -->
     <section id="metodologia">
         <div class="content-box">
-            <h2>🔬 Metodología: 6 Fases del Proyecto</h2>
+            <h2>🔬 Metodología</h2>
+            
+            <div class="problem-box" style="margin-bottom: 40px;">
+                <p style="font-size: 1.3rem; line-height: 1.9; text-align: left;">
+                    Usamos una metodología tipo <strong>CRISP-DM</strong>, avanzando paso a paso desde la comprensión del negocio hasta el despliegue del sistema de analítica, organizada en <strong>6 fases</strong>.
+                </p>
+            </div>
             
             <div class="methodology-timeline">
                 <div class="phase">
                     <span class="phase-number">1</span>
-                    <h3>Pipeline de Limpieza de Datos</h3>
-                    <p class="phase-tech">🛠️ Tecnologías: Python, Pandas, NumPy, OpenPyXL</p>
+                    <h3>Fase 1 – Pipeline de Limpieza de Datos</h3>
                     <p class="phase-description">
-                        <strong>Proceso:</strong> Carga de 7 hojas Excel (FIFA 15-21), unificación en un DataFrame único, renombrado de 106→73 columnas al español, eliminación de duplicados y columnas con &gt;70% nulos, normalización monetaria (M, K → EUR), normalización temporal, imputación inteligente por posición, creación de 7 nuevas features.
-                    </p>
-                    <p class="phase-description" style="margin-top: 10px;">
-                        <strong>Salida:</strong> <code>datos/procesados/fifa_limpio.csv</code> (122,501 jugadores procesados)
+                        Aquí programamos el proceso que transforma el archivo original en fifa_limpio.csv. Esta fase la voy a explicar en profundidad más adelante.
                     </p>
                 </div>
 
                 <div class="phase">
                     <span class="phase-number">2</span>
-                    <h3>Análisis Exploratorio de Datos (EDA)</h3>
-                    <p class="phase-tech">📊 Tecnologías: Jupyter Notebook, Matplotlib, Seaborn, Plotly</p>
+                    <h3>Fase 2 – EDA: Análisis Exploratorio de Datos</h3>
                     <p class="phase-description">
-                        <strong>Análisis:</strong> Estadísticas descriptivas (media, mediana, desviación), distribución de valores de mercado, correlaciones entre atributos técnicos y precio, identificación de outliers, análisis por posición/liga/edad, visualizaciones interactivas (histogramas, boxplots, scatter plots, heatmaps).
-                    </p>
-                    <p class="phase-description" style="margin-top: 10px;">
-                        <strong>Objetivo:</strong> Determinar qué variables incluir en el modelo ML y detectar patrones clave.
+                        Ya con los datos limpios, analizamos distribuciones, patrones, outliers, correlaciones y características que influyen en el valor del jugador.
                     </p>
                 </div>
 
                 <div class="phase">
                     <span class="phase-number">3</span>
-                    <h3>Entrenamiento de Modelos ML</h3>
-                    <p class="phase-tech">🤖 Tecnologías: Scikit-learn, Joblib</p>
+                    <h3>Fase 3 – Entrenamiento de Modelos</h3>
                     <p class="phase-description">
-                        <strong>Preprocesamiento:</strong> Selección de 14 features base (11 numéricas + 3 categóricas), aplicación de OneHotEncoding (resultando en 84 features totales), división train/test 75/25, encoding especial para 954 clubes únicos.
-                    </p>
-                    <p class="phase-description" style="margin-top: 10px;">
-                        <strong>Modelos:</strong> Entrenamiento de Regresión Lineal (baseline) y Random Forest (4000 árboles, max_depth=30). Evaluación con R², MAE, RMSE. Selección del mejor modelo (Random Forest con R²=0.85-0.98).
-                    </p>
-                    <p class="phase-description" style="margin-top: 10px;">
-                        <strong>Salida:</strong> 3 archivos Joblib (modelo.joblib, encoder.joblib, club_encoding.joblib) - Total: ~5GB
+                        Entrenamos modelos de regresión. La Regresión Lineal fue nuestro baseline, pero el Random Forest alcanzó mejor desempeño para predecir el valor del jugador.
                     </p>
                 </div>
 
                 <div class="phase">
                     <span class="phase-number">4</span>
-                    <h3>Desarrollo de API REST</h3>
-                    <p class="phase-tech">🌐 Tecnologías: FastAPI, Uvicorn, Pydantic</p>
+                    <h3>Fase 4 – API REST con FastAPI</h3>
                     <p class="phase-description">
-                        <strong>Arquitectura:</strong> API asíncrona con 8 endpoints, validación de datos con Pydantic, carga de modelos ML en memoria al iniciar.
-                    </p>
-                    <p class="phase-description" style="margin-top: 10px;">
-                        <strong>Endpoints principales:</strong><br>
-                        • GET <code>/jugadores/buscar</code> - Búsqueda con filtros avanzados<br>
-                        • POST <code>/ml/predecir</code> - Predicción de valor de mercado<br>
-                        • GET <code>/jugadores/infravalorados</code> - Top oportunidades del mercado<br>
-                        • GET <code>/jugadores/{player_id}/perfil</code> - Perfil detallado del jugador
-                    </p>
-                    <p class="phase-description" style="margin-top: 10px;">
-                        <strong>Performance:</strong> Respuestas preparadas para producción.
+                        Convertimos el modelo en un servicio accesible mediante HTTP: la API permite buscar jugadores, obtener estadísticas y realizar predicciones.
                     </p>
                 </div>
 
                 <div class="phase">
                     <span class="phase-number">5</span>
-                    <h3>Dashboard Interactivo</h3>
-                    <p class="phase-tech">📊 Tecnologías: Streamlit, Plotly, Requests</p>
+                    <h3>Fase 5 – Dashboard con Streamlit</h3>
                     <p class="phase-description">
-                        <strong>Funcionalidades:</strong> 3 pestañas interactivas (Búsqueda y Análisis, Predicción ML, Oportunidades de Mercado), filtros dinámicos por posición/liga/club/edad, tabla de resultados con escudos de clubes y ligas, tarjeta especial de jugador con foto y gráfico radar de 6 atributos, formulario de predicción ML con validación en tiempo real, visualizaciones interactivas con Plotly (distribuciones, comparaciones, tendencias).
-                    </p>
-                    <p class="phase-description" style="margin-top: 10px;">
-                        <strong>Integración:</strong> Conectado a API REST (FastAPI)para todas las consultas y predicciones.
+                        Creamos una interfaz interactiva donde un usuario puede explorar jugadores, analizar el mercado y obtener predicciones sin programar.
                     </p>
                 </div>
 
                 <div class="phase">
                     <span class="phase-number">6</span>
-                    <h3>Despliegue en Producción (Docker)</h3>
-                    <p class="phase-tech">🐳 Tecnologías: Docker, Docker Compose</p>
+                    <h3>Fase 6 – Docker y despliegue</h3>
                     <p class="phase-description">
-                        <strong>Arquitectura:</strong> 2 contenedores independientes (backend:8000, frontend:8501), imágenes base Python 3.11-slim, volumen externo para datos (<code>datos/</code> montado como read-only), optimización con caché de dependencias, orquestación con docker-compose, configuración de timezone (America/Guayaquil).
-                    </p>
-                    <p class="phase-description" style="margin-top: 10px;">
-                        <strong>Ventajas:</strong> Portabilidad completa, escalabilidad horizontal, despliegue en cualquier servidor, rollback instantáneo, aislamiento de dependencias.
-                    </p>
-                    <p class="phase-description" style="margin-top: 10px;">
-                        <strong>Comandos:</strong> <code>docker-compose up --build</code> para levantar todo el sistema.
-                    </p>
-                    <p class="phase-description" style="margin-top: 10px;">
-                        <strong>VPS:</strong> <code>Contabo</code> Servidor en la nube alojado con ip publica y Rocky Linux, con proxy pass Nginx y Docker.
-                    </p>
-                      <p class="phase-description" style="margin-top: 10px;">
-                        <strong>Url:</strong> <code>https://grupo7fifa.uniandes.site/</code> para acceder al frontend en entorno de producción con ssl verificado.
+                        Empaquetamos backend y frontend como contenedores. Con docker-compose orquestamos ambos servicios y montamos el volumen de datos.
                     </p>
                 </div>
+            </div>
+
+            <div class="problem-box" style="margin-top: 40px;">
+                <p style="font-size: 1.3rem; line-height: 1.9; text-align: center; color: #4ade80;">
+                    <strong>Estas seis fases garantizan un producto final integral.</strong>
+                </p>
             </div>
         </div>
     </section>
@@ -812,7 +967,8 @@
     <!-- ARQUITECTURA -->
     <section id="arquitectura">
         <div class="content-box">
-            <h2>🏗️ Arquitectura y Ordenación del Sistema</h2>
+            <h2>🏗️ Arquitectura y Organización del Sistema</h2>
+            
             
             <div class="architecture-diagram">
                 <div class="problem-box" style="margin-bottom: 50px;">
@@ -897,11 +1053,70 @@
         </div>
     </section>
 
-    <!-- DATOS -->
+
+    <!-- PIPELINE: LIMPIEZA DE DATOS -->
+    <section id="pipeline" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
+        <div class="content-box">
+            <h2>🔧 Pipeline: Limpieza de Datos</h2>
+            
+            <div class="problem-box" style="margin-bottom: 50px;">
+                <p style="font-size: 1.3rem; line-height: 1.9; text-align: center;">
+                    Proceso automatizado que transforma el dataset original de FIFA en un archivo limpio y listo para análisis y modelado
+                </p>
+            </div>
+
+            <div class="methodology-timeline">
+                <div class="phase">
+                    <span class="phase-number">1</span>
+                    <h3>Carga del dataset original (Excel con 7 hojas)</h3>
+                    <p class="phase-description">
+                        Leemos el archivo fifa.xlsx, que trae una hoja por cada versión del juego. El pipeline recorre las siete, las carga y las une en un solo DataFrame con más de 180 mil registros brutos.
+                    </p>
+                </div>
+
+                <div class="phase">
+                    <span class="phase-number">2</span>
+                    <h3>Unificación y renombrado de columnas</h3>
+                    <p class="phase-description">
+                        El dataset tiene 106 columnas con nombres distintos según la versión. Aquí las traducimos, normalizamos con snake_case y filtramos solo las útiles. El resultado: 73 columnas limpias y consistentes.
+                    </p>
+                </div>
+
+                <div class="phase">
+                    <span class="phase-number">3</span>
+                    <h3>Limpieza general (duplicados, nulos y formatos)</h3>
+                    <p class="phase-description">
+                        Eliminamos duplicados, descartamos columnas con más del 70% de nulos, convertimos valores monetarios como '5.5M' o '350K' a euros numéricos, y estandarizamos fechas. Con esto, la estructura queda ordenada.
+                    </p>
+                </div>
+
+                <div class="phase">
+                    <span class="phase-number">4</span>
+                    <h3>Imputación inteligente según posición del jugador</h3>
+                    <p class="phase-description">
+                        Los valores faltantes se rellenan considerando el rol del jugador. Un arquero nunca recibe valores de un extremo, y viceversa. Así evitamos distorsiones y respetamos el perfil real del jugador.
+                    </p>
+                </div>
+
+                <div class="phase">
+                    <span class="phase-number">5</span>
+                    <h3>Ingeniería de características (nuevas variables)</h3>
+                    <p class="phase-description">
+                        Creamos nuevas features que añaden contexto y mejoran el modelo<br><br>
+                        Estas características enriquecen el análisis y capturan información que el dataset original no trae explícita.
+                    </p>
+                </div>
+            </div>
+
+          
+        </div>
+    </section>
+    
+    <!-- Exportación del Dataset Final  -->
     <section id="datos">
         <div class="content-box">
-            <h2>📊 Pipeline: Dataset y Variables</h2>
-            
+            <h2>📊 Exportación del Dataset Final</h2>
+                       
             <div class="data-stats">
                 <div class="stat-card">
                     <div class="stat-number">122,501</div>
@@ -966,26 +1181,7 @@
                 </p>
             </div>
 
-            <div class="data-stats">
-                <div class="stat-card">
-                    <div class="stat-number">73</div>
-                    <div class="stat-label">Variables Analizadas</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">12</div>
-                    <div class="stat-label">Visualizaciones Generadas</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">84</div>
-                    <div class="stat-label">Features Finales ML</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">0.64</div>
-                    <div class="stat-label">Correlación Máxima<br>(Reputación)</div>
-                </div>
-            </div>
-
-            <div class="info-grid" style="margin-top: 60px;">
+            <div class="info-grid" style="margin-top: 40px;">
                 <div class="info-card" style="background: white; color: #333;">
                     <h3 style="color: #4facfe;">📊 Análisis de Distribución</h3>
                     <p style="margin-top: 15px;"><strong>Valor de Mercado:</strong></p>
@@ -1041,74 +1237,9 @@
                     </p>
                 </div>
 
-                <div class="info-card" style="background: white; color: #333;">
-                    <h3 style="color: #4facfe;">⭐ Reputación Internacional</h3>
-                    <p style="margin-top: 15px;"><strong>Impacto por Nivel (1-5):</strong></p>
-                    <ul style="text-align: left;">
-                        <li>Nivel 5 (Mundial): €65.89M</li>
-                        <li>Nivel 4 (Continental): €35.97M</li>
-                        <li>Nivel 3 (Nacional): €18.53M</li>
-                        <li>Nivel 2 (Regional): €6.75M</li>
-                        <li>Nivel 1 (Local): €1.27M</li>
-                    </ul>
-                    <p style="margin-top: 15px; font-size: 0.95rem; color: #666;">
-                        <strong>Hallazgo:</strong> Nivel 5 vale 52x más que nivel 1. Segundo mejor predictor (0.64).
-                    </p>
-                </div>
-
-                <div class="info-card" style="background: white; color: #333;">
-                    <h3 style="color: #4facfe;">💡 Descubrimientos Inesperados</h3>
-                    <ul style="text-align: left;">
-                        <li><strong>Club y Liga</strong> capturan "brand premium" no reflejado en habilidades técnicas</li>
-                        <li><strong>Reputación</strong> más importante que Overall (0.64 vs 0.61)</li>
-                        <li><strong>Contexto geográfico</strong> explica 15-25% de varianza adicional</li>
-                        <li><strong>Edad óptima:</strong> 24-27 años (peak valor/potencial)</li>
-                    </ul>
-                </div>
             </div>
 
-            <div class="problem-box" style="margin-top: 60px;">
-                <h3>🧠 Decisiones Informadas por el EDA</h3>
-                <p style="text-align: left; font-size: 1.2rem; line-height: 2;">
-                    ✓ <strong>Incluir variables contextuales:</strong> Club, Liga, Reputación explican varianza que atributos técnicos no capturan<br>
-                    ✓ <strong>Transformación logarítmica:</strong> Normalizar distribución con CV=2.39 mejora rendimiento del modelo<br>
-                    ✓ <strong>Target Encoding para Club:</strong> Evitar 954 columnas OneHot (explosión dimensional)<br>
-                    ✓ <strong>Selección de 84 features:</strong> Balance entre información y parsimonia (descarte de 20 variables ruidosas)<br>
-                    ✓ <strong>Random Forest sobre Regresión Lineal:</strong> Capturar interacciones no lineales (Club × Liga × Reputación)<br>
-                    ✓ <strong>NO aplicar escalamiento:</strong> Random Forest invariante a escala, mantener interpretabilidad<br>
-                    ✓ <strong>Validación OOB:</strong> Aprovechar bootstrap interno del RF para validación sin split adicional
-                </p>
-            </div>
-
-            <div class="info-grid" style="margin-top: 60px;">
-                <div class="info-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-                    <h3>📈 Mejora Esperada en Modelo ML</h3>
-                    <div style="margin-top: 20px;">
-                        <p style="font-size: 1.5rem; margin-bottom: 15px;"><strong>R² Anterior:</strong> 0.5495 (54.95%)</p>
-                        <p style="font-size: 2rem; color: #4ade80; margin-bottom: 15px;"><strong>R² Esperado:</strong> 0.65-0.75</p>
-                        <p style="font-size: 1.3rem; color: #4ade80;"><strong>Mejora:</strong> +10-20 puntos porcentuales</p>
-                    </div>
-                    <p style="margin-top: 20px; font-size: 1rem; opacity: 0.9;">
-                        Gracias a la inclusión de variables contextuales (Club, Liga, Reputación) que explican el "brand premium" no capturado por atributos técnicos.
-                    </p>
-                </div>
-
-                <div class="info-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
-                    <h3>🎯 Visualizaciones Clave Generadas</h3>
-                    <ul style="text-align: left; margin-top: 20px; line-height: 2;">
-                        <li>Distribución del valor de mercado</li>
-                        <li>Matriz de correlación (heatmap)</li>
-                        <li>Top 20 predictores (barplot)</li>
-                        <li>Overall vs Valor (scatter + regresión)</li>
-                        <li>Potencial vs Valor por edad</li>
-                        <li>Valor promedio por posición</li>
-                        <li>Club × Liga × Reputación (boxplot)</li>
-                        <li>Jugadores "promesa" (alto potencial)</li>
-                        <li>Outliers y valores extremos</li>
-                        <li>Feature importance preliminar</li>
-                    </ul>
-                </div>
-            </div>
+            
         </div>
     </section>
 
@@ -1365,46 +1496,6 @@
                 <div class="stat-card">
                     <h3>122K</h3>
                     <p>Jugadores Disponibles</p>
-                </div>
-            </div>
-
-            <h3 style="margin-top: 70px; color: #667eea; font-size: 2rem; text-align: center;">📡 Arquitectura de Conexión Dual</h3>
-            
-            <div class="info-grid" style="margin-top: 40px;">
-                <div class="info-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-                    <h3>🗄️ Conexión a Dataset (Parquet)</h3>
-                    <p style="margin-top: 15px; line-height: 1.8;">
-                        <strong>Entrada:</strong> <code>fifa_limpio.csv</code> / <code>fifa_limpio.parquet</code> (122,501 × 73)<br>
-                        <strong>Proceso:</strong> Carga optimizada con Pandas (fallback CSV→Parquet automático)<br>
-                        <strong>Queries:</strong> Filtrado rápido por nombre, posición, club, liga, edad, valoración, potencial<br>
-                        <strong>Ventaja:</strong> 7x más rápido con Parquet (50MB CSV → 25MB Parquet, queries &lt;2 seg)<br>
-                        <strong>Normalización:</strong> Búsqueda flexible sin tildes/mayúsculas (<code>normalizar_texto</code>)
-                    </p>
-                    <div style="margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.2); border-radius: 8px;">
-                        <strong>Endpoints de Dataset:</strong><br>
-                        <code style="color: #4ade80;">/jugadores/buscar</code><br>
-                        <code style="color: #4ade80;">/jugadores/filtros</code><br>
-                        <code style="color: #4ade80;">/eda/estadisticas_generales</code><br>
-                        <code style="color: #4ade80;">/eda/datos_graficos</code>
-                    </div>
-                </div>
-
-                <div class="info-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
-                    <h3>🤖 Conexión a Modelo ML</h3>
-                    <p style="margin-top: 15px; line-height: 1.8;">
-                        <strong>Entrada:</strong> Atributos del jugador (edad, overall, potencial, club, liga, posición, etc.)<br>
-                        <strong>Proceso:</strong> Preprocesamiento + Target Encoding (club) + OneHot Encoding (5 categóricas)<br>
-                        <strong>Inferencia:</strong> Random Forest (4000 árboles) + reversión de log1p<br>
-                        <strong>Salida:</strong> Valor predicho (EUR), clasificación (±8%), percentil, confianza<br>
-                        <strong>Artefactos:</strong> <code>modelo_fifa.joblib</code> (5GB), <code>encoder_fifa.joblib</code>, <code>club_encoding_fifa.joblib</code>
-                    </p>
-                    <div style="margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.2); border-radius: 8px;">
-                        <strong>Endpoints de ML:</strong><br>
-                        <code style="color: #4ade80;">/ml/predecir_valor</code><br>
-                        <code style="color: #4ade80;">/jugadores/{id}/perfil</code><br>
-                        <code style="color: #4ade80;">/jugadores/infravalorados</code><br>
-                        <code style="color: #4ade80;">/jugadores/sobrevalorados</code>
-                    </div>
                 </div>
             </div>
 
@@ -2906,6 +2997,30 @@
             if (indicator && window.scrollY > 100) {
                 indicator.style.opacity = '0';
             }
+        });
+
+        // Toggle del menú de navegación
+        function toggleNav() {
+            const nav = document.getElementById('mainNav');
+            const toggle = document.querySelector('.nav-toggle');
+            nav.classList.toggle('visible');
+            
+            // Cambiar icono del botón
+            if (nav.classList.contains('visible')) {
+                toggle.innerHTML = '✕';
+            } else {
+                toggle.innerHTML = '☰';
+            }
+        }
+
+        // Cerrar menú al hacer clic en un enlace
+        document.querySelectorAll('nav a').forEach(link => {
+            link.addEventListener('click', function() {
+                const nav = document.getElementById('mainNav');
+                const toggle = document.querySelector('.nav-toggle');
+                nav.classList.remove('visible');
+                toggle.innerHTML = '☰';
+            });
         });
     </script>
 

@@ -1175,68 +1175,130 @@
             <h2>🔍 EDA: Análisis Exploratorio de Datos</h2>
             
             <div class="problem-box" style="margin-bottom: 50px;">
-                <h3>🎯 ¿Por Qué Realizar un EDA Exhaustivo?</h3>
+                <h3>🎯 ¿Por Qué EDA Antes de Machine Learning?</h3>
                 <p style="text-align: left; font-size: 1.2rem; line-height: 2;">
-                    Antes de entrenar cualquier modelo de Machine Learning, es <strong>fundamental entender profundamente los datos</strong>. El EDA nos permitió descubrir patrones ocultos, identificar correlaciones inesperadas y tomar decisiones informadas sobre qué variables incluir en el modelo, evitando el <strong>data leakage</strong> y optimizando el rendimiento predictivo.
+                    Para aplicar modelos predictivos mediante machine learning, realizamos el <strong>Análisis Exploratorio de Datos (EDA)</strong>. Esta es una fase fundamental en todo proyecto de ciencia de datos y machine learning. Consiste en explorar, comprender y resumir los datos antes de aplicar modelos predictivos o algoritmos, con el objetivo de descubrir patrones, detectar errores, evaluar la calidad de los datos y entender su comportamiento.
                 </p>
             </div>
 
+            <div class="problem-box" style="margin-bottom: 50px;">
+                <h3>🛠️ Técnicas Más Usadas</h3>
+                <table style="width: 100%; margin-top: 20px; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: rgba(79, 172, 254, 0.2);">
+                            <th style="padding: 15px; text-align: left; border-bottom: 2px solid #4facfe;">Técnica</th>
+                            <th style="padding: 15px; text-align: left; border-bottom: 2px solid #4facfe;">En qué ayuda</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="padding: 12px; border-bottom: 1px solid #ddd;"><strong>Estadísticas descriptivas</strong><br>(media, mediana, mínimo, máximo)</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #ddd;">Resumen numérico de los datos</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 12px; border-bottom: 1px solid #ddd;"><strong>Matrices de correlación</strong></td>
+                            <td style="padding: 12px; border-bottom: 1px solid #ddd;">Identificar qué variables se relacionan</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 12px; border-bottom: 1px solid #ddd;"><strong>Conteo de valores nulos</strong></td>
+                            <td style="padding: 12px; border-bottom: 1px solid #ddd;">Ver la calidad de los datos</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 12px;"><strong>Agrupaciones y filtros</strong></td>
+                            <td style="padding: 12px;">Encontrar patrones</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 style="text-align: center; font-size: 2rem; margin-top: 60px; margin-bottom: 40px;">📊 Estadísticas Descriptivas</h3>
+
             <div class="info-grid" style="margin-top: 40px;">
                 <div class="info-card" style="background: white; color: #333;">
-                    <h3 style="color: #4facfe;">📊 Análisis de Distribución</h3>
-                    <p style="margin-top: 15px;"><strong>Valor de Mercado:</strong></p>
-                    <ul style="text-align: left;">
-                        <li>Media: €2,050,152</li>
-                        <li>Mediana: €600,000</li>
-                        <li>CV: 2.39 (alta dispersión)</li>
-                        <li>Rango: €0 - €123M (Neymar)</li>
-                    </ul>
-                    <p style="margin-top: 15px; font-size: 0.95rem; color: #666;">
-                        <strong>Decisión:</strong> Aplicar transformación logarítmica (log1p) para normalizar la distribución altamente sesgada.
+                    <h3 style="color: #4facfe;">1️⃣ Media: €2,050,152</h3>
+                    <p style="margin-top: 15px; text-align: left; line-height: 1.8;">
+                        Este es el <strong>promedio</strong> del valor de mercado de todos los jugadores.<br><br>
+                        Indica, de forma general, cuánto vale un jugador.<br><br>
+                        👉 Pero en distribuciones muy dispersas, la media puede estar inflada por unos pocos jugadores muy caros.
                     </p>
                 </div>
 
                 <div class="info-card" style="background: white; color: #333;">
-                    <h3 style="color: #4facfe;">🔗 Matriz de Correlación</h3>
-                    <p style="margin-top: 15px;"><strong>Top 5 Predictores:</strong></p>
-                    <ul style="text-align: left;">
-                        <li><strong>Reputación:</strong> 0.6423 ⭐</li>
-                        <li><strong>Overall:</strong> 0.6067</li>
-                        <li><strong>Potencial:</strong> 0.5631</li>
-                        <li><strong>Reacciones:</strong> 0.5178</li>
-                        <li><strong>Calidad Promedio:</strong> 0.4560</li>
-                    </ul>
-                    <p style="margin-top: 15px; font-size: 0.95rem; color: #666;">
-                        <strong>Hallazgo:</strong> Salario (0.82) descartado por data leakage.
+                    <h3 style="color: #4facfe;">2️⃣ Mediana: €600,000</h3>
+                    <p style="margin-top: 15px; text-align: left; line-height: 1.8;">
+                        La mediana es el <strong>valor central</strong> cuando ordenas todos los jugadores de menor a mayor valor.<br><br>
+                        La mediana es más representativa porque no se ve afectada por valores extremos.<br><br>
+                        👉 Esto indica que la mayoría de los jugadores vale alrededor de €600,000.
                     </p>
                 </div>
 
                 <div class="info-card" style="background: white; color: #333;">
-                    <h3 style="color: #4facfe;">🏟️ Impacto del Club</h3>
-                    <p style="margin-top: 15px;"><strong>Top 3 Clubes (954 únicos):</strong></p>
-                    <ul style="text-align: left;">
-                        <li>Bayern München: €24.23M</li>
-                        <li>FC Barcelona: €23.79M</li>
-                        <li>Real Madrid: €23.47M</li>
-                    </ul>
-                    <p style="margin-top: 15px; font-size: 0.95rem; color: #666;">
-                        <strong>Decisión:</strong> Target Encoding → club_valor_promedio (1 columna vs 954 OneHot).
+                    <h3 style="color: #4facfe;">3️⃣ Mínimo: €0</h3>
+                    <p style="margin-top: 15px; text-align: left; line-height: 1.8;">
+                        Valor del <strong>jugador más barato</strong>.<br><br>
+                        En FIFA, esto suele corresponder a jugadores sin valor de mercado o libres.
                     </p>
                 </div>
 
                 <div class="info-card" style="background: white; color: #333;">
-                    <h3 style="color: #4facfe;">🏆 Impacto de la Liga</h3>
-                    <p style="margin-top: 15px;"><strong>Top 3 Ligas (56 únicas):</strong></p>
-                    <ul style="text-align: left;">
-                        <li>Premier League: €8.10M</li>
-                        <li>La Liga: €7.77M</li>
-                        <li>Bundesliga: €6.47M</li>
-                    </ul>
-                    <p style="margin-top: 15px; font-size: 0.95rem; color: #666;">
-                        <strong>Decisión:</strong> OneHot Encoding (56 columnas) por impacto regional significativo.
+                    <h3 style="color: #4facfe;">4️⃣ Máximo: €123,000,000</h3>
+                    <p style="margin-top: 15px; text-align: left; line-height: 1.8;">
+                        Valor del <strong>jugador más caro</strong> del dataset.<br><br>
+                        Representa estrellas de élite mundial (Mbappé, Messi joven, Haaland según el año).
                     </p>
                 </div>
+            </div>
 
+            <h3 style="text-align: center; font-size: 2rem; margin-top: 80px; margin-bottom: 40px;">🔗 Matrices de Correlación</h3>
+
+            <div class="problem-box" style="margin-bottom: 40px;">
+                <h3>📊 Análisis de Correlación</h3>
+                <p style="text-align: left; font-size: 1.2rem; line-height: 2;">
+                    Se usó para <strong>identificar los atributos más relevantes</strong> antes de entrenar modelos:<br>
+                    • Salario<br>
+                    • Valoración global<br>
+                    • Potencial<br><br>
+                    Cada fila y columna representa un atributo (edad, potencial, reputación internacional, salario, valor de mercado, etc.).<br><br>
+                    Cada celda contiene un número entre <strong>-1 y 1</strong>, que indica qué tan fuerte es la relación entre dos variables.
+                </p>
+            </div>
+
+
+            <!-- Imagen de Matriz de Correlación -->
+            <div style="margin-top: 70px; margin-bottom: 70px; text-align: center;">
+                <div style="background: white; padding: 40px; border-radius: 25px; box-shadow: 0 15px 50px rgba(0,0,0,0.15); display: inline-block; max-width: 95%;">
+                    <h3 style="color: #4facfe; font-size: 2rem; margin-bottom: 30px; text-align: center;">
+                        📊 Visualización de la Matriz de Correlación
+                    </h3>
+                    <div style="position: relative; overflow: hidden; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                        <img src="imagenes/grafica_corelaciones.jpg" 
+                             alt="Matriz de Correlación FIFA" 
+                             style="width: 100%; height: auto; display: block; border-radius: 15px; transition: transform 0.3s ease;"
+                             onmouseover="this.style.transform='scale(1.02)'"
+                             onmouseout="this.style.transform='scale(1)'">
+                    </div>
+                  
+                </div>
+            </div>
+
+            <div class="problem-box" style="margin-top: 60px;">
+                <h3>🧠💰 Variables que MÁS Influyen en el Valor de Mercado</h3>
+                <p style="text-align: left; font-size: 1.2rem; line-height: 2;">
+                    Estas variables tienen una <strong>correlación ALTA</strong>, por lo tanto decimos que:<br><br>
+                    <strong style="color: #4ade80; font-size: 1.4rem;">Lo económico + lo reputacional + lo potencial son los factores que realmente explican el mercado futbolístico.</strong><br><br>
+                    Las habilidades técnicas son importantes… pero solas no determinan el precio.
+                </p>
+            </div>
+
+            <div class="problem-box" style="margin-top: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <h3>🚀 Conclusión: EDA Antes de Machine Learning</h3>
+                <p style="text-align: left; font-size: 1.2rem; line-height: 2;">
+                    El Análisis Exploratorio de Datos antes de aplicar los modelos predictivos nos permitió:<br><br>
+                    📉 <strong>Evitar errores</strong> antes de entrenar el modelo<br>
+                    🧠 <strong>Elegir las variables más importantes</strong><br>
+                    📊 <strong>Comprender los patrones reales</strong> que hay en el dataset<br>
+                    🚀 <strong>Mejorar la precisión</strong> del modelo final
+                </p>
             </div>
 
             
@@ -1246,216 +1308,123 @@
     <!-- MACHINE LEARNING -->
     <section id="ml">
         <div class="content-box">
-            <h2>🤖 Machine Learning: Proceso Completo de Entrenamiento</h2>
+            <h2>🤖 Machine Learning: Evaluación de Modelos de Regresión</h2>
             
             <div class="problem-box" style="margin-bottom: 50px;">
-                <h3>🔄 Pipeline de Machine Learning End-to-End</h3>
+                <h3>📊 Aplicación de Machine Learning</h3>
                 <p style="text-align: left; font-size: 1.2rem; line-height: 2;">
-                    Se implementó un <strong>pipeline automatizado completo</strong> que abarca desde la carga de datos hasta la optimización final para producción. El proceso incluye preprocesamiento, partición estratégica, entrenamiento competitivo de modelos, validación rigurosa, generación de predicciones masivas y optimización de almacenamiento.
+                    Una vez hecho nuestro <strong>Análisis Exploratorio de Datos (EDA)</strong>, aplicamos varias técnicas de machine learning enfocadas en la <strong>predicción del valor de mercado de jugadores de fútbol</strong>. Lo cual hicimos una evaluación de modelos de regresión para determinar el mejor enfoque predictivo.
                 </p>
             </div>
 
-            <div class="methodology-timeline" style="margin-bottom: 60px;">
-                <div class="phase">
-                    <span class="phase-number">1</span>
-                    <h3>Carga del Dataset Limpio</h3>
-                    <p class="phase-description">
-                        <strong>Entrada:</strong> <code>fifa_limpio.csv</code> (122,501 jugadores × 73 columnas)<br>
-                        <strong>Proceso:</strong> Carga con Pandas, validación de integridad, eliminación de columnas ML previas para evitar data leakage<br>
-                        <strong>Resultado:</strong> DataFrame limpio listo para modelado
-                    </p>
-                </div>
-
-                <div class="phase">
-                    <span class="phase-number">2</span>
-                    <h3>Preprocesamiento de Features</h3>
-                    <p class="phase-description">
-                        <strong>Features numéricas:</strong> 43 atributos técnicos + edad + club_encoded<br>
-                        <strong>Features categóricas:</strong> Liga (56), posición (4), edad (3), pie (2), reputación (5)<br>
-                        <strong>Encoding:</strong> Target Encoding para Club (954→1 columna), OneHot para resto (70 columnas)<br>
-                        <strong>Total final:</strong> 84 features (14 numéricas + 70 categóricas)
-                    </p>
-                </div>
-
-                <div class="phase">
-                    <span class="phase-number">3</span>
-                    <h3>Partición Estratégica 75/25</h3>
-                    <p class="phase-description">
-                        <strong>Train:</strong> 75% (91,876 jugadores) - Entrenamiento del modelo<br>
-                        <strong>Test:</strong> 25% (30,625 jugadores) - Evaluación imparcial<br>
-                        <strong>¿Por qué 75/25?</strong> Balance óptimo: suficientes datos para entrenar modelos complejos (4000 árboles) sin comprometer la validación. Con 122K registros, el test set de 30K garantiza métricas estadísticamente robustas.
-                    </p>
-                </div>
-
-                <div class="phase">
-                    <span class="phase-number">4</span>
-                    <h3>Competencia de Modelos</h3>
-                    <p class="phase-description">
-                        <strong>Candidato 1:</strong> Regresión Lineal (baseline rápido, &lt;1 min)<br>
-                        <strong>Candidato 2:</strong> Random Forest (4000 árboles, ~15 min)<br>
-                        <strong>Criterio:</strong> Mayor R² en test set + validación OOB<br>
-                        <strong>Ganador:</strong> Random Forest (R²=0.85-0.98 vs RL R²=0.80-0.90)
-                    </p>
-                </div>
-
-                <div class="phase">
-                    <span class="phase-number">5</span>
-                    <h3>Optimización de Hiperparámetros</h3>
-                    <p class="phase-description">
-                        <strong>Exploración:</strong> Se probaron configuraciones desde 100 hasta 4000 estimadores<br>
-                        <strong>Trade-off:</strong> Modelos ligeros (500 árboles) → R² menor pero rápidos (1GB, 2 min)<br>
-                        <strong>Decisión final:</strong> 4000 árboles → R² máximo pero más pesado (5GB, 15 min)<br>
-                        <strong>Justificación:</strong> Precisión &gt; velocidad en producción (predicciones precalculadas)
-                    </p>
-                </div>
-
-                <div class="phase">
-                    <span class="phase-number">6</span>
-                    <h3>Guardado y Optimización Docker</h3>
-                    <p class="phase-description">
-                        <strong>Archivos generados:</strong> modelo.joblib (5GB), encoder.joblib, club_encoding.joblib<br>
-                        <strong>Desafío:</strong> Carga lenta en Docker (5GB en memoria)<br>
-                        <strong>Solución:</strong> Configurar pertinencia en Dockerfile (caché de capas, volúmenes externos)<br>
-                        <strong>Resultado:</strong> Inicio de API en &lt;30 seg con modelo precargado
-                    </p>
-                </div>
-
-                <div class="phase">
-                    <span class="phase-number">7</span>
-                    <h3>Predicciones Masivas + Clasificación</h3>
-                    <p class="phase-description">
-                        <strong>Proceso:</strong> Predecir valor para los 122,501 jugadores<br>
-                        <strong>Nuevas columnas:</strong> <code>valor_predicho_eur</code>, <code>diferencia_porcentual</code>, <code>clasificacion_ml</code><br>
-                        <strong>Clasificación (±8%):</strong> INFRAVALORADO (dif &lt; -8%), JUSTO (-8% ≤ dif ≤ 8%), SOBREVALORADO (dif &gt; 8%)<br>
-                        <strong>Ventaja:</strong> Consultas instantáneas en API (datos precalculados)
-                    </p>
-                </div>
-
-                <div class="phase">
-                    <span class="phase-number">8</span>
-                    <h3>Conversión CSV → Parquet</h3>
-                    <p class="phase-description">
-                        <strong>Problema:</strong> CSV de 122K filas × 77 columnas = 50MB, carga lenta (7-10 seg)<br>
-                        <strong>Solución:</strong> Convertir a formato Parquet columnar comprimido<br>
-                        <strong>Resultado:</strong> 25MB comprimido, carga en &lt;1 seg (7x más rápido)<br>
-                        <strong>Impacto:</strong> API responde en &lt;2 seg incluso con filtros complejos
-                    </p>
-                </div>
-            </div>
-
-            <div class="info-grid" style="margin-top: 60px;">
-                <div class="info-card" style="background: white; color: #333;">
-                    <h3 style="color: #667eea;">📊 Comparativa de Modelos</h3>
-                    <table style="width: 100%; margin-top: 15px; font-size: 0.95rem;">
-                        <tr style="background: #f0f0f0;">
-                            <th style="padding: 10px; text-align: left;">Métrica</th>
-                            <th style="padding: 10px;">Reg. Lineal</th>
-                            <th style="padding: 10px;">Random Forest</th>
-                        </tr>
-                        <tr>
-                            <td style="padding: 10px;"><strong>R² Test</strong></td>
-                            <td style="padding: 10px; text-align: center;">0.80-0.90</td>
-                            <td style="padding: 10px; text-align: center; color: #4ade80; font-weight: bold;">0.85-0.98</td>
-                        </tr>
-                        <tr style="background: #f9f9f9;">
-                            <td style="padding: 10px;"><strong>Tiempo Entrenamiento</strong></td>
-                            <td style="padding: 10px; text-align: center;">&lt;1 min</td>
-                            <td style="padding: 10px; text-align: center;">~15 min</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 10px;"><strong>Tamaño Modelo</strong></td>
-                            <td style="padding: 10px; text-align: center;">10 MB</td>
-                            <td style="padding: 10px; text-align: center;">5 GB</td>
-                        </tr>
-                        <tr style="background: #f9f9f9;">
-                            <td style="padding: 10px;"><strong>Validación OOB</strong></td>
-                            <td style="padding: 10px; text-align: center;">❌</td>
-                            <td style="padding: 10px; text-align: center;">✅ 0.86</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 10px;"><strong>Ganador</strong></td>
-                            <td style="padding: 10px; text-align: center;">❌</td>
-                            <td style="padding: 10px; text-align: center; color: #4ade80; font-weight: bold;">✅</td>
-                        </tr>
-                    </table>
-                </div>
-
-                <div class="info-card" style="background: white; color: #333;">
-                    <h3 style="color: #667eea;">🌲 Config. Random Forest Final</h3>
-                    <ul style="text-align: left; line-height: 2; margin-top: 15px;">
-                        <li><strong>n_estimators:</strong> 4000</li>
-                        <li><strong>max_depth:</strong> 30</li>
-                        <li><strong>min_samples_split:</strong> 10</li>
-                        <li><strong>min_samples_leaf:</strong> 4</li>
-                        <li><strong>max_features:</strong> sqrt (≈9)</li>
-                        <li><strong>bootstrap:</strong> True</li>
-                        <li><strong>oob_score:</strong> True</li>
-                        <li><strong>n_jobs:</strong> -1 (todos los cores)</li>
-                    </ul>
-                </div>
-
-                <div class="info-card" style="background: white; color: #333;">
-                    <h3 style="color: #667eea;">⚖️ Trade-offs Considerados</h3>
-                    <p style="margin-top: 15px; line-height: 1.8;">
-                        <strong>Precisión vs Velocidad:</strong><br>
-                        Se priorizó máxima precisión (R²=0.98) sobre velocidad de entrenamiento. El modelo de 5GB se entrena offline 1 vez y se reutiliza indefinidamente.
-                    </p>
-                    <p style="margin-top: 15px; line-height: 1.8;">
-                        <strong>Memoria vs Latencia:</strong><br>
-                        Predicciones precalculadas en CSV/Parquet eliminan latencia de inferencia en tiempo real (queries &lt;2 seg).
-                    </p>
-                </div>
-
-                <div class="info-card" style="background: white; color: #333;">
-                    <h3 style="color: #667eea;">📈 Clasificación ML (±8%)</h3>
-                    <ul style="text-align: left; line-height: 2; margin-top: 15px;">
-                        <li><strong>💎 INFRAVALORADO:</strong> dif &lt; -8%<br><small>Valor real menor que predicho → Oportunidad</small></li>
-                        <li><strong>✓ JUSTO:</strong> -8% ≤ dif ≤ 8%<br><small>Valor real ≈ predicho → Precio correcto</small></li>
-                        <li><strong>⚠️ SOBREVALORADO:</strong> dif &gt; 8%<br><small>Valor real mayor que predicho → Riesgo</small></li>
-                    </ul>
-                    <p style="margin-top: 15px; font-size: 0.9rem; color: #666;">
-                        Tolerancia del 8% basada en variabilidad natural del mercado futbolístico.
-                    </p>
-                </div>
-            </div>
-
-            <div class="problem-box" style="margin-top: 60px;">
-                <h3>🎯 ¿Por Qué Random Forest Ganó?</h3>
+            <div class="problem-box" style="margin-bottom: 50px;">
+                <h3>🎯 ¿Por Qué Modelos de Regresión?</h3>
                 <p style="text-align: left; font-size: 1.2rem; line-height: 2;">
-                    ✓ <strong>Captura interacciones complejas:</strong> Club × Liga × Reputación (relaciones no lineales)<br>
-                    ✓ <strong>Robusto ante outliers:</strong> Neymar (€123M) no distorsiona el modelo<br>
-                    ✓ <strong>Maneja 84 features heterogéneas:</strong> Numéricas + categóricas sin problemas<br>
-                    ✓ <strong>No requiere escalamiento:</strong> Mantiene interpretabilidad de valores originales<br>
-                    ✓ <strong>Validación OOB incorporada:</strong> Score interno (0.86) valida sin split adicional<br>
-                    ✓ <strong>Feature importance:</strong> Identifica qué variables importan más (reputación, overall)<br>
-                    ✓ <strong>Paralelización eficiente:</strong> n_jobs=-1 aprovecha todos los cores CPU
+                    Los <strong>modelos de regresión</strong> se utilizan para <strong>predecir o estimar un valor numérico</strong> a partir de uno o varios datos de entrada.<br><br>
+                    Son fundamentales en análisis estadístico y en machine learning porque permiten:<br><br>
+                    ✓ <strong>Entender relaciones</strong> entre variables<br>
+                    ✓ <strong>Realizar predicciones</strong> basadas en patrones históricos<br>
+                    ✓ <strong>Estimar valores futuros</strong> con base en datos conocidos
                 </p>
             </div>
 
-            <div class="info-grid" style="margin-top: 60px;">
+            <h3 style="text-align: center; font-size: 2rem; margin-top: 60px; margin-bottom: 40px;">🔬 Proceso de Modelado Predictivo</h3>
+
+            <div class="problem-box" style="margin-bottom: 50px;">
+                <p style="text-align: left; font-size: 1.2rem; line-height: 2;">
+                    En nuestro proceso de modelado predictivo del valor de mercado de los jugadores, se evaluaron <strong>dos enfoques principales</strong>:<br><br>
+                    <strong>1.</strong> Modelo de Regresión Lineal<br>
+                    <strong>2.</strong> Modelo Random Forest (ensamble de árboles de decisión)<br><br>
+                    Cada modelo fue entrenado con los mismos datos ya limpios y luego evaluamos con <strong>métricas de rendimiento</strong> para medir su capacidad de predicción.
+                </p>
+            </div>
+
+            <div class="info-grid" style="margin-top: 40px;">
+                <div class="info-card" style="background: white; color: #333; border: 3px solid #f5576c;">
+                    <h3 style="color: #f5576c;">📉 Regresión Lineal</h3>
+                    <p style="margin-top: 20px; text-align: left; line-height: 1.9;">
+                        <strong>Rol:</strong> Modelo de referencia (baseline)<br><br>
+                        <strong>Concepto:</strong> Asume una relación lineal entre las variables independientes (salario, reputación, potencial) y el valor de mercado del jugador.<br><br>
+                        <strong>✅ Ventajas:</strong><br>
+                        • Fácil de interpretar<br>
+                        • Rápido de entrenar (&lt;1 min)<br><br>
+                        <strong>❌ Limitaciones:</strong><br>
+                        • No captura relaciones no lineales
+                    </p>
+                </div>
+
+                <div class="info-card" style="background: white; color: #333; border: 3px solid #4ade80;">
+                    <h3 style="color: #4ade80;">🌲 Random Forest</h3>
+                    <p style="margin-top: 20px; text-align: left; line-height: 1.9;">
+                        <strong>Rol:</strong> Modelo de Ensamble (ganador)<br><br>
+                        <strong>Concepto:</strong> Se compone de muchos árboles de decisión que votan o promedian sus resultados.<br><br>
+                        <strong>✅ Ventajas:</strong><br>
+                        • Captura relaciones complejas y no lineales<br>
+                        • Maneja interacciones entre variables<br>
+                        • Ideal para datos reales como el mercado futbolístico
+                    </p>
+                </div>
+            </div>
+
+            <h3 style="text-align: center; font-size: 2rem; margin-top: 70px; margin-bottom: 40px;">❓ ¿Qué es una Relación No Lineal?</h3>
+
+            <div class="problem-box" style="margin-bottom: 50px;">
+                <p style="text-align: left; font-size: 1.2rem; line-height: 2;">
+                    Una <strong>regresión no lineal</strong> es un tipo de modelo donde la relación entre las variables <strong>no sigue una línea recta</strong>.<br><br>
+                    Es decir, los datos no pueden explicarse con una fórmula simple y presentan comportamientos como:<br><br>
+                    📈 <strong>Curvas crecientes o decrecientes</strong><br>
+                    🔝 <strong>Saturación o límite</strong> (por ejemplo, llega a un punto donde ya no mejora)<br>
+                    🔄 <strong>Interacciones complejas</strong> entre múltiples variables<br><br>
+                    <strong style="color: #4ade80; font-size: 1.3rem;">Random Forest puede capturar estos patrones complejos</strong>
+                </p>
+            </div>
+
+            <h3 style="text-align: center; font-size: 2rem; margin-top: 70px; margin-bottom: 40px;">🏆 ¿Por qué elegimos Random Forest?</h3>
+
+            <div class="info-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 40px;">
+                <div class="info-card" style="background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%); color: #1a5928;">
+                    <h3>✔ Obtuvo mejores resultados</h3>
+                    <p style="margin-top: 15px; line-height: 1.8;">
+                        Los modelos de regresión lineal no pudieron capturar patrones complejos. Random Forest demostró <strong>mayor precisión</strong> en todas las métricas de evaluación.
+                    </p>
+                </div>
+
+                <div class="info-card" style="background: linear-gradient(135deg, #96e6a1 0%, #5ac8fa 100%); color: #0d3b66;">
+                    <h3>✔ Captura patrones reales</h3>
+                    <p style="margin-top: 15px; line-height: 1.8;">
+                        El mercado de fichajes no es lineal. Random Forest puede identificar <strong>relaciones no lineales</strong> entre las características de los jugadores y su valor de mercado.
+                    </p>
+                </div>
+
+                <div class="info-card" style="background: linear-gradient(135deg, #5ac8fa 0%, #667eea 100%); color: white;">
+                    <h3>✔ Reduce el sobreajuste</h3>
+                    <p style="margin-top: 15px; line-height: 1.8;">
+                        Los modelos ensemble como Random Forest combinan múltiples árboles de decisión. Esto <strong>reduce errores</strong> y mejora la generalización en datos nuevos.
+                    </p>
+                </div>
+
                 <div class="info-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-                    <h3>🚀 Optimización para Producción</h3>
-                    <div style="margin-top: 20px; line-height: 2;">
-                        <p><strong>Desafío:</strong> Modelo de 5GB lento de cargar</p>
-                        <p><strong>Solución 1:</strong> Dockerfile optimizado (caché de capas, volúmenes externos)</p>
-                        <p><strong>Solución 2:</strong> Predicciones precalculadas en CSV (consulta instantánea)</p>
-                        <p><strong>Solución 3:</strong> Conversión a Parquet (7x más rápido que CSV)</p>
-                        <p style="margin-top: 15px; color: #4ade80; font-size: 1.3rem;"><strong>Resultado:</strong> API responde en &lt;2 segundos</p>
-                    </div>
+                    <h3>✔ Maneja interacciones complejas</h3>
+                    <p style="margin-top: 15px; line-height: 1.8;">
+                        Identifica automáticamente cómo se combinan múltiples variables. Por ejemplo: <strong>edad + posición + estadísticas</strong> afectan de manera conjunta el valor.
+                    </p>
                 </div>
 
-                <div class="info-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
-                    <h3>📊 Resultados Finales</h3>
-                    <ul style="text-align: left; margin-top: 20px; line-height: 2;">
-                        <li><strong>R² Test:</strong> 0.85-0.98 (85-98%)</li>
-                        <li><strong>R² OOB:</strong> 0.86 (validación interna)</li>
-                        <li><strong>RMSE:</strong> 1.15-1.25 (escala log)</li>
-                        <li><strong>MAE:</strong> 0.85-0.95 (escala log)</li>
-                        <li><strong>Mejora vs baseline:</strong> +10-20 puntos R²</li>
-                        <li><strong>Tiempo predicción:</strong> &lt;2 seg (122K jugadores)</li>
-                        <li><strong>Clasificaciones generadas:</strong> 3 categorías (±8%)</li>
-                    </ul>
+                <div class="info-card" style="background: linear-gradient(135deg, #764ba2 0%, #f093fb 100%); color: white;">
+                    <h3>✔ Robusto ante outliers</h3>
+                    <p style="margin-top: 15px; line-height: 1.8;">
+                        A diferencia de la regresión lineal, Random Forest es más <strong>resistente a valores atípicos</strong> y no se ve afectado fácilmente por datos extremos.
+                    </p>
                 </div>
+            </div>
+
+            <h3 style="text-align: center; font-size: 2rem; margin-top: 70px; margin-bottom: 40px;">🎯 Conclusión</h3>
+
+            <div class="problem-box" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 50px; border: none;">
+                <p style="text-align: center; font-size: 1.4rem; line-height: 2.2; margin: 0;">
+                    El modelo <strong style="color: #4ade80;">Random Forest</strong> nos demostró ser <strong>más eficiente, robusto y realista</strong> para predecir el valor de mercado de los jugadores de FIFA.<br><br>
+                    Su capacidad para capturar <strong>patrones complejos</strong> y <strong>reducir el sobreajuste</strong> lo convierte en la mejor opción para nuestro sistema de valoración.
+                </p>
             </div>
         </div>
     </section>
@@ -1466,288 +1435,90 @@
             <h2>🔌 API REST: FastAPI para Scouting Inteligente</h2>
             
             <div class="problem-box" style="margin-top: 30px;">
-                <h3>💡 ¿Por Qué una API REST?</h3>
-                <p style="font-size: 1.2rem; line-height: 1.8;">
-                    El modelo ML y el dataset Parquet necesitan ser <strong>accesibles desde múltiples clientes</strong> (Dashboard Streamlit, aplicaciones móviles, integraciones con software de scouting). 
-                    Una API REST con <strong>FastAPI</strong> actúa como <strong>capa de servicio centralizada</strong>, exponiendo endpoints RESTful para:
+                <h3>🎯 Integración del Modelo Predictivo en Producción</h3>
+                <p style="font-size: 1.2rem; line-height: 2;">
+                    Para poder integrar el modelo predictivo y con el fin de <strong>poner en producción el modelo de machine learning</strong> que estima el valor de mercado de los futbolistas a partir de sus atributos técnicos, físicos y económicos, se desarrolló una <strong>API REST</strong> utilizando el framework <strong>FastAPI</strong> en Python.<br><br>
+                    
+                    FastAPI permite exponer el modelo como un <strong>servicio web ligero y de alto rendimiento</strong> para utilizar en un dashboard web que puede acceder mediante peticiones HTTP.<br><br>
+                    
+                    De esta manera, el modelo deja de ser un experimento aislado en un notebook y se convierte en un <strong>componente reutilizable</strong> dentro de una arquitectura de software.
                 </p>
-                <ul style="text-align: left; font-size: 1.1rem; line-height: 2; margin-top: 15px; list-style: none;">
-                    <li>✓ Búsqueda y filtrado avanzado de jugadores (sin cargar 122K filas en cliente)</li>
-                    <li>✓ Consulta de perfiles completos con valor predicho en tiempo real</li>
-                    <li>✓ Identificación de oportunidades de mercado (infravalorados/sobrevalorados)</li>
-                    <li>✓ Análisis estadístico agregado (top clubes, ligas, nacionalidades)</li>
-                    <li>✓ Validación automática de datos con <strong>Pydantic</strong> (type hints + schemas)</li>
-                </ul>
             </div>
 
-            <div class="stat-grid" style="margin-top: 50px;">
-                <div class="stat-card">
-                    <h3>11</h3>
-                    <p>Endpoints REST</p>
-                </div>
-                <div class="stat-card">
-                    <h3>&lt;2 seg</h3>
-                    <p>Tiempo Respuesta</p>
-                </div>
-                <div class="stat-card">
-                    <h3>3</h3>
-                    <p>Artefactos ML</p>
-                </div>
-                <div class="stat-card">
-                    <h3>122K</h3>
-                    <p>Jugadores Disponibles</p>
-                </div>
-            </div>
+            <h3 style="text-align: center; font-size: 2rem; margin-top: 60px; margin-bottom: 40px;">📡 Endpoints Principales</h3>
 
-            <h3 style="margin-top: 70px; color: #667eea; font-size: 2rem; text-align: center;">🔥 Endpoints Principales (11 totales)</h3>
-
-            <div class="methodology-timeline" style="margin-top: 40px;">
-                <div class="phase">
-                    <div class="phase-number">1</div>
-                    <h3 class="phase-title">GET /jugadores/buscar</h3>
-                    <p class="phase-description">
-                        <strong>Búsqueda avanzada con múltiples filtros combinados:</strong><br>
-                        • Nombre (búsqueda parcial sin tildes/mayúsculas: "messi" → "Lionel Messi")<br>
-                        • Posición (<code>ST</code>, <code>CM</code>, <code>CB</code>, etc.)<br>
-                        • Club, Liga, Nacionalidad (listas múltiples)<br>
-                        • Rangos: Edad (16-45), Valoración (40-100), Potencial (40-100), Valor EUR<br>
-                        • Clasificación ML (<code>INFRAVALORADO</code>, <code>JUSTO</code>, <code>SOBREVALORADO</code>)<br>
-                        • Ordenamiento configurable + paginación (límite 1-1000)<br>
-                        <strong>Retorna:</strong> Lista de jugadores con info resumida (17 campos)
+            <div class="info-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 30px; margin-top: 40px;">
+                <div class="info-card" style="background: white; color: #333; border: 3px solid #4ade80;">
+                    <h3 style="color: #4ade80;">🔍 /players/search</h3>
+                    <p style="margin-top: 20px; text-align: left; line-height: 1.9;">
+                        <strong>Función:</strong> Permite filtrar jugadores por posición, edad y potencial.<br><br>
+                        <strong>Ejemplo:</strong><br>
+                        • Buscar delanteros entre 20-25 años<br>
+                        • Filtrar por potencial mayor a 85<br>
+                        • Ordenar por valor de mercado
                     </p>
                 </div>
 
-                <div class="phase">
-                    <div class="phase-number">2</div>
-                    <h3 class="phase-title">GET /jugadores/{id}/perfil</h3>
-                    <p class="phase-description">
-                        <strong>Perfil completo de un jugador específico:</strong><br>
-                        • Entrada: <code>id_sofifa</code> + <code>año</code> (opcional 2015-2021)<br>
-                        • Retorna: Todos los 73 atributos originales del jugador<br>
-                        • <strong>Valor predicho ML en tiempo real:</strong> Preprocesa datos → Infiere → Revierte log1p<br>
-                        • Comparación: <code>valor_real</code> vs <code>valor_predicho</code><br>
-                        • Clasificación automática: INFRAVALORADO (dif &lt; -8%) / JUSTO (-8% a 8%) / SOBREVALORADO (&gt; 8%)<br>
-                        <strong>Caso especial:</strong> Si jugador existe en múltiples años → Filtra por año solicitado
-                    </p>
-                </div>
-
-                <div class="phase">
-                    <div class="phase-number">3</div>
-                    <h3 class="phase-title">POST /ml/predecir_valor</h3>
-                    <p class="phase-description">
-                        <strong>Endpoint principal de inferencia ML (Pydantic validado):</strong><br>
-                        • Entrada: JSON con 20+ campos opcionales (edad, overall, potencial, club, liga, posición, etc.)<br>
-                        • <strong>Imputación inteligente:</strong> Valores faltantes se rellenan con medianas/modas del dataset<br>
-                        • Preprocesamiento EXACTO del entrenamiento: Target Encoding (club) + OneHot (5 categóricas)<br>
-                        • Inferencia: Random Forest 4000 árboles → valor EUR<br>
-                        • Salida: <code>valor_predicho</code>, <code>valor_formateado</code>, <code>confianza</code>, <code>percentil</code>, <code>categoria</code>, <code>features_imputadas</code><br>
-                        <strong>Ventaja:</strong> Permite predicciones con datos parciales (jugadores nuevos/jóvenes)
-                    </p>
-                </div>
-
-                <div class="phase">
-                    <div class="phase-number">4</div>
-                    <h3 class="phase-title">GET /jugadores/infravalorados</h3>
-                    <p class="phase-description">
-                        <strong>Top oportunidades de mercado (jugadores baratos para su calidad):</strong><br>
-                        • Criterio: <code>valor_predicho &gt; valor_real + diferencia_minima%</code> (default 10%)<br>
-                        • Filtros opcionales: <code>edad_maxima</code>, <code>posicion[]</code><br>
-                        • Muestra: 2000 jugadores aleatorios (optimización velocidad)<br>
-                        • Predicción en lote (batch) → ~10x más rápido que fila por fila<br>
-                        • Ordenamiento: Por diferencia porcentual descendente<br>
-                        <strong>Caso de uso:</strong> Scouts buscando fichajes de alto valor a bajo costo
-                    </p>
-                </div>
-
-                <div class="phase">
-                    <div class="phase-number">5</div>
-                    <h3 class="phase-title">GET /jugadores/sobrevalorados</h3>
-                    <p class="phase-description">
-                        <strong>Top jugadores potencialmente sobrepreciados:</strong><br>
-                        • Criterio: <code>valor_real &gt; valor_predicho + diferencia_minima%</code> (default 10%)<br>
-                        • Predicción en lote optimizada (2000 muestra)<br>
-                        • Retorna: Jugadores cuyo precio de mercado excede su valor estimado por ML<br>
-                        <strong>Caso de uso:</strong> Análisis de riesgo en fichajes caros, detección de burbujas de mercado
-                    </p>
-                </div>
-
-                <div class="phase">
-                    <div class="phase-number">6</div>
-                    <h3 class="phase-title">GET /eda/estadisticas_generales</h3>
-                    <p class="phase-description">
-                        <strong>KPIs generales del dataset (Dashboard principal):</strong><br>
-                        • Total jugadores, clubes, ligas, nacionalidades<br>
-                        • Distribuciones: Edades (promedio, min, max), valoraciones<br>
-                        • Valores de mercado: Suma total, promedio, jugador más valioso<br>
-                        • Top 10: Clubes, ligas, nacionalidades (conteo jugadores)<br>
-                        <strong>Optimización:</strong> Cálculos agregados con Pandas (groupby, agg) → Respuesta instantánea
-                    </p>
-                </div>
-
-                <div class="phase">
-                    <div class="phase-number">7</div>
-                    <h3 class="phase-title">GET /eda/datos_graficos</h3>
-                    <p class="phase-description">
-                        <strong>Datos agregados para visualizaciones interactivas:</strong><br>
-                        • Tipos de análisis: <code>posiciones</code>, <code>nacionalidades</code>, <code>clubes</code>, <code>ligas</code>, <code>edades</code><br>
-                        • Top N configurable (5-50, default 20)<br>
-                        • Retorna: DataFrames agregados con conteos y promedios<br>
-                        <strong>Ejemplo:</strong> <code>/eda/datos_graficos?tipo_analisis=clubes&top_n=10</code> → Top 10 clubes por conteo jugadores + valor promedio<br>
-                        <strong>Frontend:</strong> Streamlit consume estos datos para gráficos Plotly
-                    </p>
-                </div>
-
-                <div class="phase">
-                    <div class="phase-number">8</div>
-                    <h3 class="phase-title">GET /jugadores/filtros</h3>
-                    <p class="phase-description">
-                        <strong>Opciones únicas para poblar filtros de frontend:</strong><br>
-                        • Retorna listas de valores únicos: Posiciones (27), Ligas (39), Clubes (700+), Nacionalidades (150+)<br>
-                        • Rangos: Edad (min/max), Valoración (min/max), Potencial (min/max), Valor EUR (min/max)<br>
-                        • Total de jugadores en dataset<br>
-                        <strong>Caso de uso:</strong> Cargar dropdowns/selectboxes en Dashboard Streamlit sin duplicar lógica
-                    </p>
-                </div>
-
-                <div class="phase">
-                    <div class="phase-number">9</div>
-                    <h3 class="phase-title">GET /jugadores/{id}/años</h3>
-                    <p class="phase-description">
-                        <strong>Historial temporal de un jugador:</strong><br>
-                        • Entrada: <code>id_sofifa</code><br>
-                        • Retorna: Lista de años FIFA (2015-2021) en los que el jugador aparece<br>
-                        • Ordenado ascendente<br>
-                        <strong>Caso de uso:</strong> Dashboard muestra evolución de Messi 2015→2021 (selector de año)
-                    </p>
-                </div>
-
-                <div class="phase">
-                    <div class="phase-number">10</div>
-                    <h3 class="phase-title">GET /eda/jugador_mas_valioso</h3>
-                    <p class="phase-description">
-                        <strong>Jugador top del dataset (filtrable por año):</strong><br>
-                        • Sin año: Retorna jugador con mayor <code>valor_mercado_eur</code> de todo el dataset<br>
-                        • Con año: Filtra por año FIFA específico → Máximo valor de ese año<br>
-                        • Retorna perfil completo del jugador (73 campos)<br>
-                        <strong>Ejemplo:</strong> <code>/eda/jugador_mas_valioso?año=2019</code> → Neymar €123M
-                    </p>
-                </div>
-
-                <div class="phase">
-                    <div class="phase-number">11</div>
-                    <h3 class="phase-title">GET / (Raíz)</h3>
-                    <p class="phase-description">
-                        <strong>Información general de la API (Landing page):</strong><br>
-                        • Nombre, versión, descripción del servicio<br>
-                        • Metadata del modelo: Tipo (Random Forest), R² (0.9830), Features (110), Jugadores entrenamiento (91,875)<br>
-                        • Lista de todos los endpoints disponibles con rutas<br>
-                        • Stats del dataset: Total jugadores (122,501), clubes (700+), ligas (39)<br>
-                        • Link a documentación interactiva: <code>/docs</code> (Swagger UI auto-generado por FastAPI)
+                <div class="info-card" style="background: white; color: #333; border: 3px solid #667eea;">
+                    <h3 style="color: #667eea;">👤 /players/{player_id}/profile</h3>
+                    <p style="margin-top: 20px; text-align: left; line-height: 1.9;">
+                        <strong>Función:</strong> Devuelve el perfil completo de un jugador, incluyendo su <strong>valor de mercado predicho</strong> por el modelo.<br><br>
+                        <strong>Ejemplo:</strong><br>
+                        • Ver estadísticas completas de Messi<br>
+                        • Comparar valor real vs predicho
                     </p>
                 </div>
             </div>
 
-            <div class="problem-box" style="margin-top: 60px;">
-                <h3>⚡ Características Técnicas Clave</h3>
-                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; margin-top: 30px;">
-                    <div>
-                        <h4 style="color: #667eea; margin-bottom: 15px;">🔒 Validación Robusta (Pydantic)</h4>
-                        <ul style="text-align: left; line-height: 2;">
-                            <li>Schemas tipo-seguros con <code>BaseModel</code></li>
-                            <li>Validación automática: Edad (16-45), Valoración (40-100), etc.</li>
-                            <li>Documentación auto-generada con ejemplos JSON</li>
-                            <li>Errores 422 descriptivos para datos inválidos</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 style="color: #667eea; margin-bottom: 15px;">🚀 Optimización de Performance</h4>
-                        <ul style="text-align: left; line-height: 2;">
-                            <li>Carga Parquet 7x más rápida que CSV (fallback automático)</li>
-                            <li>Predicciones en lote (batch) ~10x más rápidas que iterativas</li>
-                            <li>Muestra de 2000 jugadores para endpoints pesados (no 122K)</li>
-                            <li>Caching de artefactos ML en memoria (load 1 vez al inicio)</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 style="color: #667eea; margin-bottom: 15px;">🔍 Búsqueda Flexible</h4>
-                        <ul style="text-align: left; line-height: 2;">
-                            <li>Normalización de texto: "messi" = "Messi" = "MESSI"</li>
-                            <li>Eliminación de tildes: "Muller" = "Müller"</li>
-                            <li>Búsqueda parcial: "ron" encuentra "Cristiano Ronaldo"</li>
-                            <li>Combinación de filtros (AND lógico)</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 style="color: #667eea; margin-bottom: 15px;">📡 Documentación Interactiva</h4>
-                        <ul style="text-align: left; line-height: 2;">
-                            <li><strong>Swagger UI:</strong> <code>/docs</code> (interfaz gráfica)</li>
-                            <li><strong>ReDoc:</strong> <code>/redoc</code> (documentación elegante)</li>
-                            <li>Prueba de endpoints directamente en el navegador</li>
-                            <li>Ejemplos de request/response auto-generados</li>
-                        </ul>
-                    </div>
-                </div>
+            <h3 style="text-align: center; font-size: 2rem; margin-top: 70px; margin-bottom: 40px;">📄 Documentación Automática</h3>
+
+            <div class="problem-box" style="margin-top: 40px;">
+                <p style="font-size: 1.2rem; line-height: 2;">
+                    Además, <strong>FastAPI genera automáticamente una documentación interactiva</strong> (Swagger/OpenAPI), lo que facilita la prueba y el consumo del servicio por parte de otros desarrolladores.<br><br>
+                    
+                    <strong>Puedes acceder a la documentación en:</strong><br>
+                    • 📘 <a href="http://grupo7fifa.uniandes.site:8000/docs" target="_blank" style="color: #667eea; text-decoration: none; font-weight: bold;">http://grupo7fifa.uniandes.site:8000/docs</a> → Interfaz Swagger interactiva<br>
+                </p>
             </div>
 
-            <div class="info-grid" style="margin-top: 60px;">
+            <h3 style="text-align: center; font-size: 2rem; margin-top: 70px; margin-bottom: 40px;">✨ Ventajas de la API REST en FastAPI</h3>
+
+            <div class="info-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 40px;">
                 <div class="info-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-                    <h3>🎯 Casos de Uso Principales</h3>
-                    <ol style="text-align: left; margin-top: 20px; line-height: 2;">
-                        <li><strong>Dashboard Streamlit:</strong> Consume endpoints para mostrar resultados en 3 pestañas (Búsqueda, Valoración, EDA)</li>
-                        <li><strong>Scouting automatizado:</strong> Scripts que consultan <code>/jugadores/infravalorados</code> diariamente</li>
-                        <li><strong>Análisis de riesgo:</strong> Clubes validan fichajes caros contra <code>/ml/predecir_valor</code></li>
-                        <li><strong>Integración móvil:</strong> Apps pueden consumir la misma API (JSON REST estándar)</li>
-                        <li><strong>Visualizaciones personalizadas:</strong> Power BI / Tableau conectan a <code>/eda/datos_graficos</code></li>
-                    </ol>
+                    <h3>🧠 Desacoplamiento del modelo</h3>
+                    <p style="margin-top: 15px; line-height: 1.8;">
+                        El modelo ML funciona de forma <strong>independiente</strong> del dashboard. Esto permite que múltiples aplicaciones (web, móvil, etc.) puedan consumir las predicciones sin duplicar código.
+                    </p>
+                </div>
+
+                <div class="info-card" style="background: linear-gradient(135deg, #764ba2 0%, #f093fb 100%); color: white;">
+                    <h3>🌐 Acceso remoto en tiempo real</h3>
+                    <p style="margin-top: 15px; line-height: 1.8;">
+                        Las predicciones están disponibles mediante <strong>peticiones HTTP</strong>, lo que permite consultar el valor de mercado de cualquier jugador desde cualquier lugar con conexión a internet.
+                    </p>
                 </div>
 
                 <div class="info-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
-                    <h3>🐳 Despliegue y Ejecución</h3>
-                    <div style="margin-top: 20px; line-height: 1.8;">
-                        <p><strong>Desarrollo Local:</strong></p>
-                        <code style="background: rgba(0,0,0,0.3); padding: 10px; display: block; border-radius: 5px; margin: 10px 0;">
-                        uvicorn api_scouting_fifa:app --reload --host 0.0.0.0 --port 8000
-                        </code>
-                        
-                        <p style="margin-top: 20px;"><strong>Docker (Producción):</strong></p>
-                        <code style="background: rgba(0,0,0,0.3); padding: 10px; display: block; border-radius: 5px; margin: 10px 0;">
-                        docker build -t fifa-api .<br>
-                        docker run -p 8000:8000 -v $(pwd)/datos:/app/datos fifa-api
-                        </code>
-                        
-                        <p style="margin-top: 20px;"><strong>Health Check:</strong></p>
-                        <code style="background: rgba(0,0,0,0.3); padding: 10px; display: block; border-radius: 5px; margin: 10px 0;">
-                        curl http://localhost:8000/
-                        </code>
-                        
-                        <p style="margin-top: 15px; color: #4ade80; font-size: 1.2rem;"><strong>Tiempo de inicio:</strong> &lt;30 segundos (incluye carga de 5GB modelo + Parquet)</p>
-                    </div>
+                    <h3>📄 Documentación automática</h3>
+                    <p style="margin-top: 15px; line-height: 1.8;">
+                        FastAPI genera automáticamente la <strong>documentación de los endpoints</strong> y de los esquemas de entrada/salida, facilitando la integración para otros desarrolladores.
+                    </p>
                 </div>
             </div>
 
-            <div class="problem-box" style="margin-top: 60px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-                <h3>🏆 Resultados Clave de la API</h3>
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 30px;">
-                    <div style="text-align: center;">
-                        <h2 style="color: #4ade80; font-size: 3rem;">11</h2>
-                        <p style="font-size: 1.2rem;">Endpoints funcionales</p>
-                    </div>
-                    <div style="text-align: center;">
-                        <h2 style="color: #4ade80; font-size: 3rem;">&lt;2s</h2>
-                        <p style="font-size: 1.2rem;">Tiempo respuesta promedio</p>
-                    </div>
-                    <div style="text-align: center;">
-                        <h2 style="color: #4ade80; font-size: 3rem;">98.3%</h2>
-                        <p style="font-size: 1.2rem;">Precisión predicciones ML</p>
-                    </div>
-                </div>
-                <p style="margin-top: 30px; font-size: 1.1rem; text-align: center;">
-                    API REST completa que conecta <strong>datos (Parquet)</strong> + <strong>inteligencia (ML)</strong> en una interfaz unificada, 
-                    permitiendo búsqueda avanzada, análisis estadístico y predicciones en tiempo real para 122,501 jugadores.
+            <div class="problem-box" style="margin-top: 60px; background: linear-gradient(135deg, #4ade80 0%, #06b6d4 100%); color: white; border: none;">
+                <h3 style="color: white;">🎯 Conclusión</h3>
+                <p style="font-size: 1.2rem; line-height: 2; margin-top: 20px;">
+                    Gracias a esta API, el modelo de predicción de valor de mercado puede integrarse de forma sencilla en distintos sistemas de <strong>análisis y toma de decisiones</strong> dentro del contexto del fútbol profesional.<br><br>
+                    
+                    <strong style="font-size: 1.3rem;">A continuación, mi compañero les va a hacer la presentación en una página web donde van a poder observar el modelo predictivo de jugadores.</strong>
                 </p>
             </div>
-        </div>
+
+          
     </section>
+
+
 
     <!-- FRONTEND STREAMLIT -->
     <section id="frontend" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
